@@ -1,9 +1,12 @@
 import "./Hero.css";
 import { Link } from "react-router-dom";
+import { useBranding } from "../../context/BrandingContext";
 import clinicDoctorHero from "../../assets/images/clinic_doctor_hero.png";
 import skeletonSvg from "../../assets/svg/Hero-skeleton.svg";
 
 const Hero = () => {
+  const { settings } = useBranding();
+  const heroImageSrc = settings?.heroImage || clinicDoctorHero;
   return (
     <section className="relative min-h-[90vh] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8 px-6 lg:px-16 pt-10 lg:pt-5 pb-15 sm:pb-24 bg-bg-offwhite overflow-hidden bg-grid-blueprint">
       {/* Background ambient glowing lights */}
@@ -82,7 +85,7 @@ const Hero = () => {
         {/* Main curved image frame */}
         <div className="hero-image relative lg:right-20 lg:top-2 w-full max-h-[500px] max-w-[500px] aspect-[6/6] rounded-[36px] overflow-visible border border-white/80 bg-white/40 p-3 shadow-2xl animate-float">
           <img
-            src={clinicDoctorHero}
+            src={heroImageSrc}
             alt="Physiotherapist in modern clinic"
             className="w-full h-full object-cover rounded-[28px] shadow-inner"
           />

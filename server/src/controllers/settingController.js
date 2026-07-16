@@ -8,7 +8,7 @@ import deleteFromCloudinary from "../utils/deleteFromCloudinary.js";
 export const getSettings = asyncHandler(async (req, res) => {
   let settings = await Setting.findOne();
   if (!settings) {
-    settings = await Setting.create({ name: "PhysioCare", logo: "" });
+    settings = await Setting.create({ name: "PhysioCare", logo: "", heroImage: "" });
   }
   res.status(200).json(settings);
 });
@@ -17,7 +17,7 @@ export const getSettings = asyncHandler(async (req, res) => {
 export const updateSettings = asyncHandler(async (req, res) => {
   let settings = await Setting.findOne();
   if (!settings) {
-    settings = await Setting.create({ name: "PhysioCare", logo: "" });
+    settings = await Setting.create({ name: "PhysioCare", logo: "", heroImage: "" });
   }
 
   const {
@@ -48,8 +48,11 @@ export const updateSettings = asyncHandler(async (req, res) => {
   settings.instagram = instagram ?? settings.instagram;
   settings.youtube = youtube ?? settings.youtube;
 
-  if (req.file) {
-    if (req.file.size > 5 * 1024 * 1024) {
+  const logoFile = req.files?.["logo"]?.[0];
+  const heroImageFile = req.files?.["heroImage"]?.[0];
+
+  if (logoFile) {
+    if (logoFile.size > 5 * 1024 * 1024) {
       throw new ApiError(400, "Logo image size must be under 5MB.");
     }
 
@@ -59,10 +62,27 @@ export const updateSettings = asyncHandler(async (req, res) => {
     }
 
     const uploaded = await uploadToCloudinary(
-      req.file.buffer,
+      logoFile.buffer,
       "physio-clinic/brand"
     );
     settings.logo = uploaded.secure_url;
+  }
+
+  if (heroImageFile) {
+    if (heroImageFile.size > 5 * 1024 * 1024) {
+      throw new ApiError(400, "Hero image size must be under 5MB.");
+    }
+
+    // Delete old hero image if it exists
+    if (settings.heroImage) {
+      await deleteFromCloudinary(settings.heroImage);
+    }
+
+    const uploaded = await uploadToCloudinary(
+      heroImageFile.buffer,
+      "physio-clinic/brand"
+    );
+    settings.heroImage = uploaded.secure_url;
   }
 
   await settings.save();

@@ -73,7 +73,7 @@ const TestimonialsPreview = () => {
 
             return (
               <div 
-                className="glass-card p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden" 
+                className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden" 
                 key={testimonial._id}
               >
                 {/* Large Background Quote Icon */}
@@ -81,7 +81,7 @@ const TestimonialsPreview = () => {
                   className="absolute top-6 right-6 pointer-events-none z-0"
                   style={{ color: "hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.04)" }}
                 >
-                  <svg className="w-24 h-24 fill-currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-20 h-20 sm:w-24 sm:h-24 fill-currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.988zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                   </svg>
                 </div>
@@ -102,7 +102,7 @@ const TestimonialsPreview = () => {
                   </div>
 
                   {/* Testimonial Content */}
-                  <p className="text-sm sm:text-base text-secondary font-body italic leading-relaxed mb-4 relative pr-24">
+                  <p className="text-sm sm:text-base text-secondary font-body italic leading-relaxed mb-4 relative pr-23 sm:pr-25">
                     {testimonial.content.length > 50 ? (
                       <>
                         "{testimonial.content.substring(0, 50)}..."{" "}

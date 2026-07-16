@@ -7,6 +7,7 @@ const AdminSettings = () => {
   const { settings, updateBranding } = useBranding();
   const [name, setName] = useState("");
   const [logoFile, setLogoFile] = useState(null);
+  const [heroImageFile, setHeroImageFile] = useState(null);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
@@ -85,10 +86,14 @@ const AdminSettings = () => {
       if (logoFile) {
         formData.append("logo", logoFile);
       }
+      if (heroImageFile) {
+        formData.append("heroImage", heroImageFile);
+      }
 
       await updateBranding(formData);
       toast.success("Branding settings updated successfully.");
       setLogoFile(null);
+      setHeroImageFile(null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update branding settings.");
     } finally {
@@ -158,6 +163,38 @@ const AdminSettings = () => {
                   className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
                 />
                 <p className="text-[10px] text-text-muted">Recommended: Square logo with dark contrast or transparent background.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Hero Image Row */}
+          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
+            <div className="flex flex-col gap-2 items-center text-center shrink-0">
+              <span className="text-xs font-bold text-slate-450 uppercase tracking-wider font-heading">Current Hero Image</span>
+              <div className="w-24 h-24 rounded-2xl bg-bg-offwhite border border-slate-200 flex items-center justify-center p-1 shadow-inner relative overflow-hidden">
+                {settings.heroImage ? (
+                  <img src={settings.heroImage} alt="Hero Image" className="w-full h-full object-cover rounded-xl" />
+                ) : (
+                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                    Default Image Active
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-4 w-full text-left">
+              {/* Hero Image File Selector */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                  Upload Custom Hero Image (1:1 / Square Ratio)
+                </label>
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={(e) => setHeroImageFile(e.target.files[0])}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
+                />
+                <p className="text-[10px] text-text-muted">Recommended: Square image (1:1 aspect ratio, e.g. 800x800 px) for optimal layout in the hero section.</p>
               </div>
             </div>
           </div>

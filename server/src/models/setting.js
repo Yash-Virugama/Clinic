@@ -10,6 +10,10 @@ const settingSchema = new Schema(
       type: String,
       default: "", // Stores Cloudinary URL of uploaded PNG/SVG logo
     },
+    heroImage: {
+      type: String,
+      default: "", // Stores Cloudinary URL of uploaded PNG/JPG hero image
+    },
     address: {
       type: String,
       default: "123 Health Street, Ahmedabad, Gujarat 380015",

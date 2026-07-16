@@ -8,6 +8,16 @@ import { settingSchema } from "../validations/settingSchema.js";
 const router = Router();
 
 router.get("/", getSettings);
-router.put("/", protect, adminOnly, upload.single("logo"), validate(settingSchema), updateSettings);
+router.put(
+  "/",
+  protect,
+  adminOnly,
+  upload.fields([
+    { name: "logo", maxCount: 1 },
+    { name: "heroImage", maxCount: 1 },
+  ]),
+  validate(settingSchema),
+  updateSettings
+);
 
 export default router;
