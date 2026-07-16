@@ -104,7 +104,7 @@ const MainLayout = () => {
           <span className="font-heading text-base font-extrabold tracking-tight text-secondary">
             {settings?.name || "PhysioCare"}
           </span>
-          <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-8 h-8 rounded-full bg-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
+          <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-9 h-9 rounded-full bg-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
             
             {user?.image ? (
                 <img
