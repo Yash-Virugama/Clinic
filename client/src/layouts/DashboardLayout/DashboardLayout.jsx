@@ -16,7 +16,7 @@ const DashboardLayout = () => {
       <main className="flex-1 min-h-screen bg-grid-blueprint relative px-4 py-8 sm:p-8 lg:p-10 overflow-y-auto overflow-x-hidden lg:ml-72">
         
         {/* Mobile Header with Hamburger Trigger */}
-        <div className="flex lg:hidden items-center justify-between px-6 py-4.5 bg-white border-b border-slate-200/70 absolute top-0 left-0 right-0 z-20 shadow-sm">
+        <div className="fixed top-0 left-0 right-0 z-20 flex lg:hidden items-center justify-between px-6 py-4.5 bg-white border-b border-slate-200/70 shadow-sm">
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-1.5 rounded-lg text-slate-500 hover:text-secondary hover:bg-slate-50 transition-all shrink-0 cursor-pointer"
