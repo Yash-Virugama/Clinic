@@ -65,6 +65,13 @@ const Services = () => {
     }
   };
 
+  // Calculate reading time helper
+  const getReadingTime = (content) => {
+    const words = content ? content.split(/\s+/).length : 0;
+    const minutes = Math.ceil(words / 220); // 220 words per min avg
+    return `${minutes} min read`;
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center lg:h-[calc(100vh-80px)] h-[calc(100vh-72px)] min-h-[50vh] bg-bg-offwhite bg-grid-blueprint">
@@ -110,29 +117,29 @@ const Services = () => {
         </div>
 
         {/* Detailed Services Alternating Layout */}
-        <div className="flex flex-col gap-20 lg:gap-32 mt-16 max-w-6xl mx-auto">
+        <div className="flex flex-col gap-20 lg:gap-28 mt-16 max-w-6xl mx-auto">
           {displayedServices.map((service, idx) => {
             const globalIdx = (currentPage - 1) * SERVICES_PER_PAGE + idx;
             const isEven = globalIdx % 2 === 0;
             const serviceNumber = String(globalIdx + 1).padStart(2, "0");
 
             return (
-              <div 
+              <div
                 key={service._id}
                 id={`service-${service._id}`}
-                className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-20 transition-all duration-1000 p-2 sm:p-10 rounded-[32px] ${isEven ? "" : "lg:flex-row-reverse"}`}
+                className="flow-root transition-all duration-1000 p-2 sm:p-5 rounded-[32px]"
               >
                 {/* Image Column */}
-                <div className="w-full lg:w-[62%] relative">
+                <div className={`w-full lg:w-[50%] relative mb-6 lg:mb-4 ${isEven ? "lg:float-right lg:ml-12" : "lg:float-left lg:mr-12"}`}>
                   {/* Decorative blueprint grids & glows */}
                   <div className="absolute inset-0 bg-dot-matrix opacity-25 rounded-[32px] pointer-events-none" />
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent opacity-10 blur-xl rounded-[32px] pointer-events-none" />
-                  
+
                   <div className="relative w-full aspect-video rounded-3.5xl overflow-hidden border border-secondary/10 shadow-lg bg-slate-100">
                     {service.image ? (
-                      <img 
-                        src={service.image} 
-                        alt={service.title} 
+                      <img
+                        src={service.image}
+                        alt={service.title}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -144,30 +151,36 @@ const Services = () => {
                 </div>
 
                 {/* Content Column */}
-                <div className="w-full lg:w-[38%] flex flex-col gap-5 text-left">
+                <div className="text-left">
                   {/* Order Badge */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 mb-4">
                     <span className="text-primary font-accent font-bold text-lg">{serviceNumber}</span>
                     <span className="h-[1px] w-8 bg-primary/30" />
                     <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Clinical Program</span>
                   </div>
 
                   {/* Service Title */}
-                  <h2 className="text-3xl sm:text-4xl font-extrabold text-secondary font-heading tracking-tight leading-tight">
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-secondary font-heading tracking-tight leading-tight mb-2">
                     {service.title}
                   </h2>
 
+                  <div className="mb-4">
+                    <span className="text-[10px] font-bold text-text-muted font-accent uppercase tracking-wider">
+                      {getReadingTime(service.description)}
+                    </span>
+                  </div>
+
                   {/* Service Description (formatted with paragraphs) */}
-                  <div className="text-slate-600 font-body text-sm sm:text-base leading-relaxed flex flex-col gap-4">
+                  <div className="text-slate-600 font-body text-sm sm:text-base leading-relaxed mb-6">
                     {service.description.split(/\n+/).map((para, pIdx) => (
-                      <p key={pIdx}>{para.trim()}</p>
+                      <p key={pIdx} className="mb-4">{para.trim()}</p>
                     ))}
                   </div>
 
                   {/* Call To Action */}
-                  <div className="pt-4">
-                    <Link 
-                      to="/contact" 
+                  <div>
+                    <Link
+                      to="/contact"
                       className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl text-sm transition-premium shadow-md shadow-secondary/10 cursor-pointer"
                     >
                       Book Consultation
@@ -202,11 +215,10 @@ const Services = () => {
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`w-11 h-11 font-accent font-bold text-sm rounded-xl transition-premium cursor-pointer border flex items-center justify-center ${
-                  currentPage === page
+                className={`w-11 h-11 font-accent font-bold text-sm rounded-xl transition-premium cursor-pointer border flex items-center justify-center ${currentPage === page
                     ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
                     : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
-                }`}
+                  }`}
               >
                 {page}
               </button>

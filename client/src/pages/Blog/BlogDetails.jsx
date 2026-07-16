@@ -152,7 +152,7 @@ const BlogDetails = () => {
         </div>
 
         {/* Excerpt/Introduction Blockquote */}
-        <blockquote className="text-left font-body italic text-lg sm:text-xl text-slate-800 leading-relaxed border-l-4 border-l-primary pl-6 my-10 relative">
+        <blockquote className="text-left font-body italic text-lg sm:text-xl text-slate-800 leading-relaxed border-l-4 border-l-primary pl-3 sm:pl-6 my-10 relative">
           "{blog.excerpt}"
         </blockquote>
 
