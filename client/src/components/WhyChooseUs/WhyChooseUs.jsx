@@ -75,7 +75,7 @@ const WhyChooseUs = () => {
             {steps.map((step, idx) => (
               <div key={idx} className="flex flex-col items-center text-center group">
                 {/* Node circle */}
-                <div className="w-24 h-24 rounded-full glass-card flex items-center justify-center text-primary border border-white/60 shadow-md relative z-10 transition-premium group-hover:scale-110 group-hover:border-primary/40 group-hover:text-primary-hover group-hover:shadow-lg mb-6 cursor-pointer">
+                <div className="w-24 h-24 rounded-full glass-card backdrop-blur-[16px] flex items-center justify-center text-primary border border-white/60 shadow-md relative z-10 transition-premium group-hover:scale-110 group-hover:border-primary/40 group-hover:text-primary-hover group-hover:shadow-lg mb-6 cursor-pointer">
                   {/* Step step number badge */}
                   <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center shadow-md">
                     {step.number}
