@@ -110,7 +110,7 @@ const MainLayout = () => {
                 <img
                 src={user.image}
                 alt="Avatar"
-                className="rounded-full object-cover"
+                className="rounded-full border border-slate-200 object-cover"
                 />
                ) : (
                 <FaUser className="w-5 h-5" />
