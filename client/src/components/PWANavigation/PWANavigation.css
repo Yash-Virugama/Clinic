@@ -7,7 +7,7 @@
   background: var(--primary);/*rgba(255, 255, 255, 0.85);*/
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  /* border-top: 1px solid rgba(226, 232, 240, 0.8); */
   box-shadow: 0 -4px 20px -5px rgba(0, 0, 0, 0.05);
   /* Safe area padding for mobile notches */
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -18,12 +18,12 @@
 /* Dark mode compatibility if needed, but matching root style */
 .pwa-bottom-nav-container {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: space-around;
   height: 100%;
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 8px;
+  padding: 2px 8px 0 8px;
 }
 
 .pwa-nav-item {
@@ -62,7 +62,7 @@
 
 /* Active tab styles */
 .pwa-nav-item.active {
-  color: var(--text-muted);
+  color: var(--bg-dark-accent);
 }
 
 .pwa-nav-item.active .pwa-nav-icon-container {
