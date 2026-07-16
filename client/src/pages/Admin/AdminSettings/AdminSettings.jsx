@@ -117,7 +117,7 @@ const AdminSettings = () => {
       </div>
 
       {/* Settings Card */}
-      <section className="bg-white/80 border border-slate-200/60 backdrop-blur-md rounded-[32px] p-8 sm:p-10 shadow-sm relative overflow-visible">
+      <section className="bg-white/80 border border-slate-200/60 backdrop-blur-md rounded-[32px] p-6 sm:p-8 sm:p-10 shadow-sm relative overflow-visible">
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
 
           {/* Logo Brand Row */}

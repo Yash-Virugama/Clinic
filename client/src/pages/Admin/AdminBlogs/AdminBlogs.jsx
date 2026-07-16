@@ -206,7 +206,7 @@ const AdminBlogs = () => {
 
       {/* Editor Panel Card */}
       {(showForm || editingBlog) && (
-        <div className="w-full bg-white border border-slate-200/60 rounded-[32px] p-8 shadow-sm relative overflow-visible animate-fade-in">
+        <div className="w-full bg-white border border-slate-200/60 rounded-[32px] p-6 sm:p-8 shadow-sm relative overflow-visible animate-fade-in">
           <div className="absolute inset-0 bg-grid-blueprint opacity-[0.015] pointer-events-none rounded-[32px]" />
 
           <h3 className="text-base font-bold text-secondary font-heading mb-6 border-b border-slate-100 pb-4">
