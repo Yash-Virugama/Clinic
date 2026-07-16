@@ -1,0 +1,180 @@
+/* Global Styles & Utilities */
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-main);
+  background-color: var(--bg-offwhite);
+  overflow-x: hidden;
+}
+
+/* Medical/Blueprint Grid Patterns */
+.bg-grid-blueprint {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(37, 99, 235, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+}
+
+.bg-grid-blueprint-dark {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+}
+
+.bg-dot-matrix {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+}
+
+/* Glassmorphic cards styling */
+.glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.01),
+    0 1px 3px rgba(0, 0, 0, 0.01),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.glass-card-dark {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Micro-animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 8s ease-in-out infinite;
+}
+
+/* Smooth Transitions */
+.transition-premium {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Scrollbar styling */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Global Form Select & Option Dropdown styling */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1.1rem center !important;
+  background-size: 0.9em !important;
+  padding-right: 2.75rem !important;
+  cursor: pointer;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #19213d;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px;
+}
+
+/* Dark layout overrides */
+.glass-card-dark select option,
+.bg-gradient-to-br select option {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+/* for login, register, forget password pages */
+.arrow {
+  position: relative;
+  left: 0px;
+  top: 30px;
+}
+
+@media (max-width: 440px) {
+  .arrow {
+    left: -18px;
+  }
+}
+
+@media (max-width: 370px) {
+  .arrow {
+    left: -22px;
+  }
+}
+
+/* Page entrance slide-up/fade-in animation */
+@keyframes page-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-entrance {
+  animation: page-entrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

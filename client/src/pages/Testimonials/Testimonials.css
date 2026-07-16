@@ -1,0 +1,45 @@
+@keyframes testimonial-timeline-highlight {
+  0% {
+    background: linear-gradient(90deg, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.16) 0%, transparent 90%);
+  }
+  25% {
+    background: linear-gradient(90deg, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.10) 0%, transparent 95%);
+  }
+  100% {
+    background: linear-gradient(90deg, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.02) 0%, transparent 100%);
+  }
+}
+
+@keyframes avatar-highlight-pulse {
+  0% {
+    box-shadow: 0 0 0 0 hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 20px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0);
+  }
+}
+
+.testimonial-card-highlighted {
+  position: relative;
+}
+
+.testimonial-card-highlighted blockquote {
+  animation: testimonial-timeline-highlight 8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border-left-width: 3px !important;
+  border-left-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l)) !important;
+  padding-left: 1.25rem !important;
+  transition: border-color 0.8s ease, border-width 0.8s ease, padding 0.8s ease;
+}
+
+.testimonial-card-highlighted img {
+  animation: avatar-highlight-pulse 2.2s ease-out 2;
+}
+
+/* Hide scrollbars for swipable element rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,29 @@
+/* Resources Page Custom Premium Styles */
+
+.resource-preview-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .resource-preview-card {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 28px -8px rgba(var(--primary-h), var(--primary-s), var(--primary-l), 0.12);
+}
+
+.simulated-checklist-box {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.3);
+  background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.simulated-checklist-check {
+  width: 5px;
+  height: 5px;
+  color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  stroke-width: 4px;
+}

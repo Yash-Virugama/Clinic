@@ -1,0 +1,19 @@
+@keyframes service-section-highlight-glow {
+  0% {
+    box-shadow: 0 0 0 0 hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.35);
+    background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05);
+  }
+  50% {
+    box-shadow: 0 0 0 25px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0);
+    background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0);
+    background-color: transparent;
+  }
+}
+
+.service-section-highlighted {
+  animation: service-section-highlight-glow 2.5s ease-out;
+  border-radius: 32px;
+}

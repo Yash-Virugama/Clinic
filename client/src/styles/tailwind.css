@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary: var(--secondary);
+  --color-darkblue: var(--darkblue);
+  --color-accent: var(--accent);
+  --color-accent-glow: var(--accent-glow);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-light: var(--text-light);
+  --color-bg-white: var(--bg-white);
+  --color-bg-offwhite: var(--bg-offwhite);
+  --color-bg-dark: var(--bg-dark);
+  --color-bg-dark-accent: var(--bg-dark-accent);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-accent: var(--font-accent);
+  --radius-xl: var(--radius-xl);
+  --radius-lg: var(--radius-lg);
+  --radius-md: var(--radius-md);
+  --radius-sm: var(--radius-sm);
+}

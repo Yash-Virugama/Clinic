@@ -1,0 +1,25 @@
+@keyframes loading-bar {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.animate-loading-bar {
+  animation: loading-bar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}

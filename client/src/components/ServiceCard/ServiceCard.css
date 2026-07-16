@@ -1,0 +1,18 @@
+@keyframes service-card-highlight-glow {
+  0% {
+    box-shadow: 0 0 0 0 hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.5);
+    border-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  }
+  50% {
+    box-shadow: 0 0 0 15px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0);
+    border-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0);
+  }
+}
+
+.service-card-highlighted {
+  animation: service-card-highlight-glow 2s ease-out 2;
+  border-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l)) !important;
+}

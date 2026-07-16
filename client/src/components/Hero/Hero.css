@@ -1,0 +1,21 @@
+@media (min-width: 1023px) {
+
+    @media (max-width: 1357px) {
+        .hero-image {
+            height: 450px;
+            width: 450px;
+        }
+
+        @media (max-width: 1260px) {
+            .hero-image {
+                right: 8px;
+            }
+        }
+    }
+}
+
+@media (max-width: 390px) {
+    .connect-us, .explore {
+        padding: 12px 20px;
+    }
+}

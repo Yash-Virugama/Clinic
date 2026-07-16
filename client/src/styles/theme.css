@@ -1,0 +1,50 @@
+:root {
+  /* HSL base for primary theme color - Easy to replace later (e.g. 221 is Blue, 142 is Green, 0 is Red, 262 is Purple) */
+  --primary-h: 221;
+  --primary-s: 83%;
+  --primary-l: 53%;
+
+  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  --primary-hover: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 8%));
+  --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
+  --primary-dark: hsl(var(--primary-h), var(--primary-s), 25%);
+  --primary-glow: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.15);
+  
+  --secondary: #0b0f19; /* Sleek dark slate */
+  --darkblue: #090d16;
+ /* --accent-h: 199;
+  --accent-s: 89%;
+  --accent-l: 48%; */
+
+--accent-h: calc(var(--primary-h) - 22);
+  --accent-s: calc(var(--primary-s) + 6%);
+  --accent-l: calc(var(--primary-l) + 5%);
+
+  /* --accent-h: var(--primary-h);
+  --accent-s: calc(var(--primary-s) - 5%);
+  --accent-l: calc(var(--primary-l) - 12%); */
+  --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --accent-glow: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.15);
+
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #f8fafc;
+  
+  --bg-white: #ffffff;
+  --bg-offwhite: #f8fafc;
+  --bg-dark: #070a13;
+  --bg-dark-accent: #0f1423;
+  
+  --card-glass-bg: rgba(255, 255, 255, 0.4);
+  --card-glass-border: rgba(255, 255, 255, 0.4);
+  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-accent: 'Outfit', sans-serif;
+  
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+}
