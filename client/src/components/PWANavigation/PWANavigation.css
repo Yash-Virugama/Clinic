@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--primary);/*rgba(255, 255, 255, 0.85);*/
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(226, 232, 240, 0.8);
@@ -33,12 +33,12 @@
   justify-content: center;
   flex: 1;
   height: 100%;
-  color: var(--text-muted);
+  color: var(--text-light);/*var(--text-muted);*/
   text-decoration: none;
   font-family: var(--font-accent);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  gap: 1.75px;
+  /* gap: 1px; */
   padding-top: 2.5px;
 }
 
@@ -62,7 +62,7 @@
 
 /* Active tab styles */
 .pwa-nav-item.active {
-  color: var(--primary);
+  color: var(--text-muted);
 }
 
 .pwa-nav-item.active .pwa-nav-icon-container {

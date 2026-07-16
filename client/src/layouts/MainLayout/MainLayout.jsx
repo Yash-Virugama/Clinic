@@ -96,15 +96,7 @@ const MainLayout = () => {
         <header className="pwa-app-header sticky top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-4 py-3.5 flex items-center justify-between">
           {location.pathname !== '/' ? (
             <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg text-slate-500 hover:text-primary hover:bg-slate-50 transition-colors cursor-pointer shrink-0">
-              {user?.image ? (
-                <img
-                src={user.image}
-                alt="Avatar"
-                className="w-5 h-5 rounded-full object-cover border border-slate-200 shadow-sm"
-                />
-               ) : (
                 <FaChevronLeft className="w-5 h-5" />
-              )}
             </button>
           ) : (
             <div className="w-8" />
@@ -112,8 +104,18 @@ const MainLayout = () => {
           <span className="font-heading text-base font-extrabold tracking-tight text-secondary">
             {settings?.name || "PhysioCare"}
           </span>
-          <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
-            <FaUser className="w-3.5 h-3.5" />
+          <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-10 h-10 rounded-full bg-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
+            
+            {user?.image ? (
+                <img
+                src={user.image}
+                alt="Avatar"
+                className="object-cover"
+                />
+               ) : (
+                <FaUser className="w-5 h-5" />
+              )}
+            
           </Link>
         </header>
       ) : (
