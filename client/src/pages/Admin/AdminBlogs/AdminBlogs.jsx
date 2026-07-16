@@ -147,7 +147,7 @@ const AdminBlogs = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+      <div className="min-h-[calc(100vh-76.71px-64px)] flex flex-col items-center justify-center gap-3">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         <span className="text-xs font-bold uppercase tracking-widest text-slate-450 font-accent">
           Loading clinic articles...

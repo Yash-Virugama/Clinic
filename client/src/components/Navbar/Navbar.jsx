@@ -211,7 +211,7 @@ const Navbar = () => {
               <NavLink
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
+                className="w-full text-center bg-bg-offwhite py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
               >
                 Login
               </NavLink>
