@@ -20,10 +20,11 @@ export const protect = asyncHandler(async (req, res, next) => {
   const user = await User.findById(decoded.id).select("-password");
 
   if (!user) {
+    const isProduction = process.env.NODE_ENV === "production";
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
     });
     throw new ApiError(401, "User no longer exists.");
   }
