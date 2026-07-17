@@ -192,7 +192,6 @@ export const getManifest = asyncHandler(async (req, res) => {
     ]
   };
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Type", "application/manifest+json");
   res.status(200).json(manifest);
 });

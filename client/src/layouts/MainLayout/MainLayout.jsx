@@ -49,7 +49,7 @@ const MainLayout = () => {
     }
     const apiBase = import.meta.env.VITE_API_URL || "/api";
     manifestLink.href = `${apiBase}/settings/manifest`;
-    manifestLink.setAttribute("crossorigin", "use-credentials");
+    manifestLink.removeAttribute("crossorigin");
   }, []);
 
   useEffect(() => {
