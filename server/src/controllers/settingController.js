@@ -166,6 +166,8 @@ export const getManifest = asyncHandler(async (req, res) => {
   const activeName = settings.appName || settings.name || "PhysioCare";
   const activeShortName = settings.shortName || settings.name || "PhysioCare";
 
+  const clientOrigin = req.headers.origin || process.env.CLIENT_URL || "http://localhost:5173";
+
   const manifest = {
     name: activeName,
     short_name: activeShortName,
@@ -174,8 +176,8 @@ export const getManifest = asyncHandler(async (req, res) => {
     background_color: "#f8fafc",
     display: "standalone",
     orientation: "portrait",
-    start_url: "/",
-    scope: "/",
+    start_url: `${clientOrigin}/`,
+    scope: `${clientOrigin}/`,
     icons: [
       {
         src: pwaIconSrc,
