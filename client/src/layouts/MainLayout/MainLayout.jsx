@@ -11,6 +11,24 @@ import OfflineView from "../../components/OfflineView/OfflineView.jsx";
 import { FaChevronLeft, FaUser } from "react-icons/fa";
 import "./MainLayout.css";
 
+const parseHsl = (hslString) => {
+  try {
+    let clean = hslString.toLowerCase().replace(/hsl\(|\)|%|deg/g, "").replace(/,/g, " ").trim();
+    let parts = clean.split(/\s+/);
+    if (parts.length >= 3) {
+      let h = parseInt(parts[0], 10);
+      let s = parseInt(parts[1], 10);
+      let l = parseInt(parts[2], 10);
+      if (!isNaN(h) && !isNaN(s) && !isNaN(l)) {
+        return { h, s, l };
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse HSL string:", e);
+  }
+  return null;
+};
+
 const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,28 +58,66 @@ const MainLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (settings && settings.name) {
+    if (settings) {
+      const activeName = settings.appName || settings.name || "PhysioCare";
       // 1. Sync Page Title
-      document.title = settings.name;
+      document.title = activeName;
 
-      // 2. Sync Meta Theme Color
+      // 2. Sync Theme Color
+      const rawThemeColor = settings.primaryColor || "221 83% 53%";
+      let h = 221, s = 83, l = 53;
+      let themeColor = "hsl(221, 83%, 53%)";
+
+      const parsedHsl = parseHsl(rawThemeColor);
+      if (parsedHsl) {
+        h = parsedHsl.h;
+        s = parsedHsl.s;
+        l = parsedHsl.l;
+        themeColor = `hsl(${h}, ${s}%, ${l}%)`;
+      }
+
+      document.documentElement.style.setProperty('--primary-h', `${h}`);
+      document.documentElement.style.setProperty('--primary-s', `${s}%`);
+      document.documentElement.style.setProperty('--primary-l', `${l}%`);
+      document.documentElement.style.setProperty('--primary', themeColor);
+      document.documentElement.style.setProperty('--primary-hover', `hsl(${h}, ${s}%, ${Math.max(0, l - 8)}%)`);
+
+      // 3. Sync Meta Theme Color
       let themeMeta = document.querySelector('meta[name="theme-color"]');
       if (!themeMeta) {
         themeMeta = document.createElement('meta');
         themeMeta.name = 'theme-color';
         document.head.appendChild(themeMeta);
       }
-      
-      const rootStyle = getComputedStyle(document.documentElement);
-      const primaryColor = rootStyle.getPropertyValue('--primary').trim() || '#2563EB';
-      themeMeta.content = primaryColor;
+      themeMeta.content = themeColor;
 
-      // 3. Dynamic Manifest Generation
+      // 4. Sync Favicon Link
+      if (settings.favicon) {
+        let faviconLink = document.querySelector('link[rel="icon"]');
+        if (!faviconLink) {
+          faviconLink = document.createElement('link');
+          faviconLink.rel = 'icon';
+          document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = settings.favicon;
+      }
+
+      // 5. Sync Apple Touch Icon
+      const pwaIconSrc = settings.pwaIcon || "/emerald-192.png";
+      let appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+      if (!appleIcon) {
+        appleIcon = document.createElement('link');
+        appleIcon.rel = 'apple-touch-icon';
+        document.head.appendChild(appleIcon);
+      }
+      appleIcon.href = pwaIconSrc;
+
+      // 6. Dynamic Manifest Generation
       const manifest = {
-        name: settings.name,
-        short_name: settings.name,
+        name: activeName,
+        short_name: settings.shortName || settings.name || "PhysioCare",
         description: "Professional Physiotherapy Clinic",
-        theme_color: primaryColor,
+        theme_color: themeColor,
         background_color: "#f8fafc",
         display: "standalone",
         orientation: "portrait",
@@ -69,13 +125,13 @@ const MainLayout = () => {
         scope: "/",
         icons: [
           {
-            src: "/emerald-192.png",
+            src: pwaIconSrc,
             sizes: "192x192",
             type: "image/png",
             purpose: "any maskable"
           },
           {
-            src: "/emerald-512.png",
+            src: pwaIconSrc,
             sizes: "512x512",
             type: "image/png",
             purpose: "any maskable"

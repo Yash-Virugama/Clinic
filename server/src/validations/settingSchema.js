@@ -13,4 +13,7 @@ export const settingSchema = z.object({
   facebook: z.string().trim().optional().or(z.literal("")),
   instagram: z.string().trim().optional().or(z.literal("")),
   youtube: z.string().trim().optional().or(z.literal("")),
+  appName: z.string().trim().optional().or(z.literal("")),
+  shortName: z.string().trim().optional().or(z.literal("")),
+  primaryColor: z.string().trim().optional().or(z.literal("")),
 });

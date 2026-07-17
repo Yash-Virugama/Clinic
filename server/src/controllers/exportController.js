@@ -19,35 +19,6 @@ export const exportPatients = asyncHandler(async (req, res) => {
 
     const worksheet = workbook.addWorksheet("Patients");
 
-    // Fetch and embed logo if present in settings
-    let hasLogo = false;
-    let logoId = null;
-
-    if (setting?.logo) {
-        try {
-            const response = await fetch(setting.logo);
-            if (response.ok) {
-                const arrayBuffer = await response.arrayBuffer();
-                const buffer = Buffer.from(arrayBuffer);
-                
-                let extension = "png";
-                if (setting.logo.toLowerCase().endsWith(".jpg") || setting.logo.toLowerCase().endsWith(".jpeg")) {
-                    extension = "jpeg";
-                } else if (setting.logo.toLowerCase().endsWith(".gif")) {
-                    extension = "gif";
-                }
-
-                logoId = workbook.addImage({
-                    buffer: buffer,
-                    extension: extension,
-                });
-                hasLogo = true;
-            }
-        } catch (error) {
-            console.error("Failed to fetch/embed logo in Excel:", error);
-        }
-    }
-
     // Configure individual columns directly to avoid ExcelJS duplicate headers side effects
     worksheet.getColumn(1).width = 8;   // No.
     worksheet.getColumn(2).width = 25;  // Name
@@ -57,75 +28,36 @@ export const exportPatients = asyncHandler(async (req, res) => {
     worksheet.getColumn(6).width = 15;  // Gender
     worksheet.getColumn(7).width = 20;  // Registered On
 
-    if (hasLogo) {
-        // Corporate layout: Left-aligned logo with titles immediately next to it
-        worksheet.getRow(1).height = 45;
-        worksheet.getRow(2).height = 20;
+    // Centered titles layout
+    worksheet.mergeCells("A1:G1");
+    const titleCell = worksheet.getCell("A1");
+    titleCell.value = clinicName;
+    titleCell.font = {
+        name: "Calibri",
+        size: 20,
+        bold: true,
+        color: { argb: "1E293B" }, // Slate-800
+    };
+    titleCell.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+    };
+    worksheet.getRow(1).height = 35;
 
-        worksheet.addImage(logoId, {
-            tl: { col: 0.99, row: 0.25 }, // Float inside Column A
-            ext: { width: 40, height: 40 }
-        });
-
-        worksheet.mergeCells("B1:G1");
-        const titleCell = worksheet.getCell("B1");
-        titleCell.value = clinicName;
-        titleCell.font = {
-            name: "Calibri",
-            size: 18,
-            bold: true,
-            color: { argb: "1E293B" }, // Slate-800
-        };
-        titleCell.alignment = {
-            horizontal: "left",
-            vertical: "middle",
-        };
-
-        worksheet.mergeCells("B2:G2");
-        const reportTitle = worksheet.getCell("B2");
-        reportTitle.value = "Patient Registry Report";
-        reportTitle.font = {
-            name: "Calibri",
-            size: 12,
-            bold: true,
-            color: { argb: "475569" }, // Slate-600
-        };
-        reportTitle.alignment = {
-            horizontal: "left",
-            vertical: "middle",
-        };
-    } else {
-        // Fallback: Centered titles layout
-        worksheet.mergeCells("A1:G1");
-        const titleCell = worksheet.getCell("A1");
-        titleCell.value = clinicName;
-        titleCell.font = {
-            name: "Calibri",
-            size: 20,
-            bold: true,
-            color: { argb: "1E293B" }, // Slate-800
-        };
-        titleCell.alignment = {
-            horizontal: "center",
-            vertical: "middle",
-        };
-        worksheet.getRow(1).height = 35;
-
-        worksheet.mergeCells("A2:G2");
-        const reportTitle = worksheet.getCell("A2");
-        reportTitle.value = "Patient Registry Directory";
-        reportTitle.font = {
-            name: "Calibri",
-            size: 13,
-            bold: true,
-            color: { argb: "475569" }, // Slate-600
-        };
-        reportTitle.alignment = {
-            horizontal: "center",
-            vertical: "middle",
-        };
-        worksheet.getRow(2).height = 25;
-    }
+    worksheet.mergeCells("A2:G2");
+    const reportTitle = worksheet.getCell("A2");
+    reportTitle.value = "Patient Registry Directory";
+    reportTitle.font = {
+        name: "Calibri",
+        size: 13,
+        bold: true,
+        color: { argb: "475569" }, // Slate-600
+    };
+    reportTitle.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+    };
+    worksheet.getRow(2).height = 25;
 
     // Generated Metadata
     worksheet.getCell("A4").value = `Generated On: ${new Date().toLocaleString()}`;

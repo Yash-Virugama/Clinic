@@ -8,7 +8,16 @@ import deleteFromCloudinary from "../utils/deleteFromCloudinary.js";
 export const getSettings = asyncHandler(async (req, res) => {
   let settings = await Setting.findOne();
   if (!settings) {
-    settings = await Setting.create({ name: "PhysioCare", logo: "", heroImage: "" });
+    settings = await Setting.create({ 
+      name: "PhysioCare", 
+      logo: "", 
+      heroImage: "", 
+      favicon: "",
+      pwaIcon: "",
+      appName: "PhysioCare",
+      shortName: "PhysioCare",
+      primaryColor: "#2563eb"
+    });
   }
   res.status(200).json(settings);
 });
@@ -17,7 +26,16 @@ export const getSettings = asyncHandler(async (req, res) => {
 export const updateSettings = asyncHandler(async (req, res) => {
   let settings = await Setting.findOne();
   if (!settings) {
-    settings = await Setting.create({ name: "PhysioCare", logo: "", heroImage: "" });
+    settings = await Setting.create({ 
+      name: "PhysioCare", 
+      logo: "", 
+      heroImage: "", 
+      favicon: "",
+      pwaIcon: "",
+      appName: "PhysioCare",
+      shortName: "PhysioCare",
+      primaryColor: "#2563eb"
+    });
   }
 
   const {
@@ -33,6 +51,9 @@ export const updateSettings = asyncHandler(async (req, res) => {
     facebook,
     instagram,
     youtube,
+    appName,
+    shortName,
+    primaryColor,
   } = req.body;
 
   settings.name = name ?? settings.name;
@@ -47,9 +68,14 @@ export const updateSettings = asyncHandler(async (req, res) => {
   settings.facebook = facebook ?? settings.facebook;
   settings.instagram = instagram ?? settings.instagram;
   settings.youtube = youtube ?? settings.youtube;
+  settings.appName = appName ?? settings.appName;
+  settings.shortName = shortName ?? settings.shortName;
+  settings.primaryColor = primaryColor ?? settings.primaryColor;
 
   const logoFile = req.files?.["logo"]?.[0];
   const heroImageFile = req.files?.["heroImage"]?.[0];
+  const faviconFile = req.files?.["favicon"]?.[0];
+  const pwaIconFile = req.files?.["pwaIcon"]?.[0];
 
   if (logoFile) {
     if (logoFile.size > 5 * 1024 * 1024) {
@@ -66,6 +92,40 @@ export const updateSettings = asyncHandler(async (req, res) => {
       "physio-clinic/brand"
     );
     settings.logo = uploaded.secure_url;
+  }
+
+  if (faviconFile) {
+    if (faviconFile.size > 2 * 1024 * 1024) {
+      throw new ApiError(400, "Favicon image size must be under 2MB.");
+    }
+
+    // Delete old favicon if it exists
+    if (settings.favicon) {
+      await deleteFromCloudinary(settings.favicon);
+    }
+
+    const uploaded = await uploadToCloudinary(
+      faviconFile.buffer,
+      "physio-clinic/brand"
+    );
+    settings.favicon = uploaded.secure_url;
+  }
+
+  if (pwaIconFile) {
+    if (pwaIconFile.size > 5 * 1024 * 1024) {
+      throw new ApiError(400, "PWA Icon image size must be under 5MB.");
+    }
+
+    // Delete old PWA icon if it exists
+    if (settings.pwaIcon) {
+      await deleteFromCloudinary(settings.pwaIcon);
+    }
+
+    const uploaded = await uploadToCloudinary(
+      pwaIconFile.buffer,
+      "physio-clinic/brand"
+    );
+    settings.pwaIcon = uploaded.secure_url;
   }
 
   if (heroImageFile) {

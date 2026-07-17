@@ -8,7 +8,7 @@ const Hero = () => {
   const { settings } = useBranding();
   const heroImageSrc = settings?.heroImage || clinicDoctorHero;
   return (
-    <section className="relative min-h-[90vh] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8 px-6 lg:px-16 pt-10 lg:pt-5 pb-15 sm:pb-24 bg-bg-offwhite overflow-hidden bg-grid-blueprint">
+    <section className="relative min-h-[90vh] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8 px-6 lg:px-16 pt-10 sm:pt-15 pb-15 sm:pb-24 bg-bg-offwhite overflow-hidden bg-grid-blueprint">
       {/* Background ambient glowing lights */}
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-primary-glow blur-[100px] animate-pulse-glow -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[350px] h-[350px] rounded-full bg-accent-glow blur-[80px] animate-pulse-glow pointer-events-none" />
@@ -42,7 +42,7 @@ const Hero = () => {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 mb-12">
+        <div className="flex flex-wrap gap-4 mb-12 lg:mb-8">
           <Link
             to="/contact" className="connect-us px-7 py-3.5 bg-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/35 transition-premium flex items-center gap-2 group cursor-pointer text-sm sm:text-base">
             Contact Us
@@ -57,7 +57,7 @@ const Hero = () => {
         </div>
 
         {/* Experience Statistics */}
-        <div className="grid grid-cols-3 gap-6 pt-4 sm:pt-8 border-t border-slate-200/80 max-w-md">
+        <div className="grid grid-cols-3 gap-6 pt-4 sm:pt-8 lg:pt-6 border-t border-slate-200/80 max-w-md">
           <div className="flex flex-col gap-1">
             <span className="text-2xl sm:text-3.5xl font-bold text-secondary font-heading tracking-tight">5+ Yrs</span>
             <span className="text-[11px] sm:text-xs text-text-muted font-medium uppercase tracking-wider">Experience</span>
@@ -83,7 +83,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-dot-matrix pointer-events-none opacity-20" />
 
         {/* Main curved image frame */}
-        <div className="hero-image relative lg:right-20 lg:top-2 w-full max-h-[500px] max-w-[500px] aspect-[6/6] rounded-[36px] overflow-visible border border-white/80 bg-white/40 p-3 shadow-2xl animate-float">
+        <div className="hero-image relative lg:right-20 lg:-top-8 w-full max-h-[500px] max-w-[500px] aspect-[6/6] rounded-[36px] overflow-visible border border-white/80 bg-white/40 p-3 shadow-2xl animate-float">
           <img
             src={heroImageSrc}
             alt="Physiotherapist in modern clinic"

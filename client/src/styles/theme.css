@@ -12,17 +12,11 @@
   
   --secondary: #0b0f19; /* Sleek dark slate */
   --darkblue: #090d16;
- /* --accent-h: 199;
-  --accent-s: 89%;
-  --accent-l: 48%; */
 
 --accent-h: calc(var(--primary-h) - 22);
   --accent-s: calc(var(--primary-s) + 6%);
   --accent-l: calc(var(--primary-l) + 5%);
 
-  /* --accent-h: var(--primary-h);
-  --accent-s: calc(var(--primary-s) - 5%);
-  --accent-l: calc(var(--primary-l) - 12%); */
   --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
   --accent-glow: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.15);
 

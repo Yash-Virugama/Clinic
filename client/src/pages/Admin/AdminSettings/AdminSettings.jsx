@@ -8,6 +8,8 @@ const AdminSettings = () => {
   const [name, setName] = useState("");
   const [logoFile, setLogoFile] = useState(null);
   const [heroImageFile, setHeroImageFile] = useState(null);
+  const [faviconFile, setFaviconFile] = useState(null);
+  const [pwaIconFile, setPwaIconFile] = useState(null);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
@@ -19,6 +21,9 @@ const AdminSettings = () => {
   const [facebook, setFacebook] = useState("");
   const [instagram, setInstagram] = useState("");
   const [youtube, setYoutube] = useState("");
+  const [appName, setAppName] = useState("");
+  const [shortName, setShortName] = useState("");
+  const [primaryColor, setPrimaryColor] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -39,6 +44,9 @@ const AdminSettings = () => {
       setFacebook(settings.facebook || "");
       setInstagram(settings.instagram || "");
       setYoutube(settings.youtube || "");
+      setAppName(settings.appName || "");
+      setShortName(settings.shortName || "");
+      setPrimaryColor(settings.primaryColor || "#2563eb");
     }
   }, [settings]);
 
@@ -59,6 +67,9 @@ const AdminSettings = () => {
       facebook,
       instagram,
       youtube,
+      appName,
+      shortName,
+      primaryColor,
     });
 
     if (!validationResult.success) {
@@ -82,6 +93,9 @@ const AdminSettings = () => {
       formData.append("facebook", facebook);
       formData.append("instagram", instagram);
       formData.append("youtube", youtube);
+      formData.append("appName", appName);
+      formData.append("shortName", shortName);
+      formData.append("primaryColor", primaryColor);
 
       if (logoFile) {
         formData.append("logo", logoFile);
@@ -89,11 +103,19 @@ const AdminSettings = () => {
       if (heroImageFile) {
         formData.append("heroImage", heroImageFile);
       }
+      if (faviconFile) {
+        formData.append("favicon", faviconFile);
+      }
+      if (pwaIconFile) {
+        formData.append("pwaIcon", pwaIconFile);
+      }
 
       await updateBranding(formData);
       toast.success("Branding settings updated successfully.");
       setLogoFile(null);
       setHeroImageFile(null);
+      setFaviconFile(null);
+      setPwaIconFile(null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update branding settings.");
     } finally {
@@ -195,6 +217,122 @@ const AdminSettings = () => {
                   className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
                 />
                 <p className="text-[10px] text-text-muted">Recommended: Square image (1:1 aspect ratio, e.g. 800x800 px) for optimal layout in the hero section.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Favicon Icon Row */}
+          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
+            <div className="flex flex-col gap-2 items-center text-center shrink-0">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current Favicon</span>
+              <div className="w-24 h-24 rounded-full bg-bg-offwhite border border-slate-200 flex items-center justify-center p-4 shadow-inner relative overflow-hidden">
+                {settings.favicon ? (
+                  <img src={settings.favicon} alt="Favicon" className="w-full h-full object-contain" />
+                ) : (
+                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                    Default Tab Icon
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-4 w-full text-left">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                  Upload Custom Favicon (1:1 Aspect Ratio)
+                </label>
+                <input
+                  type="file"
+                  accept="image/png, image/x-icon, image/svg+xml"
+                  onChange={(e) => setFaviconFile(e.target.files[0])}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
+                />
+                <p className="text-[10px] text-text-muted">Recommended: Square image with 1:1 ratio (e.g. 32x32 pixels) in PNG or ICO format. This is shown in your browser's address tab.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* PWA Icon Row */}
+          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
+            <div className="flex flex-col gap-2 items-center text-center shrink-0">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current PWA Icon</span>
+              <div className="w-24 h-24 rounded-2xl bg-bg-offwhite border border-slate-200 flex items-center justify-center p-3 shadow-inner relative overflow-hidden">
+                {settings.pwaIcon ? (
+                  <img src={settings.pwaIcon} alt="PWA Icon" className="w-full h-full object-contain" />
+                ) : (
+                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                    Default PWA Icon
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-4 w-full text-left">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                  Upload Custom PWA Launcher Icon (1:1 Aspect Ratio)
+                </label>
+                <input
+                  type="file"
+                  accept="image/png"
+                  onChange={(e) => setPwaIconFile(e.target.files[0])}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
+                />
+                <p className="text-[10px] text-text-muted">Recommended: High-resolution square PNG (1:1 ratio, minimum 512x512 pixels). Used as the app icon on mobile screens when installed.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: PWA & Theme Customizations */}
+          <div className="flex flex-col gap-5 pb-8 border-b border-slate-100">
+            <h3 className="border-s-3 text-sm font-bold text-primary p-1 bg-text-light font-heading uppercase tracking-wider pl-4 shadow-sm">
+              PWA & Theme Customizations
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left">
+              {/* App Name */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                  PWA App Name (Full Title)
+                </label>
+                <input
+                  type="text"
+                  value={appName}
+                  onChange={(e) => setAppName(e.target.value)}
+                  placeholder="e.g. PhysioCare Clinic"
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+                />
+                <p className="text-[10px] text-text-muted">Full application name displayed during app installation prompts.</p>
+              </div>
+
+              {/* Short Name */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                  PWA Short Name (Launcher Title)
+                </label>
+                <input
+                  type="text"
+                  value={shortName}
+                  onChange={(e) => setShortName(e.target.value)}
+                  placeholder="e.g. PhysioCare"
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+                />
+                <p className="text-[10px] text-text-muted">Short name displayed under the icon on mobile home screens (max 12 characters recommended).</p>
+              </div>
+
+              {/* Primary Color Picker */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                  Primary Theme Color (HSL Format)
+                </label>
+                <input
+                  type="text"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  placeholder="e.g. 221 83% 53%"
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+                />
+                <p className="text-[10px] text-text-muted">Enter the color in HSL format (e.g. "221 83% 53%" or "hsl(221, 83%, 53%)"). This updates both the primary color and calculations for all accents and shadows.</p>
               </div>
             </div>
           </div>

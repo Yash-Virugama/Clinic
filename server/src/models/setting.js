@@ -6,9 +6,29 @@ const settingSchema = new Schema(
       type: String,
       default: "PhysioCare",
     },
+    appName: {
+      type: String,
+      default: "PhysioCare",
+    },
+    shortName: {
+      type: String,
+      default: "PhysioCare",
+    },
+    primaryColor: {
+      type: String,
+      default: "#2563eb",
+    },
     logo: {
       type: String,
       default: "", // Stores Cloudinary URL of uploaded PNG/SVG logo
+    },
+    favicon: {
+      type: String,
+      default: "", // Stores Cloudinary URL of uploaded PNG/ICO favicon
+    },
+    pwaIcon: {
+      type: String,
+      default: "", // Stores Cloudinary URL of uploaded PNG PWA icon
     },
     heroImage: {
       type: String,

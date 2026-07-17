@@ -15,6 +15,8 @@ router.put(
   upload.fields([
     { name: "logo", maxCount: 1 },
     { name: "heroImage", maxCount: 1 },
+    { name: "favicon", maxCount: 1 },
+    { name: "pwaIcon", maxCount: 1 },
   ]),
   validate(settingSchema),
   updateSettings
