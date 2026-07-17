@@ -40,6 +40,18 @@ const MainLayout = () => {
   }, []);
 
   useEffect(() => {
+    // Sync Stable Manifest Link immediately on mount
+    let manifestLink = document.querySelector('link[rel="manifest"]');
+    if (!manifestLink) {
+      manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      document.head.appendChild(manifestLink);
+    }
+    manifestLink.href = `${import.meta.env.VITE_API_URL}/settings/manifest`;
+    manifestLink.setAttribute("crossorigin", "use-credentials");
+  }, []);
+
+  useEffect(() => {
     if (settings) {
       const activeName = settings.appName || settings.name || "PhysioCare";
       // 1. Sync Page Title
@@ -65,15 +77,6 @@ const MainLayout = () => {
         document.head.appendChild(appleIcon);
       }
       appleIcon.href = pwaIconSrc;
-
-      // 4. Sync Stable Manifest Link
-      let manifestLink = document.querySelector('link[rel="manifest"]');
-      if (!manifestLink) {
-        manifestLink = document.createElement('link');
-        manifestLink.rel = 'manifest';
-        document.head.appendChild(manifestLink);
-      }
-      manifestLink.href = "/api/settings/manifest";
     }
   }, [settings]);
 
