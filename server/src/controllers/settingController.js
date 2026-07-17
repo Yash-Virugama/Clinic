@@ -15,8 +15,7 @@ export const getSettings = asyncHandler(async (req, res) => {
       favicon: "",
       pwaIcon: "",
       appName: "PhysioCare",
-      shortName: "PhysioCare",
-      primaryColor: "#2563eb"
+      shortName: "PhysioCare"
     });
   }
   res.status(200).json(settings);
@@ -33,8 +32,7 @@ export const updateSettings = asyncHandler(async (req, res) => {
       favicon: "",
       pwaIcon: "",
       appName: "PhysioCare",
-      shortName: "PhysioCare",
-      primaryColor: "#2563eb"
+      shortName: "PhysioCare"
     });
   }
 
@@ -53,7 +51,6 @@ export const updateSettings = asyncHandler(async (req, res) => {
     youtube,
     appName,
     shortName,
-    primaryColor,
   } = req.body;
 
   settings.name = name ?? settings.name;
@@ -70,7 +67,6 @@ export const updateSettings = asyncHandler(async (req, res) => {
   settings.youtube = youtube ?? settings.youtube;
   settings.appName = appName ?? settings.appName;
   settings.shortName = shortName ?? settings.shortName;
-  settings.primaryColor = primaryColor ?? settings.primaryColor;
 
   const logoFile = req.files?.["logo"]?.[0];
   const heroImageFile = req.files?.["heroImage"]?.[0];

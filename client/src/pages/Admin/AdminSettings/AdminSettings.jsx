@@ -23,7 +23,6 @@ const AdminSettings = () => {
   const [youtube, setYoutube] = useState("");
   const [appName, setAppName] = useState("");
   const [shortName, setShortName] = useState("");
-  const [primaryColor, setPrimaryColor] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -46,7 +45,6 @@ const AdminSettings = () => {
       setYoutube(settings.youtube || "");
       setAppName(settings.appName || "");
       setShortName(settings.shortName || "");
-      setPrimaryColor(settings.primaryColor || "#2563eb");
     }
   }, [settings]);
 
@@ -69,7 +67,6 @@ const AdminSettings = () => {
       youtube,
       appName,
       shortName,
-      primaryColor,
     });
 
     if (!validationResult.success) {
@@ -95,7 +92,6 @@ const AdminSettings = () => {
       formData.append("youtube", youtube);
       formData.append("appName", appName);
       formData.append("shortName", shortName);
-      formData.append("primaryColor", primaryColor);
 
       if (logoFile) {
         formData.append("logo", logoFile);
@@ -283,13 +279,13 @@ const AdminSettings = () => {
             </div>
           </div>
 
-          {/* Section: PWA & Theme Customizations */}
+          {/* Section: PWA App Customizations */}
           <div className="flex flex-col gap-5 pb-8 border-b border-slate-100">
             <h3 className="border-s-3 text-sm font-bold text-primary p-1 bg-text-light font-heading uppercase tracking-wider pl-4 shadow-sm">
-              PWA & Theme Customizations
+              PWA App Customizations
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-left">
               {/* App Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
@@ -318,21 +314,6 @@ const AdminSettings = () => {
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
                 />
                 <p className="text-[10px] text-text-muted">Short name displayed under the icon on mobile home screens (max 12 characters recommended).</p>
-              </div>
-
-              {/* Primary Color Picker */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  Primary Theme Color (HSL Format)
-                </label>
-                <input
-                  type="text"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  placeholder="e.g. 221 83% 53%"
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
-                />
-                <p className="text-[10px] text-text-muted">Enter the color in HSL format (e.g. "221 83% 53%" or "hsl(221, 83%, 53%)"). This updates both the primary color and calculations for all accents and shadows.</p>
               </div>
             </div>
           </div>

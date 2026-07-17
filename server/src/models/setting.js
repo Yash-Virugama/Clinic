@@ -14,10 +14,6 @@ const settingSchema = new Schema(
       type: String,
       default: "PhysioCare",
     },
-    primaryColor: {
-      type: String,
-      default: "#2563eb",
-    },
     logo: {
       type: String,
       default: "", // Stores Cloudinary URL of uploaded PNG/SVG logo

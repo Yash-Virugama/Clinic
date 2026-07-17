@@ -15,5 +15,4 @@ export const settingSchema = z.object({
   youtube: z.string().trim().optional().or(z.literal("")),
   appName: z.string().trim().optional().or(z.literal("")),
   shortName: z.string().trim().optional().or(z.literal("")),
-  primaryColor: z.string().trim().optional().or(z.literal("")),
 });
