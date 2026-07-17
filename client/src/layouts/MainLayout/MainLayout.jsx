@@ -7,6 +7,7 @@ import PWAInstallBanner from "../../components/PWAInstallBanner/PWAInstallBanner
 import { useIsPWA } from "../../hooks/useIsPWA";
 import { useBranding } from "../../context/BrandingContext";
 import { useAuth } from "../../context/AuthContext";
+import OfflineView from "../../components/OfflineView/OfflineView.jsx";
 import { FaChevronLeft, FaUser } from "react-icons/fa";
 import "./MainLayout.css";
 
@@ -17,6 +18,7 @@ const MainLayout = () => {
   const { user } = useAuth();
   const isPwa = useIsPWA();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,6 +26,17 @@ const MainLayout = () => {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
 
   useEffect(() => {
@@ -126,7 +139,7 @@ const MainLayout = () => {
         key={location.pathname} 
         className={`animate-page-entrance ${showPWAChrome ? "pb-20" : ""}`}
       >
-        <Outlet />
+        {isOnline ? <Outlet /> : <OfflineView />}
       </main>
 
       {showPWAChrome ? (
