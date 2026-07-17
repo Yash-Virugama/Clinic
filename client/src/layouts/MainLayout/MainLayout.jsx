@@ -47,7 +47,8 @@ const MainLayout = () => {
       manifestLink.rel = 'manifest';
       document.head.appendChild(manifestLink);
     }
-    manifestLink.href = `${import.meta.env.VITE_API_URL}/settings/manifest`;
+    const apiBase = import.meta.env.VITE_API_URL || "/api";
+    manifestLink.href = `${apiBase}/settings/manifest`;
     manifestLink.setAttribute("crossorigin", "use-credentials");
   }, []);
 
