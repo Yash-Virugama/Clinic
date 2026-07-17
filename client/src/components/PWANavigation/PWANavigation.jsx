@@ -1,6 +1,6 @@
 import "./PWANavigation.css";
 import { NavLink } from "react-router-dom";
-import { FaHome, FaBriefcaseMedical, FaFolderOpen, FaUser, FaEnvelope, FaQuoteLeft } from "react-icons/fa";
+import { FaHome, FaBriefcaseMedical, FaFolderOpen, FaUser, FaEnvelope, FaQuoteLeft, FaNewspaper } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
 const PWANavigation = () => {
@@ -11,6 +11,7 @@ const PWANavigation = () => {
   const tabs = [
     { name: "Home", path: "/", icon: <FaHome className="w-5 h-5" /> },
     { name: "Services", path: "/services", icon: <FaBriefcaseMedical className="w-5 h-5" /> },
+    { name: "Blogs", path: "/blogs", icon: <FaNewspaper className="w-5 h-5" /> },
     { name: "Resources", path: "/resources", icon: <FaFolderOpen className="w-5 h-5" /> },
     { name: "Reviews", path: "/testimonials", icon: <FaQuoteLeft className="w-5 h-5" /> },
     { name: "Contact", path: "/contact", icon: <FaEnvelope className="w-5 h-5" /> }
