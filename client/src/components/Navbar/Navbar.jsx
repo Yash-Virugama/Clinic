@@ -87,7 +87,7 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 w-full z-50 bg-white/70 backdrop-blur-lg border-b border-slate-200/50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between relative z-50">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-6 xl:px-2 h-18 sm:h-20 flex items-center justify-between relative z-50">
 
         {/* Logo */}
         <Link to="/" className="flex items-center cursor-pointer">
@@ -111,6 +111,17 @@ const Navbar = () => {
               </NavLink>
             </li>
           ))}
+          <li>
+             {(isPwa || !isInstallable) ? <></> :
+                <a
+                  onClick={handleInstall}
+                  className="text-sm font-semibold font-accent tracking-wide text-text-muted hover:text-primary cursor-pointer transition-colors duration-200"
+                >
+                  Download App
+                </a>
+              }
+          </li>
+
         </ul>
 
         {/* Desktop Auth */}
