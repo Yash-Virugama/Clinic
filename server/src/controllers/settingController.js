@@ -149,3 +149,49 @@ export const updateSettings = asyncHandler(async (req, res) => {
     settings,
   });
 });
+
+// Serve dynamic PWA manifest (Public)
+export const getManifest = asyncHandler(async (req, res) => {
+  let settings = await Setting.findOne();
+  if (!settings) {
+    settings = {
+      name: "PhysioCare",
+      appName: "PhysioCare",
+      shortName: "PhysioCare",
+      pwaIcon: ""
+    };
+  }
+
+  const pwaIconSrc = settings.pwaIcon || "/emerald-192.png";
+  const activeName = settings.appName || settings.name || "PhysioCare";
+  const activeShortName = settings.shortName || settings.name || "PhysioCare";
+
+  const manifest = {
+    name: activeName,
+    short_name: activeShortName,
+    description: "Professional Physiotherapy Clinic",
+    theme_color: "#2563eb",
+    background_color: "#f8fafc",
+    display: "standalone",
+    orientation: "portrait",
+    start_url: "/",
+    scope: "/",
+    icons: [
+      {
+        src: pwaIconSrc,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any maskable"
+      },
+      {
+        src: pwaIconSrc,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any maskable"
+      }
+    ]
+  };
+
+  res.setHeader("Content-Type", "application/manifest+json");
+  res.status(200).json(manifest);
+});

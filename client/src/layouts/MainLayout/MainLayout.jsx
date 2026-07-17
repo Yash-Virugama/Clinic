@@ -66,48 +66,14 @@ const MainLayout = () => {
       }
       appleIcon.href = pwaIconSrc;
 
-      // 4. Dynamic Manifest Generation
-      const manifest = {
-        name: activeName,
-        short_name: settings.shortName || settings.name || "PhysioCare",
-        description: "Professional Physiotherapy Clinic",
-        theme_color: "#2563eb",
-        background_color: "#f8fafc",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/",
-        scope: "/",
-        icons: [
-          {
-            src: pwaIconSrc,
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any maskable"
-          },
-          {
-            src: pwaIconSrc,
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable"
-          }
-        ]
-      };
-
-      const stringManifest = JSON.stringify(manifest);
-      const blob = new Blob([stringManifest], { type: 'application/json' });
-      const manifestURL = URL.createObjectURL(blob);
-
+      // 4. Sync Stable Manifest Link
       let manifestLink = document.querySelector('link[rel="manifest"]');
       if (!manifestLink) {
         manifestLink = document.createElement('link');
         manifestLink.rel = 'manifest';
         document.head.appendChild(manifestLink);
       }
-      manifestLink.href = manifestURL;
-
-      return () => {
-        URL.revokeObjectURL(manifestURL);
-      };
+      manifestLink.href = "/api/settings/manifest";
     }
   }, [settings]);
 
