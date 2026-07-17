@@ -3,8 +3,17 @@ import "./Navbar.css";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useBranding } from "../../context/BrandingContext";
+import { useIsPWA } from "../../hooks/useIsPWA";
+import { usePWAInstall } from "../../hooks/usePWAInstall";
 
 const Logo = ({ settings, firstWord, secondWord }) => {
+
+
+
+  //  const showPWAChrome = isPwa && isMobile;
+
+
+
   if (!settings) return null;
   return (
     <div className="flex items-center gap-2">
@@ -41,6 +50,17 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const { settings } = useBranding();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isPwa = useIsPWA();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const { isInstallable, installPWA } = usePWAInstall();
+
+  const handleInstall = async () => {
+    const success = await installPWA();
+    if (success) {
+      handleDismiss();
+    }
+  };
 
   const words = (settings?.name || "").split(" ");
 
@@ -95,6 +115,7 @@ const Navbar = () => {
 
         {/* Desktop Auth */}
         <div className="hidden xl:flex items-center gap-4">
+
           {user ? (
             <>
               {user?.role === "admin" ? (
@@ -119,6 +140,7 @@ const Navbar = () => {
               >
                 Logout
               </button>
+
             </>
           ) : (
             <>
@@ -179,8 +201,19 @@ const Navbar = () => {
         </ul>
 
         <div className="pt-4 border-t border-slate-100 lg:border-0 lg:p-0 flex flex-col gap-3">
+
           {user ? (
             <>
+
+              {(isPwa || !isInstallable) ? <></> :
+                <button
+                  onClick={handleInstall}
+                  className="w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
+                >
+                  Download Our App
+                </button>
+              }
+
               {user?.role === "admin" ? (
                 <NavLink
                   to="/admin"
@@ -208,10 +241,20 @@ const Navbar = () => {
             </>
           ) : (
             <>
+
+              {(isPwa || !isInstallable) ? <></> :
+                <button
+                  onClick={handleInstall}
+                  className="w-full uppercase text-center bg-bg-offwhite py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
+                >
+                  Download Our App
+                </button>
+              }
+
               <NavLink
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center bg-bg-offwhite py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
+                className="w-full uppercase text-center bg-bg-offwhite py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
               >
                 Login
               </NavLink>
