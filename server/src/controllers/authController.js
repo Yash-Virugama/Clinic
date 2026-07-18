@@ -207,7 +207,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { name, phone, age, gender } = req.body;
+  const { name, phone, age, gender, removeImage } = req.body;
 
   const user = await User.findById(req.user._id);
 
@@ -219,6 +219,14 @@ export const updateProfile = asyncHandler(async (req, res) => {
   user.phone = phone ?? user.phone;
   user.age = age ?? user.age;
   user.gender = gender ?? user.gender;
+
+  // Handle profile image removal
+  if (removeImage === "true" || removeImage === true) {
+    if (user.image) {
+      await deleteFromCloudinary(user.image);
+      user.image = "";
+    }
+  }
 
   if (req.file) {
     if (req.file.size > 5 * 1024 * 1024) {

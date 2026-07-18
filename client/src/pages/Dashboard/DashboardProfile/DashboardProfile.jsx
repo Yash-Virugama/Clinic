@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,12 +9,14 @@ import CustomSelect from "../../../components/CustomSelect/CustomSelect";
 
 const DashboardProfile = () => {
   const { user, fetchCurrentUser } = useAuth();
+  const [removeImage, setRemoveImage] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(profileSchema),
@@ -33,8 +35,14 @@ const DashboardProfile = () => {
         age: user.age,
         gender: user.gender,
       });
+      setRemoveImage(false);
     }
   }, [user, reset]);
+
+  const handleRemovePhoto = () => {
+    setRemoveImage(true);
+    setValue("image", null);
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -46,6 +54,8 @@ const DashboardProfile = () => {
 
       if (data.image && data.image[0]) {
         formData.append("image", data.image[0]);
+      } else if (removeImage) {
+        formData.append("removeImage", "true");
       }
 
       const res = await api.put("/auth/profile", formData, {
@@ -87,7 +97,7 @@ const DashboardProfile = () => {
         {/* Profile Image Uploader Row */}
         <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-100">
           <div className="relative shrink-0">
-            {user?.image ? (
+            {user?.image && !removeImage ? (
               <img
                 src={user.image}
                 alt="Avatar"
@@ -104,12 +114,33 @@ const DashboardProfile = () => {
             <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
               Update Avatar / Photo
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              {...register("image")}
-              className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
-            />
+            <div className="flex flex-wrap items-center gap-3">
+              <input
+                type="file"
+                accept="image/*"
+                {...register("image")}
+                onChange={() => setRemoveImage(false)} // Reset remove flag if user selects a new file
+                className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+              />
+              {user?.image && !removeImage && (
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 font-accent text-xs font-bold transition-all cursor-pointer"
+                >
+                  Remove Photo
+                </button>
+              )}
+              {removeImage && (
+                <button
+                  type="button"
+                  onClick={() => setRemoveImage(false)}
+                  className="px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 font-accent text-xs font-bold transition-all cursor-pointer"
+                >
+                  Undo Remove
+                </button>
+              )}
+            </div>
             {errors.image && <p className="text-[10px] text-rose-500 font-bold uppercase mt-1">{errors.image.message}</p>}
           </div>
         </div>

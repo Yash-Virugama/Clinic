@@ -39,4 +39,5 @@ export const profileSchema = z.object({
       "Max image size is 5MB."
     )
     .optional(),
+  removeImage: z.boolean().optional(),
 });

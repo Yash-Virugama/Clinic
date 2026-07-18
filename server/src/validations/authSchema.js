@@ -101,4 +101,5 @@ export const profileSchema = z.object({
       }),
     }
   ),
+  removeImage: z.string().optional().or(z.boolean().optional()),
 });
