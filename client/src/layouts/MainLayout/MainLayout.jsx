@@ -96,7 +96,7 @@ const MainLayout = () => {
         <header className="pwa-app-header sticky top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-4 py-3.5 flex items-center justify-between">
           {location.pathname !== '/' ? (
             <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg text-slate-500 hover:text-primary hover:bg-slate-50 transition-colors cursor-pointer shrink-0">
-                <FaChevronLeft className="w-5 h-5" />
+              <FaChevronLeft className="w-5 h-5" />
             </button>
           ) : (
             <div className="w-8" />
@@ -105,25 +105,31 @@ const MainLayout = () => {
             {settings?.name || "PhysioCare"}
           </span>
           <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-9 h-9 rounded-full bg-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
-            
+
             {user?.image ? (
-                <img
+              <img
                 src={user.image}
                 alt="Avatar"
-                className="rounded-full border border-slate-200 object-cover"
-                />
-               ) : (
+                className="rounded-full w-full h-full border border-slate-200 object-cover"
+              />
+            ) : (
+              (user?.name ? (
+                <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-xs text-primary uppercase font-heading">
+                  {user.name?.charAt(0) || "A"}
+                </div>
+              ) : (
                 <FaUser className="w-4 h-4" />
-              )}
-            
+              ))
+            )}
+
           </Link>
         </header>
       ) : (
         <Navbar />
       )}
 
-      <main 
-        key={location.pathname} 
+      <main
+        key={location.pathname}
         className={`animate-page-entrance ${showPWAChrome ? "pb-[61px]" : ""}`}
       >
         <Outlet />
