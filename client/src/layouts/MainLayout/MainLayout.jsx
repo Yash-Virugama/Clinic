@@ -104,7 +104,7 @@ const MainLayout = () => {
           <span className="font-heading text-base font-extrabold tracking-tight text-secondary">
             {settings?.name || "PhysioCare"}
           </span>
-          <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-9 h-9 rounded-full bg-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
+          <Link to={user?.role === "admin" ? "/admin" : "/dashboard"} className="w-10 h-10 rounded-full bg-slate-100 shadow-sm flex items-center justify-center text-slate-600 hover:text-primary hover:bg-slate-200 transition-colors">
 
             {user?.image ? (
               <img
@@ -114,11 +114,11 @@ const MainLayout = () => {
               />
             ) : (
               (user?.name ? (
-                <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-xs text-primary uppercase font-heading">
+                <div className="w-full h-full bg-primary/10 rounded-full flex items-center justify-center font-bold text-sm text-primary uppercase font-heading">
                   {user.name?.charAt(0) || "A"}
                 </div>
               ) : (
-                <FaUser className="w-4 h-4" />
+                <FaUser className="w-5 h-5" />
               ))
             )}
 
