@@ -17,7 +17,7 @@ const PWANavigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-primary backdrop-blur-xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom,0px)] h-[calc(4rem+env(safe-area-inset-bottom,0px))] transition-all duration-300 ease-out lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-primary backdrop-blur-xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom,0px)] h-[calc(3.8rem+env(safe-area-inset-bottom,0px))] transition-all duration-300 ease-out lg:hidden">
       <div className="flex justify-around h-full max-w-[600px] mx-auto px-1.5">
         {tabs.map((tab) => (
           <NavLink

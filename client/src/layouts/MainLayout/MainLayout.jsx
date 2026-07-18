@@ -124,7 +124,7 @@ const MainLayout = () => {
 
       <main 
         key={location.pathname} 
-        className={`animate-page-entrance ${showPWAChrome ? "pb-[64px]" : ""}`}
+        className={`animate-page-entrance ${showPWAChrome ? "pb-[61px]" : ""}`}
       >
         <Outlet />
       </main>
