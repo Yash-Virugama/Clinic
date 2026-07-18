@@ -77,13 +77,13 @@ const Hero = () => {
       <div className="w-full lg:w-1/2 relative flex items-center justify-center z-10 pt-5 lg:py-0 sm:px-8">
 
         {/* Glow backdrop behind image */}
-        <div className="absolute w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] rounded-full bg-primary/5 blur-[60px] pointer-events-none" />
+        <div className="hero-image-blur absolute lg:right-31 lg:-top-0 w-[500px] lg:w-[450px] h-[500px] lg:h-[450px] rounded-full bg-primary/20 blur-[60px] pointer-events-none" />
 
         {/* Grid Background Overlay inside illustration */}
         <div className="absolute inset-0 bg-dot-matrix pointer-events-none opacity-20" />
 
         {/* Main curved image frame */}
-        <div className="hero-image relative lg:right-20 lg:-top-8 w-full max-h-[500px] max-w-[500px] aspect-[6/6] rounded-[36px] overflow-visible border border-white/80 bg-white/40 p-3 shadow-2xl animate-float">
+        <div className="hero-image relative lg:right-20 lg:-top-0 w-full max-h-[500px] max-w-[500px] lg:max-h-[450px] lg:max-w-[450px] aspect-[1/1] rounded-[36px] overflow-visible border border-white/80 bg-white/70 p-3 shadow-2xl transition-premium animate-float">
           <img
             src={heroImageSrc}
             alt="Physiotherapist in modern clinic"

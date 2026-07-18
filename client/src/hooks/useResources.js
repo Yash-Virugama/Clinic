@@ -7,10 +7,16 @@ const useResources = () => {
 
   const fetchResources = async () => {
     try {
+      setLoading(true);
       const res = await api.get("/resources");
       setResources(res.data);
+      localStorage.setItem("cached_resources", JSON.stringify(res.data));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch resources:", error);
+      const cached = localStorage.getItem("cached_resources");
+      if (cached) {
+        setResources(JSON.parse(cached));
+      }
     } finally {
       setLoading(false);
     }

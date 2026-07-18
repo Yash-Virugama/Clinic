@@ -219,7 +219,7 @@ const Navbar = () => {
               {(isPwa || !isInstallable) ? <></> :
                 <button
                   onClick={handleInstall}
-                  className="w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
+                  className="lg:hidden w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
                 >
                   Download Our App
                 </button>
@@ -256,7 +256,7 @@ const Navbar = () => {
               {(isPwa || !isInstallable) ? <></> :
                 <button
                   onClick={handleInstall}
-                  className="w-full uppercase text-center bg-bg-offwhite py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
+                  className="lg:hidden w-full uppercase text-center bg-bg-offwhite py-3 text-sm font-semibold text-text-muted hover:text-primary border border-slate-200 rounded-xl"
                 >
                   Download Our App
                 </button>

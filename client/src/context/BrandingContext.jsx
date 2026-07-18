@@ -13,8 +13,13 @@ export const BrandingProvider = ({ children }) => {
       setLoading(true);
       const res = await api.get("/settings");
       setSettings(res.data);
+      localStorage.setItem("cached_settings", JSON.stringify(res.data));
     } catch (error) {
       console.error("Failed to fetch branding settings:", error);
+      const cached = localStorage.getItem("cached_settings");
+      if (cached) {
+        setSettings(JSON.parse(cached));
+      }
     } finally {
       setLoading(false);
     }

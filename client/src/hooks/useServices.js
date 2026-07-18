@@ -7,10 +7,16 @@ const useServices = () => {
 
   const fetchServices = async () => {
     try {
+      setLoading(true);
       const res = await api.get("/services");
       setServices(res.data.services);
+      localStorage.setItem("cached_services", JSON.stringify(res.data.services));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch services:", error);
+      const cached = localStorage.getItem("cached_services");
+      if (cached) {
+        setServices(JSON.parse(cached));
+      }
     } finally {
       setLoading(false);
     }

@@ -85,6 +85,13 @@ const MainLayout = () => {
 
   return (
     <>
+      {/* Dynamic Offline Status Banner */}
+      {!isOnline && (
+        <div className="bg-amber-500 text-white text-[11px] sm:text-xs font-bold py-2.5 px-4 text-center font-heading tracking-wide shadow-sm flex items-center justify-center gap-2 z-50 sticky top-0">
+          <span>⚠️ Connection lost. Viewing cached resources and exercise checksheets offline.</span>
+        </div>
+      )}
+
       {showPWAChrome ? (
         <header className="pwa-app-header sticky top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-4 py-3.5 flex items-center justify-between">
           {location.pathname !== '/' ? (
@@ -117,9 +124,9 @@ const MainLayout = () => {
 
       <main 
         key={location.pathname} 
-        className={`animate-page-entrance ${showPWAChrome ? "pb-20" : ""}`}
+        className={`animate-page-entrance ${showPWAChrome ? "pb-[64px]" : ""}`}
       >
-        {isOnline ? <Outlet /> : <OfflineView />}
+        <Outlet />
       </main>
 
       {showPWAChrome ? (

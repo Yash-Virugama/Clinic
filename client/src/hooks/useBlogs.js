@@ -7,10 +7,16 @@ const useBlogs = () => {
 
   const fetchBlogs = async () => {
     try {
+      setLoading(true);
       const res = await api.get("/blogs");
       setBlogs(res.data);
+      localStorage.setItem("cached_blogs", JSON.stringify(res.data));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch blogs:", error);
+      const cached = localStorage.getItem("cached_blogs");
+      if (cached) {
+        setBlogs(JSON.parse(cached));
+      }
     } finally {
       setLoading(false);
     }

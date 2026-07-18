@@ -1,23 +1,35 @@
 import { useState, useEffect } from "react";
 
 export const usePWAInstall = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(window.deferredPrompt || null);
+  const [isInstallable, setIsInstallable] = useState(!!window.deferredPrompt);
 
   useEffect(() => {
+    // If already captured by global head script, sync immediately
+    if (window.deferredPrompt) {
+      setDeferredPrompt(window.deferredPrompt);
+      setIsInstallable(true);
+    }
+
     const handleBeforeInstallPrompt = (e) => {
-      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      // Save the event so it can be triggered later.
+      window.deferredPrompt = e;
       setDeferredPrompt(e);
-      // Update UI to notify the user they can install the PWA
       setIsInstallable(true);
     };
 
+    const handlePwaReady = () => {
+      if (window.deferredPrompt) {
+        setDeferredPrompt(window.deferredPrompt);
+        setIsInstallable(true);
+      }
+    };
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("pwa-install-ready", handlePwaReady);
 
     const handleAppInstalled = () => {
-      // Clear the deferredPrompt so it can be garbage collected
+      window.deferredPrompt = null;
       setDeferredPrompt(null);
       setIsInstallable(false);
       console.log("PWA was installed successfully");
@@ -27,21 +39,23 @@ export const usePWAInstall = () => {
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("pwa-install-ready", handlePwaReady);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
   const installPWA = async () => {
-    if (!deferredPrompt) return false;
+    const promptEvent = deferredPrompt || window.deferredPrompt;
+    if (!promptEvent) return false;
 
     // Show the install prompt
-    deferredPrompt.prompt();
+    promptEvent.prompt();
 
     // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
+    const { outcome } = await promptEvent.userChoice;
     console.log(`User response to the install prompt: ${outcome}`);
 
-    // We've used the prompt, and can't use it again
+    window.deferredPrompt = null;
     setDeferredPrompt(null);
     setIsInstallable(false);
 

@@ -10,6 +10,10 @@
             .hero-image {
                 right: 8px;
             }
+
+            .hero-image-blur {
+                right: 41px;
+            }
         }
     }
 }
