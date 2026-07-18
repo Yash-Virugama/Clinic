@@ -91,8 +91,6 @@ const AdminDashboard = () => {
     <div className="flex flex-col gap-8 text-left">
       {/* 1. Greeting Banner */}
       <div className="w-full bg-white border border-slate-200/60 rounded-[32px] p-8 sm:p-10 shadow-sm relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="absolute inset-0 bg-grid-blueprint opacity-[0.02] pointer-events-none" />
-
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-primary font-accent block mb-2">
             Control Workspace

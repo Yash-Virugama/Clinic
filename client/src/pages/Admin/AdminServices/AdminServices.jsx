@@ -13,6 +13,7 @@ const AdminServices = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const ITEMS_PER_PAGE = 10;
 
   const { services, loading, fetchServices } = useAdminServices();
@@ -111,17 +112,18 @@ const AdminServices = () => {
 
   const handleConfirmDelete = async () => {
     if (!deleteConfirmId) return;
-
+    setDeleting(true);
     try {
       await api.delete(`/services/${deleteConfirmId}`);
       toast.success("Service deleted successfully.");
-      fetchServices();
+      await fetchServices();
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
         "Failed to delete service."
       );
     } finally {
+      setDeleting(false);
       setDeleteConfirmId(null);
     }
   };
@@ -280,39 +282,109 @@ const AdminServices = () => {
                   <tbody className="divide-y divide-slate-100">
                     {displayedServices.map((service) => (
                       <tr key={service._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
+                        <td className="px-6 py-4">
+                          {service.image ? (
+                            <img
+                              src={service.image}
+                              alt={service.title}
+                              className="w-16 h-10 rounded-xl object-cover border border-slate-200/60 shadow-inner bg-slate-50"
+                            />
+                          ) : (
+                            <div className="w-16 h-10 rounded-xl bg-slate-100 border border-slate-200/60 flex items-center justify-center shadow-inner">
+                              <svg className="w-4 h-4 text-slate-400 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                              </svg>
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="text-sm font-bold text-secondary block font-heading mb-0.5">
+                            {service.title}
+                          </span>
+                          <p className="text-xs text-text-muted line-clamp-1 max-w-lg leading-relaxed">
+                            {service.description}
+                          </p>
+                        </td>
+
+                        <td className="px-6 py-4 text-center">
+                          <span className="inline-block bg-slate-100/80 border border-slate-200/50 text-[10px] font-bold text-slate-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                            {service.order}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2.5">
+                            <button
+                              onClick={() => {
+                                setEditingService(service);
+                                setShowForm(false);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                              title="Edit Service"
+                              style={{ cursor: "pointer" }}
+                              className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-500 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                            >
+                              <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-3.85.87a.375.375 0 01-.448-.448l.87-3.85a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                              </svg>
+                            </button>
+
+                            <button
+                              onClick={() => handleDelete(service._id)}
+                              title="Delete Service"
+                              style={{ cursor: "pointer" }}
+                              className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-500 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                            >
+                              <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 2. Mobile/Tablet card-based grid (hidden on desktop) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+                {displayedServices.map((service) => (
+                  <div
+                    key={service._id}
+                    className="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between gap-4"
+                  >
+                    <div className="flex items-start gap-4">
                       {service.image ? (
                         <img
                           src={service.image}
                           alt={service.title}
-                          className="w-16 h-10 rounded-xl object-cover border border-slate-200/60 shadow-inner bg-slate-50"
+                          className="w-16 h-12 rounded-2xl object-cover border border-slate-200/60 shadow-inner bg-slate-50 shrink-0"
                         />
                       ) : (
-                        <div className="w-16 h-10 rounded-xl bg-slate-100 border border-slate-200/60 flex items-center justify-center shadow-inner">
+                        <div className="w-16 h-12 rounded-2xl bg-slate-100 border border-slate-200/60 flex items-center justify-center shadow-inner shrink-0">
                           <svg className="w-4 h-4 text-slate-400 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
                           </svg>
                         </div>
                       )}
-                    </td>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm font-bold text-secondary block font-heading truncate">
+                          {service.title}
+                        </span>
+                        <p className="text-xs text-text-muted line-clamp-2 mt-0.5 leading-relaxed">
+                          {service.description}
+                        </p>
+                      </div>
+                    </div>
 
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-secondary block font-heading mb-0.5">
-                        {service.title}
-                      </span>
-                      <p className="text-xs text-text-muted line-clamp-1 max-w-lg leading-relaxed">
-                        {service.description}
-                      </p>
-                    </td>
-
-                    <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
                       <span className="inline-block bg-slate-100/80 border border-slate-200/50 text-[10px] font-bold text-slate-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                        {service.order}
+                        Order: {service.order}
                       </span>
-                    </td>
 
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2.5">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => {
                             setEditingService(service);
@@ -321,7 +393,7 @@ const AdminServices = () => {
                           }}
                           title="Edit Service"
                           style={{ cursor: "pointer" }}
-                          className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-500 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                          className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary transition-colors cursor-pointer shadow-sm"
                         >
                           <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-3.85.87a.375.375 0 01-.448-.448l.87-3.85a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
@@ -332,132 +404,61 @@ const AdminServices = () => {
                           onClick={() => handleDelete(service._id)}
                           title="Delete Service"
                           style={{ cursor: "pointer" }}
-                          className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-500 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                          className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-550 hover:text-primary transition-colors cursor-pointer shadow-sm"
                         >
                           <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                           </svg>
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* 2. Mobile/Tablet card-based grid (hidden on desktop) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-            {displayedServices.map((service) => (
-              <div
-                key={service._id}
-                className="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between gap-4"
-              >
-                <div className="flex items-start gap-4">
-                  {service.image ? (
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-16 h-12 rounded-2xl object-cover border border-slate-200/60 shadow-inner bg-slate-50 shrink-0"
-                    />
-                  ) : (
-                    <div className="w-16 h-12 rounded-2xl bg-slate-100 border border-slate-200/60 flex items-center justify-center shadow-inner shrink-0">
-                      <svg className="w-4 h-4 text-slate-400 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-                      </svg>
                     </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <span className="text-sm font-bold text-secondary block font-heading truncate">
-                      {service.title}
-                    </span>
-                    <p className="text-xs text-text-muted line-clamp-2 mt-0.5 leading-relaxed">
-                      {service.description}
-                    </p>
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
-                  <span className="inline-block bg-slate-100/80 border border-slate-200/50 text-[10px] font-bold text-slate-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    Order: {service.order}
-                  </span>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setEditingService(service);
-                        setShowForm(false);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      title="Edit Service"
-                      style={{ cursor: "pointer" }}
-                      className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary transition-colors cursor-pointer shadow-sm"
-                    >
-                      <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-3.85.87a.375.375 0 01-.448-.448l.87-3.85a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                      </svg>
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(service._id)}
-                      title="Delete Service"
-                      style={{ cursor: "pointer" }}
-                      className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-550 hover:text-primary transition-colors cursor-pointer shadow-sm"
-                    >
-                      <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8 z-20 relative">
-              {/* Prev Button */}
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-                aria-label="Previous page"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8 z-20 relative">
+                  {/* Prev Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
+                    aria-label="Previous page"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
 
-              {/* Page Numbers */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`w-9 h-9 font-accent font-bold text-xs rounded-lg transition-premium cursor-pointer border flex items-center justify-center ${
-                    currentPage === page
-                      ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                      : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+                  {/* Page Numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`w-9 h-9 font-accent font-bold text-xs rounded-lg transition-premium cursor-pointer border flex items-center justify-center ${currentPage === page
+                          ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                          : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
 
-              {/* Next Button */}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-                aria-label="Next page"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          )}
-          </>
+                  {/* Next Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
+                    aria-label="Next page"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -465,6 +466,7 @@ const AdminServices = () => {
         isOpen={!!deleteConfirmId}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleConfirmDelete}
+        isLoading={deleting}
         title="Delete Service"
         message="Are you sure you want to permanently delete this service? This action cannot be undone."
       />

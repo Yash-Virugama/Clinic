@@ -1,6 +1,7 @@
 import { Contact } from "../models/contact.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
+import { sendPushToUser } from "../utils/pushNotification.js";
 
 // Public - Submit Contact Form
 export const createContact = asyncHandler(async (req, res) => {
@@ -17,6 +18,25 @@ export const createContact = asyncHandler(async (req, res) => {
     subject,
     message,
   });
+
+  // Notify admins
+  (async () => {
+    try {
+      const { User } = await import("../models/user.js");
+      const admins = await User.find({ role: "admin" });
+      const payload = {
+        title: "New Contact Message",
+        body: `You have received a new contact enquiry from ${contact.name}.`,
+        url: "/admin/contacts",
+        tag: `new-contact-${contact._id}`,
+      };
+      for (const admin of admins) {
+        await sendPushToUser(admin._id, payload, "account");
+      }
+    } catch (err) {
+      console.error("Error sending admin contact notification:", err);
+    }
+  })();
 
   res.status(201).json({
     success: true,

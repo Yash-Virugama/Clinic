@@ -32,6 +32,8 @@ import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
 import DashboardProfile from "../pages/Dashboard/DashboardProfile/DashboardProfile";
 import DashboardTestimonials from "../pages/Dashboard/DashboardTestimonials/DashboardTestimonials";
 import ChangePassword from "../pages/Dashboard/ChangePassword/ChangePassword"
+import DashboardNotifications from "../pages/Dashboard/DashboardNotifications/DashboardNotifications";
+import AdminNotifications from "../pages/Admin/AdminNotifications/AdminNotifications";
 
 //forget password
 import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
@@ -70,6 +72,7 @@ const AppRoutes = () => {
         <Route path="testimonials" element={<DashboardTestimonials />} />
 
         <Route path="change-password" element={<ChangePassword />} />
+        <Route path="notifications" element={<DashboardNotifications />} />
       </Route>
 
       {/* Admin */}
@@ -89,6 +92,7 @@ const AppRoutes = () => {
         <Route path="contacts" element={<AdminContacts />} />
         <Route path="profile" element={<DashboardProfile />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="notifications" element={<AdminNotifications />} />
       </Route>
 
       {/* 404 */}

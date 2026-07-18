@@ -13,6 +13,7 @@ const AdminBlogs = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const ITEMS_PER_PAGE = 10;
 
   const { blogs, loading, fetchBlogs } = useAdminBlogs();
@@ -126,7 +127,7 @@ const AdminBlogs = () => {
 
   const handleConfirmDelete = async () => {
     if (!deleteConfirmId) return;
-
+    setDeleting(true);
     try {
       await api.delete(`/blogs/${deleteConfirmId}`);
       toast.success("Blog deleted successfully.");
@@ -137,6 +138,7 @@ const AdminBlogs = () => {
         "Failed to delete blog."
       );
     } finally {
+      setDeleting(false);
       setDeleteConfirmId(null);
     }
   };
@@ -506,6 +508,7 @@ const AdminBlogs = () => {
         isOpen={!!deleteConfirmId}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleConfirmDelete}
+        isLoading={deleting}
         title="Delete Blog Post"
         message="Are you sure you want to permanently delete this blog post? This action cannot be undone."
       />

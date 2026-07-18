@@ -11,6 +11,7 @@ const AdminResources = () => {
   const [saving, setSaving] = useState(false);
   const [editingResource, setEditingResource] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [downloadingId, setDownloadingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -109,7 +110,7 @@ const AdminResources = () => {
 
   const handleConfirmDelete = async () => {
     if (!deleteConfirmId) return;
-
+    setDeleting(true);
     try {
       await api.delete(`/resources/${deleteConfirmId}`);
       toast.success("Resource deleted successfully.");
@@ -119,6 +120,7 @@ const AdminResources = () => {
         error.response?.data?.message || "Failed to delete resource."
       );
     } finally {
+      setDeleting(false);
       setDeleteConfirmId(null);
     }
   };
@@ -309,56 +311,139 @@ const AdminResources = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {displayedResources.map((resource) => (
-                  <tr key={resource._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-secondary block font-heading mb-0.5 truncate max-w-sm">
+                      <tr key={resource._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <span className="text-sm font-bold text-secondary block font-heading mb-0.5 truncate max-w-sm">
+                            {resource.title}
+                          </span>
+                          <p className="text-xs text-text-muted font-mono leading-relaxed truncate max-w-xs">
+                            {resource.fileName || "unspecified_file.dat"}
+                          </p>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="inline-block bg-slate-100/80 border border-slate-200/50 text-[10px] font-bold text-slate-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                            {resource.category}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4 text-center">
+                          {resource.published ? (
+                            <span className="inline-block bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                              Visible
+                            </span>
+                          ) : (
+                            <span className="inline-block bg-slate-150/70 border border-slate-250/50 text-[10px] font-bold text-slate-550 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                              Hidden
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="px-6 py-4 text-center">
+                          {resource.fileUrl ? (
+                            <button
+                              onClick={(e) => handleDownload(e, resource)}
+                              title="Download Document"
+                              style={{
+                                cursor: downloadingId === resource._id ? "wait" : "pointer",
+                              }}
+                              className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary hover:text-primary/80 transition-colors bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-xl cursor-pointer border-0"
+                            >
+                              <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                              </svg>
+                              {downloadingId === resource._id ? "..." : "Get"}
+                            </button>
+                          ) : (
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">No file</span>
+                          )}
+                        </td>
+
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2.5">
+                            <button
+                              onClick={() => {
+                                setEditingResource(resource);
+                                setShowForm(false);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                              title="Edit Resource"
+                              style={{ cursor: "pointer" }}
+                              className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-500 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                            >
+                              <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-3.85.87a.375.375 0 01-.448-.448l.87-3.85a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                              </svg>
+                            </button>
+
+                            <button
+                              onClick={() => handleDelete(resource._id)}
+                              title="Delete Resource"
+                              style={{ cursor: "pointer" }}
+                              className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-550 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                            >
+                              <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 2. Mobile/Tablet card-based grid (hidden on desktop) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+                {displayedResources.map((resource) => (
+                  <div
+                    key={resource._id}
+                    className="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between gap-4"
+                  >
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <span className="text-sm font-bold text-secondary block font-heading truncate">
                         {resource.title}
                       </span>
-                      <p className="text-xs text-text-muted font-mono leading-relaxed truncate max-w-xs">
+                      <p className="text-xs text-text-muted font-mono leading-relaxed truncate">
                         {resource.fileName || "unspecified_file.dat"}
                       </p>
-                    </td>
+                    </div>
 
-                    <td className="px-6 py-4">
-                      <span className="inline-block bg-slate-100/80 border border-slate-200/50 text-[10px] font-bold text-slate-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                        {resource.category}
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-4 text-center">
-                      {resource.published ? (
-                        <span className="inline-block bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-600 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                          Visible
+                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                          Category: {resource.category}
                         </span>
-                      ) : (
-                        <span className="inline-block bg-slate-150/70 border border-slate-250/50 text-[10px] font-bold text-slate-550 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                          Hidden
-                        </span>
-                      )}
-                    </td>
+                        <div>
+                          {resource.published ? (
+                            <span className="inline-block bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold text-emerald-600 px-2 py-0.2 rounded-full uppercase tracking-wider">
+                              Visible
+                            </span>
+                          ) : (
+                            <span className="inline-block bg-slate-100 border border-slate-200/50 text-[9px] font-bold text-slate-550 px-2 py-0.2 rounded-full uppercase tracking-wider">
+                              Hidden
+                            </span>
+                          )}
+                        </div>
+                      </div>
 
-                    <td className="px-6 py-4 text-center">
-                      {resource.fileUrl ? (
-                        <button
-                          onClick={(e) => handleDownload(e, resource)}
-                          title="Download Document"
-                          style={{
-                            cursor: downloadingId === resource._id ? "wait" : "pointer",
-                          }}
-                          className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary hover:text-primary/80 transition-colors bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-xl cursor-pointer border-0"
-                        >
-                          <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                          </svg>
-                          {downloadingId === resource._id ? "..." : "Get"}
-                        </button>
-                      ) : (
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">No file</span>
-                      )}
-                    </td>
+                      <div className="flex items-center gap-2">
+                        {resource.fileUrl && (
+                          <button
+                            onClick={(e) => handleDownload(e, resource)}
+                            title="Download Document"
+                            style={{
+                              cursor: downloadingId === resource._id ? "wait" : "pointer",
+                            }}
+                            className="p-2 rounded-xl bg-slate-50 text-slate-500 hover:text-primary transition-colors cursor-pointer border border-slate-200/80 shadow-sm"
+                          >
+                            <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                          </button>
+                        )}
 
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2.5">
                         <button
                           onClick={() => {
                             setEditingResource(resource);
@@ -367,7 +452,7 @@ const AdminResources = () => {
                           }}
                           title="Edit Resource"
                           style={{ cursor: "pointer" }}
-                          className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-500 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                          className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary transition-colors cursor-pointer shadow-sm"
                         >
                           <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-3.85.87a.375.375 0 01-.448-.448l.87-3.85a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
@@ -378,145 +463,61 @@ const AdminResources = () => {
                           onClick={() => handleDelete(resource._id)}
                           title="Delete Resource"
                           style={{ cursor: "pointer" }}
-                          className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-350 text-slate-550 hover:text-primary transition-all duration-200 cursor-pointer shadow-sm"
+                          className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-550 hover:text-primary transition-colors cursor-pointer shadow-sm"
                         >
                           <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                           </svg>
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* 2. Mobile/Tablet card-based grid (hidden on desktop) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-            {displayedResources.map((resource) => (
-              <div
-                key={resource._id}
-                className="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between gap-4"
-              >
-                <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-sm font-bold text-secondary block font-heading truncate">
-                    {resource.title}
-                  </span>
-                  <p className="text-xs text-text-muted font-mono leading-relaxed truncate">
-                    {resource.fileName || "unspecified_file.dat"}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                      Category: {resource.category}
-                    </span>
-                    <div>
-                      {resource.published ? (
-                        <span className="inline-block bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold text-emerald-600 px-2 py-0.2 rounded-full uppercase tracking-wider">
-                          Visible
-                        </span>
-                      ) : (
-                        <span className="inline-block bg-slate-100 border border-slate-200/50 text-[9px] font-bold text-slate-550 px-2 py-0.2 rounded-full uppercase tracking-wider">
-                          Hidden
-                        </span>
-                      )}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    {resource.fileUrl && (
-                      <button
-                        onClick={(e) => handleDownload(e, resource)}
-                        title="Download Document"
-                        style={{
-                          cursor: downloadingId === resource._id ? "wait" : "pointer",
-                        }}
-                        className="p-2 rounded-xl bg-slate-50 text-slate-500 hover:text-primary transition-colors cursor-pointer border border-slate-200/80 shadow-sm"
-                      >
-                        <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                      </button>
-                    )}
-
-                    <button
-                      onClick={() => {
-                        setEditingResource(resource);
-                        setShowForm(false);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      title="Edit Resource"
-                      style={{ cursor: "pointer" }}
-                      className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-500 hover:text-primary transition-colors cursor-pointer shadow-sm"
-                    >
-                      <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-3.85.87a.375.375 0 01-.448-.448l.87-3.85a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                      </svg>
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(resource._id)}
-                      title="Delete Resource"
-                      style={{ cursor: "pointer" }}
-                      className="p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-550 hover:text-primary transition-colors cursor-pointer shadow-sm"
-                    >
-                      <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8 z-20 relative">
-              {/* Prev Button */}
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-                aria-label="Previous page"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8 z-20 relative">
+                  {/* Prev Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
+                    aria-label="Previous page"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
 
-              {/* Page Numbers */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`w-9 h-9 font-accent font-bold text-xs rounded-lg transition-premium cursor-pointer border flex items-center justify-center ${
-                    currentPage === page
-                      ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                      : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+                  {/* Page Numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`w-9 h-9 font-accent font-bold text-xs rounded-lg transition-premium cursor-pointer border flex items-center justify-center ${currentPage === page
+                          ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                          : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
 
-              {/* Next Button */}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
-                aria-label="Next page"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          )}
-          </>
+                  {/* Next Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg border border-secondary/10 bg-white text-secondary transition-premium shadow-sm cursor-pointer hover:border-primary hover:text-primary hover:shadow-md disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none"
+                    aria-label="Next page"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -524,6 +525,7 @@ const AdminResources = () => {
         isOpen={!!deleteConfirmId}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleConfirmDelete}
+        isLoading={deleting}
         title="Delete Resource"
         message="Are you sure you want to permanently delete this resource? This action cannot be undone."
       />

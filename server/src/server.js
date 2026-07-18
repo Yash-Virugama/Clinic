@@ -16,6 +16,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
 import exportRoutes from "./routes/exportRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
@@ -51,6 +52,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/export", exportRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use((req, res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found`));

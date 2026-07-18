@@ -3,6 +3,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import deleteFromCloudinary from "../utils/deleteFromCloudinary.js";
+import { sendPushToAll } from "../utils/pushNotification.js";
 
 // Create Resource
 export const createResource = asyncHandler(async (req, res) => {
@@ -31,6 +32,15 @@ export const createResource = asyncHandler(async (req, res) => {
     author: req.user?._id,
   });
   
+  if (resource.published) {
+    const payload = {
+      title: "New Resource Available",
+      body: `A new physiotherapy exercise guide "${resource.title}" is now available.`,
+      url: "/resources",
+      tag: `new-resource-${resource._id}`,
+    };
+    sendPushToAll(payload, "resources").catch((err) => console.error("Error sending resource push notification:", err));
+  }
 
   res.status(201).json(resource);
 });
@@ -109,6 +119,8 @@ export const updateResource = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Resource not found");
   }
 
+  const wasPublished = resource.published;
+
   resource.title = req.body.title ?? resource.title;
   resource.description = req.body.description ?? resource.description;
   resource.category = req.body.category ?? resource.category;
@@ -131,6 +143,16 @@ export const updateResource = asyncHandler(async (req, res) => {
   }
 
   await resource.save();
+
+  if (!wasPublished && resource.published) {
+    const payload = {
+      title: "New Resource Available",
+      body: `A new physiotherapy exercise guide "${resource.title}" is now available.`,
+      url: "/resources",
+      tag: `new-resource-${resource._id}`,
+    };
+    sendPushToAll(payload, "resources").catch((err) => console.error("Error sending resource push notification:", err));
+  }
 
   res.status(200).json(resource);
 });

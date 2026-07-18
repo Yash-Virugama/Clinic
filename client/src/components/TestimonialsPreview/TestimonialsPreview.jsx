@@ -97,7 +97,7 @@ const TestimonialsPreview = () => {
                         className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm shrink-0"
                       />
                     ) : (
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center font-bold text-md sm:text-lg text-primary uppercase font-heading">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center font-bold text-md sm:text-lg text-primary uppercase font-heading shrink-0">
                         {testimonial.user?.name?.charAt(0) || "A"}
                       </div>
                     )}

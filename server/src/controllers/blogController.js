@@ -3,6 +3,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import deleteFromCloudinary from "../utils/deleteFromCloudinary.js";
+import { sendPushToAll } from "../utils/pushNotification.js";
 
 //Create Blog
 export const createBlog = asyncHandler(async (req, res) => {
@@ -52,6 +53,16 @@ export const createBlog = asyncHandler(async (req, res) => {
     published,
     publishedAt: published ? new Date() : null,
   });
+  
+  if (blog.published) {
+    const payload = {
+      title: "New Article Published",
+      body: blog.title,
+      url: `/blog/${blog.slug}`,
+      tag: `new-blog-${blog._id}`,
+    };
+    sendPushToAll(payload, "blogs").catch((err) => console.error("Error sending new blog push notification:", err));
+  }
 
   res.status(201).json(blog);
 });
@@ -170,6 +181,16 @@ export const updateBlog = asyncHandler(async (req, res) => {
   }
 
   await blog.save();
+
+  if (!wasPublished && blog.published) {
+    const payload = {
+      title: "New Article Published",
+      body: blog.title,
+      url: `/blog/${blog.slug}`,
+      tag: `new-blog-${blog._id}`,
+    };
+    sendPushToAll(payload, "blogs").catch((err) => console.error("Error sending new blog push notification:", err));
+  }
 
   res.status(200).json(blog);
 });

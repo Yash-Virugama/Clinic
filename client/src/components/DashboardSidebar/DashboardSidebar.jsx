@@ -22,20 +22,29 @@ const DashboardSidebar = ({ isOpen, onClose }) => {
       )
     },
     {
-      to: "/dashboard/update-profile",
-      label: "Update Profile",
-      icon: (
-        <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-        </svg>
-      )
-    },
-    {
       to: "/dashboard/testimonials",
       label: "My Testimonials",
       icon: (
         <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      )
+    },
+    {
+      to: "/dashboard/notifications",
+      label: "Notifications",
+      icon: (
+        <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      )
+    },
+    {
+      to: "/dashboard/update-profile",
+      label: "Update Profile",
+      icon: (
+        <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       )
     },
@@ -48,7 +57,7 @@ const DashboardSidebar = ({ isOpen, onClose }) => {
         </svg>
       )
     },
-     {
+    {
       to: "/",
       label: "Home",
       icon: (
@@ -71,11 +80,10 @@ const DashboardSidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar aside Container */}
       <aside
-        className={`w-72 h-screen fixed left-0 top-0 bg-darkblue border-r border-slate-800/80 flex flex-col z-50 transition-transform duration-300 lg:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`w-72 h-screen fixed left-0 top-0 bg-darkblue border-r border-slate-800/80 flex flex-col z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
-        
+
         {/* Header Brand */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800/50">
           <NavLink to="/" className="flex items-center gap-3" onClick={onClose}>
@@ -98,7 +106,7 @@ const DashboardSidebar = ({ isOpen, onClose }) => {
               {settings?.name || "PhysioCare"}
             </span>
           </NavLink>
-          
+
           {/* Close trigger on Mobile viewports */}
           <button
             onClick={onClose}

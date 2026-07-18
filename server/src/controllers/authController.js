@@ -7,6 +7,7 @@ import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import deleteFromCloudinary from "../utils/deleteFromCloudinary.js";
+import { sendPushToUser } from "../utils/pushNotification.js";
 
 // Register User
 export const registerUser = asyncHandler(async (req, res) => {
@@ -200,6 +201,14 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   await user.save();
 
+  const payload = {
+    title: "Password Changed",
+    body: "Your account password was updated successfully via reset link. If this wasn't you, please contact support immediately.",
+    url: "/dashboard",
+    tag: `pwd-changed-${Date.now()}`,
+  };
+  sendPushToUser(user._id, payload, "account").catch((err) => console.error("Error sending password reset push alert:", err));
+
   res.status(200).json({
     success: true,
     message: "Password reset successful.",
@@ -292,6 +301,14 @@ export const changePassword = asyncHandler(async (req, res) => {
   user.password = await bcrypt.hash(newPassword, 10);
 
   await user.save();
+
+  const payload = {
+    title: "Password Changed",
+    body: "Your account password was updated successfully. If this wasn't you, please contact support immediately.",
+    url: "/dashboard",
+    tag: `pwd-changed-${Date.now()}`,
+  };
+  sendPushToUser(user._id, payload, "account").catch((err) => console.error("Error sending password change push alert:", err));
 
   res.status(200).json({
     success: true,

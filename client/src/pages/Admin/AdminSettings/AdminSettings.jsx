@@ -138,39 +138,43 @@ const AdminSettings = () => {
       <section className="bg-white/80 border border-slate-200/60 backdrop-blur-md rounded-[32px] p-6 sm:p-8 sm:p-10 shadow-sm relative overflow-visible">
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
 
-          {/* Logo Brand Row */}
-          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
-            <div className="flex flex-col gap-2 items-center text-center shrink-0">
-              <span className="text-xs font-bold text-slate-450 uppercase tracking-wider font-heading">Current Logo</span>
-              <div className="w-24 h-24 rounded-full bg-bg-offwhite border border-slate-200 flex items-center justify-center p-3 shadow-inner relative overflow-hidden">
-                {settings.logo ? (
-                  <img src={settings.logo} alt="Logo" className="w-full h-full object-contain" />
-                ) : (
-                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
-                    Default SVG Active
-                  </div>
-                )}
-              </div>
+          <div className="flex flex-col gap-5 pb-8 border-b border-slate-100">
+            <h3 className="border-s-3 text-sm font-bold text-primary p-1 bg-text-light font-heading uppercase tracking-wider pl-4 shadow-sm">
+              Web Customizations
+            </h3>
+
+            {/* Brand Name Input */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                Website Title / Brand Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. PhysioCare"
+                required
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+              />
             </div>
 
-            <div className="flex-1 flex flex-col gap-4 w-full text-left">
-              {/* Brand Name Input */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  Website Title / Brand Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. PhysioCare"
-                  required
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
-                />
+            {/* Logo Brand Row */}
+            <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
+              <div className="flex flex-col gap-2 items-center text-center shrink-0">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current Logo</span>
+                <div className="w-24 h-24 rounded-full bg-bg-offwhite border border-slate-200 flex items-center justify-center p-3 shadow-inner relative overflow-hidden">
+                  {settings.logo ? (
+                    <img src={settings.logo} alt="Logo" className="w-full h-full object-contain" />
+                  ) : (
+                    <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                      Default SVG Active
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Logo File Selector */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1.5 w-full">
                 <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
                   Upload Custom Logo (PNG, SVG, JPG)
                 </label>
@@ -183,98 +187,67 @@ const AdminSettings = () => {
                 <p className="text-[10px] text-text-muted">Recommended: Square logo with dark contrast or transparent background.</p>
               </div>
             </div>
-          </div>
 
-          {/* Hero Image Row */}
-          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
-            <div className="flex flex-col gap-2 items-center text-center shrink-0">
-              <span className="text-xs font-bold text-slate-450 uppercase tracking-wider font-heading">Current Hero Image</span>
-              <div className="w-24 h-24 rounded-2xl bg-bg-offwhite border border-slate-200 flex items-center justify-center p-1 shadow-inner relative overflow-hidden">
-                {settings.heroImage ? (
-                  <img src={settings.heroImage} alt="Hero Image" className="w-full h-full object-cover rounded-xl" />
-                ) : (
-                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
-                    Default Image Active
-                  </div>
-                )}
+            {/* Favicon Icon Row */}
+            <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
+              <div className="flex flex-col gap-2 items-center text-center shrink-0">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current Favicon</span>
+                <div className="w-24 h-24 rounded-full bg-bg-offwhite border border-slate-200 flex items-center justify-center p-4 shadow-inner relative overflow-hidden">
+                  {settings.favicon ? (
+                    <img src={settings.favicon} alt="Favicon" className="w-full h-full object-contain" />
+                  ) : (
+                    <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                      Default Tab Icon
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col gap-4 w-full text-left">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                    Upload Custom Favicon (1:1 Aspect Ratio)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png, image/x-icon, image/svg+xml"
+                    onChange={(e) => setFaviconFile(e.target.files[0])}
+                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
+                  />
+                  <p className="text-[10px] text-text-muted">Recommended: Square image with 1:1 ratio (e.g. 32x32 pixels) in PNG or ICO format. This is shown in your browser's address tab.</p>
+                </div>
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col gap-4 w-full text-left">
-              {/* Hero Image File Selector */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  Upload Custom Hero Image (1:1 / Square Ratio)
-                </label>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/webp"
-                  onChange={(e) => setHeroImageFile(e.target.files[0])}
-                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
-                />
-                <p className="text-[10px] text-text-muted">Recommended: Square image (1:1 aspect ratio, e.g. 800x800 px) for optimal layout in the hero section.</p>
+            {/* Hero Image Row */}
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex flex-col gap-2 items-center text-center shrink-0">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current Hero Image</span>
+                <div className="w-24 h-24 rounded-2xl bg-bg-offwhite border border-slate-200 flex items-center justify-center p-1 shadow-inner relative overflow-hidden">
+                  {settings.heroImage ? (
+                    <img src={settings.heroImage} alt="Hero Image" className="w-full h-full object-cover rounded-xl" />
+                  ) : (
+                    <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                      Default Image Active
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Favicon Icon Row */}
-          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
-            <div className="flex flex-col gap-2 items-center text-center shrink-0">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current Favicon</span>
-              <div className="w-24 h-24 rounded-full bg-bg-offwhite border border-slate-200 flex items-center justify-center p-4 shadow-inner relative overflow-hidden">
-                {settings.favicon ? (
-                  <img src={settings.favicon} alt="Favicon" className="w-full h-full object-contain" />
-                ) : (
-                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
-                    Default Tab Icon
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-col gap-4 w-full text-left">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  Upload Custom Favicon (1:1 Aspect Ratio)
-                </label>
-                <input
-                  type="file"
-                  accept="image/png, image/x-icon, image/svg+xml"
-                  onChange={(e) => setFaviconFile(e.target.files[0])}
-                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
-                />
-                <p className="text-[10px] text-text-muted">Recommended: Square image with 1:1 ratio (e.g. 32x32 pixels) in PNG or ICO format. This is shown in your browser's address tab.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* PWA Icon Row */}
-          <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
-            <div className="flex flex-col gap-2 items-center text-center shrink-0">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current PWA Icon</span>
-              <div className="w-24 h-24 rounded-2xl bg-bg-offwhite border border-slate-200 flex items-center justify-center p-3 shadow-inner relative overflow-hidden">
-                {settings.pwaIcon ? (
-                  <img src={settings.pwaIcon} alt="PWA Icon" className="w-full h-full object-contain" />
-                ) : (
-                  <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
-                    Default PWA Icon
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-col gap-4 w-full text-left">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  Upload Custom PWA Launcher Icon (1:1 Aspect Ratio)
-                </label>
-                <input
-                  type="file"
-                  accept="image/png"
-                  onChange={(e) => setPwaIconFile(e.target.files[0])}
-                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
-                />
-                <p className="text-[10px] text-text-muted">Recommended: High-resolution square PNG (1:1 ratio, minimum 512x512 pixels). Used as the app icon on mobile screens when installed.</p>
+              <div className="flex-1 flex flex-col gap-4 w-full text-left">
+                {/* Hero Image File Selector */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                    Upload Custom Hero Image (1:1 / Square Ratio)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={(e) => setHeroImageFile(e.target.files[0])}
+                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
+                  />
+                  <p className="text-[10px] text-text-muted">Recommended: Square image (1:1 aspect ratio, e.g. 800x800 px) for optimal layout in the hero section.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -282,14 +255,45 @@ const AdminSettings = () => {
           {/* Section: PWA App Customizations */}
           <div className="flex flex-col gap-5 pb-8 border-b border-slate-100">
             <h3 className="border-s-3 text-sm font-bold text-primary p-1 bg-text-light font-heading uppercase tracking-wider pl-4 shadow-sm">
-              PWA App Customizations
+              App Customizations
             </h3>
+
+            {/* PWA Icon Row */}
+            <div className="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-slate-100">
+              <div className="flex flex-col gap-2 items-center text-center shrink-0">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-heading">Current app Icon</span>
+                <div className="w-24 h-24 rounded-2xl bg-bg-offwhite border border-slate-200 flex items-center justify-center p-3 shadow-inner relative overflow-hidden">
+                  {settings.pwaIcon ? (
+                    <img src={settings.pwaIcon} alt="PWA Icon" className="w-full h-full object-contain" />
+                  ) : (
+                    <div className="text-[9px] text-slate-400 font-semibold italic text-center leading-tight">
+                      Default app Icon
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col gap-4 w-full text-left">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
+                    Upload Custom app Launcher Icon (1:1 Aspect Ratio)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png"
+                    onChange={(e) => setPwaIconFile(e.target.files[0])}
+                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer border border-slate-200/80 rounded-2xl p-2 bg-white/50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary shadow-sm"
+                  />
+                  <p className="text-[10px] text-text-muted">Recommended: High-resolution square PNG (1:1 ratio, minimum 512x512 pixels). Used as the app icon on mobile screens when installed.</p>
+                </div>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-left">
               {/* App Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  PWA App Name (Full Title)
+                  App Name (Full Title)
                 </label>
                 <input
                   type="text"
@@ -304,7 +308,7 @@ const AdminSettings = () => {
               {/* Short Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">
-                  PWA Short Name (Launcher Title)
+                  Short Name (Launcher Title)
                 </label>
                 <input
                   type="text"
@@ -477,8 +481,8 @@ const AdminSettings = () => {
               disabled={saving}
               style={{ cursor: saving ? "wait" : "pointer" }}
               className={`px-6 py-3.5 rounded-2xl w-full sm:w-auto flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider transition-premium cursor-pointer ${saving
-                  ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
-                  : "bg-primary hover:bg-primary/95 text-white border-primary shadow hover:shadow-md hover:scale-[1.01]"
+                ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
+                : "bg-primary hover:bg-primary/95 text-white border-primary shadow hover:shadow-md hover:scale-[1.01]"
                 }`}
             >
               {saving ? (

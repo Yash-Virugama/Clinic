@@ -25,7 +25,7 @@ const AdminLayout = () => {
       <div className="flex-1 lg:pl-72 flex flex-col min-h-screen">
         <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
-        <main key={location.pathname} className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto relative z-10 animate-page-entrance">
+        <main key={location.pathname} className="flex-1 p-6 sm:p-8 bg-grid-blueprint max-w-7xl w-full mx-auto relative z-10 animate-page-entrance">
           <Outlet />
         </main>
       </div>

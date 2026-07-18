@@ -51,6 +51,13 @@ const userSchema = new Schema(
         passwordResetExpires: {
             type: Date,
         },
+
+        notificationPreferences: {
+            appointments: { type: Boolean, default: true },
+            blogs: { type: Boolean, default: true },
+            resources: { type: Boolean, default: true },
+            account: { type: Boolean, default: true },
+        },
     },
 
     {
