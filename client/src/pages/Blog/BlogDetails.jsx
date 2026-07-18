@@ -40,6 +40,21 @@ const BlogDetails = () => {
   );
 
   if (!blog) {
+    if (navigator.onLine === false) {
+      return (
+        <div className="flex flex-col items-center justify-center sm:h-[calc(100vh-80px)] h-[calc(100vh-72px)] min-h-[55vh] bg-bg-offwhite bg-grid-blueprint text-center p-6">
+          <div className="w-[70px] h-[70px] rounded-[18px] bg-amber-500/10 flex items-center justify-center text-amber-500 mx-auto mb-6">
+            ⚠️
+          </div>
+          <h2 className="text-2xl font-bold text-secondary font-heading mb-2">Article Unavailable Offline</h2>
+          <p className="text-text-muted max-w-sm font-body mb-6">You haven't opened this recovery guide online yet, so it isn't cached in your PWA. Connect to the internet to read this post.</p>
+          <Link to="/blog" className="px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wider shadow hover:bg-primary-hover transition-premium">
+            Browse Cached Guides
+          </Link>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col items-center justify-center sm:h-[calc(100vh-80px)] h-[calc(100vh-72px)] min-h-[55vh] bg-bg-offwhite bg-grid-blueprint text-center p-6">
         <h2 className="text-2xl font-bold text-secondary font-heading mb-2">Article Not Found</h2>

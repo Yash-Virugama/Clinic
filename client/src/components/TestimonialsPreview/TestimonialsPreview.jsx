@@ -2,37 +2,6 @@ import "./TestimonialsPreview.css";
 import { Link } from "react-router-dom";
 import useTestimonials from "../../hooks/useTestimonials";
 
-// Helper function to return beautiful avatars
-const getPatientDetails = (name = "", index = 0) => {
-  const lowercaseName = name.toLowerCase();
-  
-  if (lowercaseName.includes("priya")) {
-    return {
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120&h=120"
-    };
-  }
-  if (lowercaseName.includes("rahul")) {
-    return {
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120&h=120"
-    };
-  }
-  if (lowercaseName.includes("neha")) {
-    return {
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120&h=120"
-    };
-  }
-  
-  const avatars = [
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120",
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120&h=120",
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120&h=120"
-  ];
-  
-  return {
-    avatar: avatars[index % avatars.length]
-  };
-};
-
 const TestimonialsPreview = () => {
   const { testimonials, loading } = useTestimonials();
 
@@ -67,9 +36,8 @@ const TestimonialsPreview = () => {
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {testimonials.slice(0, 3).map((testimonial, idx) => {
-            const details = getPatientDetails(testimonial.patientName, idx);
             const rating = testimonial.rating || 5;
-            const avatar = testimonial.user?.image || details.avatar;
+            const avatar = testimonial.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.patientName)}&background=random&color=fff`;
 
             return (
               <div 
@@ -125,11 +93,11 @@ const TestimonialsPreview = () => {
                     {/* Rounded avatar */}
                     <img 
                       src={avatar} 
-                      alt={testimonial.patientName} 
+                      alt={testimonial.patientName || "Unknown"} 
                       className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm shrink-0"
                     />
                     <div>
-                      <h4 className="font-bold text-sm text-secondary font-heading leading-tight">{testimonial.patientName}</h4>
+                      <h4 className="font-bold text-sm text-secondary font-heading leading-tight">{testimonial.patientName || "Unknown"}</h4>
                       <p className="text-[11px] text-text-muted mt-0.5 font-medium uppercase tracking-wider">{testimonial.treatment || "General Rehab"}</p>
                     </div>
                   </div>
