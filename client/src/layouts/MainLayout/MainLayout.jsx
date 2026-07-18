@@ -114,7 +114,7 @@ const MainLayout = () => {
               />
             ) : (
               (user?.name ? (
-                <div className="w-full h-full bg-primary/10 rounded-full flex items-center justify-center font-bold text-sm text-primary uppercase font-heading">
+                <div className="w-full h-full bg-primary/10 rounded-full flex items-center justify-center font-bold text-md text-primary uppercase font-heading">
                   {user.name?.charAt(0) || "A"}
                 </div>
               ) : (
