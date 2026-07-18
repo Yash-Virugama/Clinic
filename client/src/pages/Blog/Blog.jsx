@@ -192,7 +192,7 @@ const Blog = () => {
                 ) : (
                   <CoverFallback category={featuredBlog.category} />
                 )}
-                <div className="absolute top-4 left-4 bg-primary text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full shadow border border-white/10 uppercase tracking-wider">
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-primary text-white text-[10px] font-extrabold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full shadow border border-white/10 uppercase tracking-wider">
                   Featured
                 </div>
               </div>
@@ -218,7 +218,7 @@ const Blog = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 pt-6 border-t border-slate-100 mt-auto">
+                <div className="flex items-center justify-between gap-4 pt-6 border-t border-slate-200 mt-auto">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden shrink-0 bg-slate-50">
                       {featuredBlog.author?.image ? (
@@ -270,11 +270,11 @@ const Blog = () => {
                   return (
                     <article
                       key={blog._id}
-                      className="bg-white/40 border border-slate-200/60 rounded-3xl p-4 sm:p-6.5 hover:border-primary/20 hover:shadow-xl transition-premium group relative flex flex-col justify-between min-h-[440px] text-left"
+                      className="bg-white/40 border border-slate-200/60 rounded-3xl p-4 pb-4.5 sm:p-6.5 hover:border-primary/20 hover:shadow-xl transition-premium group relative flex flex-col justify-between gap-4 sm:gap-6 min-h-[400px] text-left"
                     >
                       <Link to={`/blog/${blog.slug}`} className="flex flex-col flex-1">
                         {/* Cover Frame (Refactored to aspect-[16/10] for a cleaner card ratio) */}
-                        <div className="w-full aspect-[16/10] rounded-2xl overflow-hidden shrink-0 shadow-sm relative mb-5">
+                        <div className="w-full aspect-video rounded-2xl overflow-hidden shrink-0 shadow-sm relative mb-5">
                           {blog.coverImage ? (
                             <img
                               src={blog.coverImage}
@@ -284,7 +284,7 @@ const Blog = () => {
                           ) : (
                             <CoverFallback category={blog.category} />
                           )}
-                          <span className="absolute top-3.5 left-3.5 text-[9px] font-extrabold text-primary uppercase tracking-widest bg-white px-2.5 py-1 rounded-full shadow border border-slate-100">
+                          <span className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 text-[9px] font-extrabold text-primary uppercase tracking-widest bg-white px-2 sm:px-2.5 py-1 rounded-full shadow border border-slate-100">
                             {blog.category}
                           </span>
                         </div>
@@ -298,14 +298,14 @@ const Blog = () => {
                             <h3 className="font-extrabold text-lg sm:text-xl text-secondary font-heading group-hover:text-primary transition-colors duration-300 leading-snug mb-3">
                               {blog.title}
                             </h3>
-                            <p className="text-xs sm:text-sm text-text-muted font-body leading-relaxed mb-6 line-clamp-3">
+                            <p className="text-xs sm:text-sm text-text-muted font-body leading-relaxed mb-4.5 line-clamp-3">
                               {blog.excerpt}
                             </p>
                           </div>
                         </div>
                       </Link>
 
-                      <div className="flex items-center justify-between gap-4 pt-4.5 border-t border-slate-100 mt-auto">
+                      <div className="flex items-center justify-between gap-4 pt-4.5 border-t border-slate-200 mt-auto">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden shrink-0 bg-slate-50">
                             {blog.author?.image ? (

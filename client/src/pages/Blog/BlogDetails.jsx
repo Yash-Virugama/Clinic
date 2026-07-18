@@ -28,14 +28,16 @@ const BlogDetails = () => {
 
   // Reusable Cinematic Blueprint Cover Fallback
   const DetailsCoverFallback = ({ category }) => (
-    <div className="w-full h-full bg-darkblue bg-grid-blueprint-dark flex flex-col items-center justify-center p-6 sm:p-12 text-center select-none relative overflow-hidden min-h-[300px] sm:min-h-[420px]">
+    <div className="w-full aspect-video bg-darkblue bg-grid-blueprint-dark flex flex-col items-center justify-center p-6 sm:p-12 text-center select-none relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/25 via-transparent to-accent/15 pointer-events-none" />
-      <span className="text-white/80 font-bold text-sm uppercase tracking-widest bg-white/10 px-5 py-2 rounded-full border border-white/10 relative -top-10 sm:-top-0 z-10 font-accent backdrop-blur-sm">
-        {category}
-      </span>
-      <span className="text-[0.6rem] sm:text-[1rem] text-white/40 font-bold uppercase tracking-wider mt-4 relative -top-10 sm:-top-0 z-10 font-body">
-        {settings?.name || ""} Clinical Publication
-      </span>
+      {/* <div className="flex flex-col justify-center iteams-center"> */}
+        <span className="text-white/80 font-bold text-sm uppercase tracking-widest bg-white/10 px-5 py-2 rounded-full border border-white/10 z-10 font-accent backdrop-blur-sm">
+          {category}
+        </span>
+        <span className="text-[0.6rem] sm:text-[1rem] text-white/40 font-bold uppercase tracking-wider mt-4 z-10 font-body">
+          {settings?.name || ""} Clinical Publication
+        </span>
+      {/* </div> */}
     </div>
   );
 
@@ -154,7 +156,7 @@ const BlogDetails = () => {
         </div>
 
         {/* Cinematic Cover Image (Reduced size and centered to align with the text column) */}
-        <div className="max-w-2xl mx-auto aspect-[16/10] rounded-[20px] overflow-hidden shadow-xl border border-slate-200/50 bg-white mb-10 sm:mb-14">
+        <div className="max-w-2xl mx-auto aspect-video rounded-[20px] overflow-hidden shadow-xl border border-slate-200/50 bg-white mb-10 sm:mb-14">
           {blog.coverImage ? (
             <img
               src={blog.coverImage}

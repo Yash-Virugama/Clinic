@@ -36,7 +36,7 @@ const ServicesPreview = () => {
           {services.slice(0, 3).map((service) => (
             <Link 
               to={`/services#service-${service._id}`}
-              className="glass-card p-6 sm:p-10 lg:p-6 rounded-3xl border border-secondary/10 shadow-md hover:border-primary hover:shadow-xl transition-premium hover:-translate-y-2 group cursor-pointer flex flex-col justify-between gap-8 min-h-[440px] block no-underline" 
+              className="glass-card p-6 sm:p-10 lg:p-6 rounded-3xl border border-secondary/10 shadow-md hover:border-primary hover:shadow-xl transition-premium hover:-translate-y-2 group cursor-pointer flex flex-col justify-between gap-4 sm:gap-8 min-h-[400px] block no-underline" 
               style={{
                 background: "radial-gradient(120% 120% at 50% 0%, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.08) 0%, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0.95) 100%)"
               }}
