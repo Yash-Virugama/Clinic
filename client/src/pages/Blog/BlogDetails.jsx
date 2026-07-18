@@ -47,7 +47,7 @@ const BlogDetails = () => {
             ⚠️
           </div>
           <h2 className="text-2xl font-bold text-secondary font-heading mb-2">Article Unavailable Offline</h2>
-          <p className="text-text-muted max-w-sm font-body mb-6">You haven't opened this recovery guide online yet, so it isn't cached in your PWA. Connect to the internet to read this post.</p>
+          <p className="text-text-muted max-w-sm font-body mb-6">You haven't opened this blog online yet, so it isn't cached in your APP. Connect to the internet to read this post.</p>
           <Link to="/blog" className="px-5 py-2.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wider shadow hover:bg-primary-hover transition-premium">
             Browse Cached Guides
           </Link>
