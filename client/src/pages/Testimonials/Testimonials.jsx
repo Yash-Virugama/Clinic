@@ -132,11 +132,10 @@ const Testimonials = () => {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4.5 py-2 rounded-full text-xs font-bold tracking-wide uppercase transition-premium cursor-pointer border shrink-0 ${
-                  selectedCategory === category
-                    ? "bg-primary text-white border-primary shadow-md shadow-primary/15"
-                    : "bg-white/60 hover:bg-white text-secondary border-slate-200/80 hover:border-slate-300"
-                }`}
+                className={`px-4.5 py-2 rounded-full text-xs font-bold tracking-wide uppercase transition-premium cursor-pointer border shrink-0 ${selectedCategory === category
+                  ? "bg-primary text-white border-primary shadow-md shadow-primary/15"
+                  : "bg-white/60 hover:bg-white text-secondary border-slate-200/80 hover:border-slate-300"
+                  }`}
               >
                 {category}
               </button>
@@ -161,7 +160,7 @@ const Testimonials = () => {
                   const avatarUrl = testimonial.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.patientName)}&background=random&color=fff`;
 
                   return (
-                    <div 
+                    <div
                       key={testimonial._id}
                       id={`testimonial-${testimonial._id}`}
                       className="flex flex-col md:flex-row gap-5 md:gap-8 items-start relative group w-full"
@@ -170,11 +169,17 @@ const Testimonials = () => {
                       <div className="flex items-center gap-4 w-full md:hidden">
                         <div className="relative shrink-0">
                           <div className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-white shadow-md bg-white ring-4 ring-primary/10">
-                            <img 
-                              src={avatarUrl} 
-                              alt={testimonial.patientName} 
-                              className="w-full h-full object-cover"
-                            />
+                            {testimonial.user?.image ? (
+                              <img
+                                src={testimonial.user.image}
+                                alt={testimonial.patientName}
+                                className="w-full h-full object-cover rounded-2xl"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-primary/10 rounded-2xl flex items-center justify-center font-bold text-lg sm:text-2xl text-primary uppercase font-heading">
+                                {testimonial.user?.name?.charAt(0) || "❓"}
+                              </div>
+                            )}
                           </div>
                           {/* Rating Overlay */}
                           <div className="absolute -bottom-1 -right-1 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow flex items-center gap-0.5 border border-white">
@@ -202,13 +207,19 @@ const Testimonials = () => {
                       {/* Desktop-only Timeline Node (Large Avatar Frame on left side) */}
                       <div className="hidden md:block relative z-10 shrink-0">
                         <div className="relative w-20 h-20 rounded-3xl overflow-hidden border-4 border-white shadow-xl bg-white ring-4 ring-primary/10 group-hover:ring-primary/30 transition-all duration-500 transform group-hover:scale-103 group-hover:rotate-2">
-                          <img 
-                            src={avatarUrl} 
-                            alt={testimonial.patientName} 
-                            className="w-full h-full object-cover rounded-2xl"
-                          />
+                          {testimonial.user?.image ? (
+                            <img
+                              src={testimonial.user.image}
+                              alt={testimonial.patientName}
+                              className="w-full h-full object-cover rounded-2xl"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-primary/10 rounded-2xl flex items-center justify-center font-bold text-md sm:text-2xl text-primary uppercase font-heading">
+                              {testimonial.user?.name?.charAt(0) || "❓"}
+                            </div>
+                          )}
                         </div>
-                        
+
                         {/* Rating Stars Overlay Badge */}
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-extrabold px-2 py-1 rounded-full shadow-lg flex items-center gap-0.5 shrink-0 z-20 border border-white">
                           <span>{rating}</span>
@@ -239,10 +250,10 @@ const Testimonials = () => {
                         {/* Stars for visual layout (Desktop only) */}
                         <div className="hidden md:flex gap-0.5 text-amber-500">
                           {[...Array(5)].map((_, i) => (
-                            <svg 
-                              key={i} 
-                              className={`w-3.5 h-3.5 ${i < rating ? "fill-currentColor" : "stroke-current stroke-1 fill-none"}`} 
-                              viewBox="0 0 20 20" 
+                            <svg
+                              key={i}
+                              className={`w-3.5 h-3.5 ${i < rating ? "fill-currentColor" : "stroke-current stroke-1 fill-none"}`}
+                              viewBox="0 0 20 20"
                               xmlns="http://www.w3.org/2000/svg"
                             >
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -281,11 +292,10 @@ const Testimonials = () => {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`w-11 h-11 font-accent font-bold text-sm rounded-xl transition-premium cursor-pointer border flex items-center justify-center ${
-                      currentPage === page
-                        ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                        : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
-                    }`}
+                    className={`w-11 h-11 font-accent font-bold text-sm rounded-xl transition-premium cursor-pointer border flex items-center justify-center ${currentPage === page
+                      ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                      : "bg-white text-secondary border-secondary/10 hover:border-primary hover:text-primary hover:shadow-md"
+                      }`}
                   >
                     {page}
                   </button>

@@ -34,18 +34,17 @@ const TestimonialsPreview = () => {
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
           {testimonials.slice(0, 3).map((testimonial, idx) => {
             const rating = testimonial.rating || 5;
-            const avatar = testimonial.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.patientName)}&background=random&color=fff`;
 
             return (
-              <div 
-                className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden" 
+              <div
+                className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden"
                 key={testimonial._id}
               >
                 {/* Large Background Quote Icon */}
-                <div 
+                <div
                   className="absolute top-6 right-6 pointer-events-none z-0"
                   style={{ color: "hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.04)" }}
                 >
@@ -58,10 +57,10 @@ const TestimonialsPreview = () => {
                   {/* Star Rating Row */}
                   <div className="flex gap-1 text-amber-500 mb-6">
                     {[...Array(5)].map((_, i) => (
-                      <svg 
-                        key={i} 
-                        className={`w-4 h-4 ${i < rating ? "fill-currentColor" : "stroke-current stroke-1 fill-none"}`} 
-                        viewBox="0 0 20 20" 
+                      <svg
+                        key={i}
+                        className={`w-4 h-4 ${i < rating ? "fill-currentColor" : "stroke-current stroke-1 fill-none"}`}
+                        viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -74,8 +73,8 @@ const TestimonialsPreview = () => {
                     {testimonial.content.length > 50 ? (
                       <>
                         "{testimonial.content.substring(0, 50)}..."{" "}
-                        <Link 
-                          to={`/testimonials#testimonial-${testimonial._id}`} 
+                        <Link
+                          to={`/testimonials#testimonial-${testimonial._id}`}
                           className="text-primary font-semibold hover:underline not-italic inline-block text-xs"
                         >
                           Read More
@@ -91,11 +90,18 @@ const TestimonialsPreview = () => {
                 <div className="flex items-center justify-between pt-6 border-t border-slate-200/60 relative z-10">
                   <div className="flex items-center gap-4">
                     {/* Rounded avatar */}
-                    <img 
-                      src={avatar} 
-                      alt={testimonial.patientName || "Unknown"} 
-                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm shrink-0"
-                    />
+                    {testimonial.user?.image ? (
+                      <img
+                        src={testimonial.user.image}
+                        alt={testimonial.patientName || "Unknown"}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center font-bold text-md sm:text-lg text-primary uppercase font-heading">
+                        {testimonial.user?.name?.charAt(0) || "A"}
+                      </div>
+                    )}
+
                     <div>
                       <h4 className="font-bold text-sm text-secondary font-heading leading-tight">{testimonial.patientName || "Unknown"}</h4>
                       <p className="text-[11px] text-text-muted mt-0.5 font-medium uppercase tracking-wider">{testimonial.treatment || "General Rehab"}</p>
@@ -117,8 +123,8 @@ const TestimonialsPreview = () => {
 
         {/* Bottom CTA Link */}
         <div className="text-center">
-          <Link 
-            to="/testimonials" 
+          <Link
+            to="/testimonials"
             className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-wide uppercase hover:text-primary-hover group transition-colors"
           >
             View All Testimonials
