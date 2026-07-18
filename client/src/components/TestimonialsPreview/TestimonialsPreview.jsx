@@ -40,12 +40,12 @@ const TestimonialsPreview = () => {
 
             return (
               <div
-                className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden"
+                className="glass-card p-6 sm:p-10 lg:p-6 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden"
                 key={testimonial._id}
               >
                 {/* Large Background Quote Icon */}
                 <div
-                  className="absolute top-6 right-6 pointer-events-none z-0"
+                  className="absolute top-6 right-6 sm:right-10 lg:right-6 pointer-events-none z-0"
                   style={{ color: "hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.04)" }}
                 >
                   <svg className="w-20 h-20 sm:w-24 sm:h-24 fill-currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

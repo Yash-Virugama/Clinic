@@ -32,11 +32,11 @@ const ServicesPreview = () => {
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
           {services.slice(0, 3).map((service) => (
             <Link 
               to={`/services#service-${service._id}`}
-              className="glass-card p-6 sm:p-7 rounded-3xl border border-secondary/10 shadow-md hover:border-primary hover:shadow-xl transition-premium hover:-translate-y-2 group cursor-pointer flex flex-col justify-between min-h-[440px] block no-underline" 
+              className="glass-card p-6 sm:p-10 lg:p-6 rounded-3xl border border-secondary/10 shadow-md hover:border-primary hover:shadow-xl transition-premium hover:-translate-y-2 group cursor-pointer flex flex-col justify-between gap-8 min-h-[440px] block no-underline" 
               style={{
                 background: "radial-gradient(120% 120% at 50% 0%, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.08) 0%, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0.95) 100%)"
               }}
@@ -45,7 +45,7 @@ const ServicesPreview = () => {
               <div>
                 {/* Uploaded Service Image Container */}
                 {service.image && (
-                  <div className="w-full h-48 rounded-2xl overflow-hidden mb-6 bg-slate-100 border border-slate-100/50 relative z-10">
+                  <div className="w-full aspect-video rounded-2xl overflow-hidden mb-6 bg-slate-100 border border-slate-100/50 relative z-10">
                     <img
                       src={service.image}
                       alt={service.title}

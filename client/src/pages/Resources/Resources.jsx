@@ -507,10 +507,10 @@ const Resources = () => {
                             )}
                           </div>
                           <div className="flex flex-col text-left">
-                            <span className="text-[10px] font-extrabold text-slate-200 leading-tight">
+                            <span className="text-[12px] font-extrabold text-slate-200 leading-tight">
                               {res.author?.name || "Admin"}
                             </span>
-                            <span className="text-[8px] font-bold text-slate-350 uppercase tracking-widest mt-0.5">
+                            <span className="text-[8px] font-bold text-text-muted uppercase tracking-widest mt-0.5">
                               {res.category}
                             </span>
                           </div>
