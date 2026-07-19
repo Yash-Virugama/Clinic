@@ -11,13 +11,19 @@ export const createContact = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide all required fields.");
   }
 
-  const contact = await Contact.create({
+  const contactData = {
     name,
     email,
     phone,
     subject,
     message,
-  });
+  };
+
+  if (req.user) {
+    contactData.userId = req.user._id;
+  }
+
+  const contact = await Contact.create(contactData);
 
   // Notify admins
   (async () => {
@@ -102,6 +108,15 @@ export const updateContactStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Contact not found.");
   }
 
+  if (status === "replied") {
+    if (!contact.userId) {
+      throw new ApiError(400, "Cannot set status to Replied for unregistered users.");
+    }
+    if (!contact.replyMessage) {
+      throw new ApiError(400, "Cannot set status to Replied without a reply message.");
+    }
+  }
+
   contact.status = status || contact.status;
 
   await contact.save();
@@ -126,5 +141,62 @@ export const deleteContact = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Contact deleted successfully.",
+  });
+});
+
+// User - Get My Contact History
+export const getMyContactHistory = asyncHandler(async (req, res) => {
+  const contacts = await Contact.find({ userId: req.user._id }).sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    count: contacts.length,
+    data: contacts,
+  });
+});
+
+// Admin - Reply to Contact
+export const replyToContact = asyncHandler(async (req, res) => {
+  const { replyMessage } = req.body;
+
+  if (!replyMessage || !replyMessage.trim()) {
+    throw new ApiError(400, "Reply message cannot be empty.");
+  }
+
+  const contact = await Contact.findById(req.params.id);
+
+  if (!contact) {
+    throw new ApiError(404, "Contact not found.");
+  }
+
+  if (!contact.userId) {
+    throw new ApiError(400, "Cannot reply to an inquiry from a non-registered user.");
+  }
+
+  contact.replyMessage = replyMessage;
+  contact.repliedAt = new Date();
+  contact.status = "replied";
+
+  await contact.save();
+
+  // Notify the user via push notification
+  (async () => {
+    try {
+      const payload = {
+        title: "Reply to your inquiry",
+        body: `Our team has replied to your message: "${replyMessage.substring(0, 50)}..."`,
+        url: "/dashboard/contact",
+        tag: `contact-reply-${contact._id}`,
+      };
+      await sendPushToUser(contact.userId, payload, "account");
+    } catch (err) {
+      console.error("Error sending reply notification:", err);
+    }
+  })();
+
+  res.status(200).json({
+    success: true,
+    message: "Reply sent successfully.",
+    data: contact,
   });
 });

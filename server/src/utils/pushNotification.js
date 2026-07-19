@@ -106,11 +106,15 @@ export const sendPushToAll = async (payload, category) => {
       return;
     }
 
-    // Filter by notification preferences
+    // Filter by notification preferences and user role (only send to patients)
     const validSubscriptions = subscriptions.filter((sub) => {
       if (!sub.user) {
         // Orphaned subscription without a valid user
-        return true;
+        return false;
+      }
+      // Only patients get broadcast notifications (skip admins)
+      if (sub.user.role !== "patient") {
+        return false;
       }
       if (category && sub.user.notificationPreferences) {
         return sub.user.notificationPreferences[category] !== false;

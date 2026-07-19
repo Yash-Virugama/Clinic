@@ -4,7 +4,6 @@ import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import useAdminContacts from "../../../hooks/useAdminContacts";
-import CustomSelect from "../../../components/CustomSelect/CustomSelect";
 import CustomConfirmModal from "../../../components/CustomConfirmModal/CustomConfirmModal";
 
 const AdminContacts = () => {
@@ -13,6 +12,9 @@ const AdminContacts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [isReplying, setIsReplying] = useState(false);
   const [contactsPerPage, setContactsPerPage] = useState(
     window.innerWidth < 768 ? 5 : 6
   );
@@ -56,17 +58,7 @@ const AdminContacts = () => {
     currentPage * contactsPerPage
   );
 
-  const handleStatus = async (id, status) => {
-    try {
-      await api.patch(`/contact/${id}/status`, { status });
-      toast.success("Inquiry status updated successfully.");
-      fetchContacts();
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to update status."
-      );
-    }
-  };
+
 
   const handleDelete = (id) => {
     setDeleteConfirmId(id);
@@ -74,7 +66,7 @@ const AdminContacts = () => {
 
   const handleConfirmDelete = async () => {
     if (!deleteConfirmId) return;
-
+    setDeleting(true);
     try {
       await api.delete(`/contact/${deleteConfirmId}`);
       toast.success("Contact inquiry deleted.");
@@ -84,7 +76,38 @@ const AdminContacts = () => {
         error.response?.data?.message || "Failed to delete contact."
       );
     } finally {
+      setDeleting(false);
       setDeleteConfirmId(null);
+    }
+  };
+
+  const handleSendReply = async () => {
+    if (!replyText.trim() || !selectedContact) return;
+    setIsReplying(true);
+    try {
+      const res = await api.post(`/contact/${selectedContact._id}/reply`, {
+        replyMessage: replyText,
+      });
+      toast.success("Reply sent successfully.");
+      setReplyText("");
+      setSelectedContact(res.data.data);
+      fetchContacts();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send reply.");
+    } finally {
+      setIsReplying(false);
+    }
+  };
+
+  const handleViewContact = async (contact) => {
+    setSelectedContact(contact);
+    if (contact.status === "new") {
+      try {
+        await api.patch(`/contact/${contact._id}/status`, { status: "read" });
+        fetchContacts();
+      } catch (error) {
+        console.error("Failed to update status to read:", error);
+      }
     }
   };
 
@@ -103,11 +126,28 @@ const AdminContacts = () => {
     );
   }
 
-  const statusOptions = [
-    { value: "new", label: "New" },
-    { value: "read", label: "Read" },
-    { value: "replied", label: "Replied" },
-  ];
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "replied":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-50 border border-rose-200 text-rose-600">
+            Replied
+          </span>
+        );
+      case "read":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 border border-amber-200 text-amber-600">
+            Read
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-200 text-emerald-600 animate-pulse">
+            New
+          </span>
+        );
+    }
+  };
 
   return (
     <>
@@ -196,18 +236,21 @@ const AdminContacts = () => {
                             <span className="text-xs text-text-muted font-body block truncate">
                               {contact.email}
                             </span>
+                            {contact.userId ? (
+                              <span className="inline-block mt-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wider">
+                                Registered
+                              </span>
+                            ) : (
+                              <span className="inline-block mt-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[9px] font-bold uppercase tracking-wider border border-slate-200/50">
+                                Guest
+                              </span>
+                            )}
                           </div>
                         </div>
 
-                        {/* Custom Status Dropdown Picker */}
-                        <div className="relative shrink-0 w-28">
-                          <CustomSelect
-                            value={contact.status}
-                            onChange={(value) => handleStatus(contact._id, value)}
-                            options={statusOptions}
-                            placeholder="Status"
-                            theme="dark"
-                          />
+                        {/* Status Badge */}
+                        <div className="shrink-0">
+                          {getStatusBadge(contact.status)}
                         </div>
                       </div>
 
@@ -229,7 +272,7 @@ const AdminContacts = () => {
 
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => setSelectedContact(contact)}
+                            onClick={() => handleViewContact(contact)}
                             title="View Message Details"
                             style={{ cursor: "pointer" }}
                             className="p-2 rounded-xl border border-slate-200/80 bg-text-light hover:bg-primary text-primary hover:text-text-light transition-colors cursor-pointer shadow-sm"
@@ -309,12 +352,12 @@ const AdminContacts = () => {
             {/* Backdrop Blur Overlay */}
             <div
               className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[90] animate-fade-in"
-              onClick={() => setSelectedContact(null)}
+              onClick={() => { setSelectedContact(null); setReplyText(""); }}
               style={{ cursor: "pointer" }}
             />
 
             {/* Centered Modal Card */}
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 border border-slate-200/60 backdrop-blur-md rounded-[32px] p-6 sm:p-8 shadow-2xl w-[calc(100%-2rem)] sm:w-full sm:max-w-lg h-[480px] max-h-[80vh] flex flex-col justify-between z-[100] animate-page-entrance text-left">
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 border border-slate-200/60 backdrop-blur-md rounded-[32px] p-6 sm:p-8 shadow-2xl w-[calc(100%-2rem)] sm:w-full sm:max-w-lg max-h-[85vh] flex flex-col justify-between z-[100] animate-page-entrance text-left">
 
               {/* Header (Fixed) */}
               <div className="shrink-0 pb-4 border-b border-slate-100">
@@ -357,12 +400,62 @@ const AdminContacts = () => {
                     {selectedContact.message}
                   </div>
                 </div>
+
+                {/* Reply section */}
+                {selectedContact.userId ? (
+                  selectedContact.replyMessage ? (
+                    <div className="flex flex-col gap-2 pt-2 border-t border-slate-100 shrink-0">
+                      <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider font-heading flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                        Admin Reply
+                      </span>
+                      <div className="bg-emerald-50/50 border border-emerald-100/80 text-emerald-950 rounded-2xl p-4 text-xs leading-relaxed font-body whitespace-pre-wrap select-text">
+                        {selectedContact.replyMessage}
+                      </div>
+                      <span className="text-[10px] text-slate-400 self-end">
+                        Replied on {new Date(selectedContact.repliedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2.5 pt-2 border-t border-slate-100 shrink-0">
+                      <span className="text-xs font-bold text-primary uppercase tracking-wider font-heading flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                        </svg>
+                        Send Reply to Registered User
+                      </span>
+                      <div className="flex gap-2">
+                        <textarea
+                          rows="2"
+                          placeholder="Type your reply message here..."
+                          className="flex-1 px-4 py-2.5 rounded-2xl border border-slate-200/80 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-xs font-medium resize-none shadow-sm"
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          disabled={isReplying}
+                        />
+                        <button
+                          onClick={handleSendReply}
+                          disabled={isReplying || !replyText.trim()}
+                          className="px-4 py-2.5 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center cursor-pointer shadow hover:shadow-md"
+                        >
+                          {isReplying ? "Sending..." : "Reply"}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-medium tracking-wide uppercase italic">
+                    Replies are only available for registered users.
+                  </div>
+                )}
               </div>
 
               {/* Footer (Fixed) */}
               <div className="shrink-0 pt-4 border-t border-slate-100 flex justify-end">
                 <button
-                  onClick={() => setSelectedContact(null)}
+                  onClick={() => { setSelectedContact(null); setReplyText(""); }}
                   style={{ cursor: "pointer" }}
                   className="px-5 py-2.5 rounded-2xl border border-slate-200 bg-primary hover:bg-primary-hover text-text-light font-bold tracking-wider transition-colors shadow-sm cursor-pointer"
                 >

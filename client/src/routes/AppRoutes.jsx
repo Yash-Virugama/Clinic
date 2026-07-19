@@ -33,6 +33,7 @@ import DashboardProfile from "../pages/Dashboard/DashboardProfile/DashboardProfi
 import DashboardTestimonials from "../pages/Dashboard/DashboardTestimonials/DashboardTestimonials";
 import ChangePassword from "../pages/Dashboard/ChangePassword/ChangePassword"
 import DashboardNotifications from "../pages/Dashboard/DashboardNotifications/DashboardNotifications";
+import DashboardContact from "../pages/Dashboard/DashboardContact/DashboardContact";
 import AdminNotifications from "../pages/Admin/AdminNotifications/AdminNotifications";
 
 //forget password
@@ -70,6 +71,8 @@ const AppRoutes = () => {
         <Route path="update-profile" element={<DashboardProfile />} />
 
         <Route path="testimonials" element={<DashboardTestimonials />} />
+
+        <Route path="contact" element={<DashboardContact />} />
 
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="notifications" element={<DashboardNotifications />} />

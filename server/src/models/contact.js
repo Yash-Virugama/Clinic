@@ -37,6 +37,22 @@ const contactSchema = new Schema(
       enum: ["new", "read", "replied"],
       default: "new",
     },
+
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+
+    replyMessage: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    repliedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

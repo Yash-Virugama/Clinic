@@ -1,11 +1,14 @@
 import "./ContactForm.css";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema } from "../../validations/contactSchema";
 import useContact from "../../hooks/useContact";
+import { useAuth } from "../../context/AuthContext";
 
 const ContactForm = () => {
   const { sendMessage } = useContact();
+  const { user } = useAuth();
 
   const {
     register,
@@ -23,10 +26,28 @@ const ContactForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      reset({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        subject: "",
+        message: "",
+      });
+    }
+  }, [user, reset]);
+
   const onSubmit = async (data) => {
     try {
       await sendMessage(data);
-      reset();
+      reset({
+        name: user ? user.name || "" : "",
+        email: user ? user.email || "" : "",
+        phone: user ? user.phone || "" : "",
+        subject: "",
+        message: "",
+      });
     } catch {
       // Toast already handled
     }
@@ -54,7 +75,12 @@ const ContactForm = () => {
             <input
               type="text"
               placeholder="Enter your name"
-              className="w-full px-4.5 py-3.5 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+              readOnly={!!user}
+              className={`w-full px-4.5 py-3.5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm ${
+                user
+                  ? "border-slate-200/50 bg-slate-100/80 text-slate-500 cursor-not-allowed"
+                  : "border-slate-200/80 bg-white/70 focus:bg-white"
+              }`}
               {...register("name")}
             />
             {errors.name && <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wide mt-1">{errors.name.message}</p>}
@@ -65,7 +91,12 @@ const ContactForm = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4.5 py-3.5 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+              readOnly={!!user}
+              className={`w-full px-4.5 py-3.5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm ${
+                user
+                  ? "border-slate-200/50 bg-slate-100/80 text-slate-500 cursor-not-allowed"
+                  : "border-slate-200/80 bg-white/70 focus:bg-white"
+              }`}
               {...register("email")}
             />
             {errors.email && <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wide mt-1">{errors.email.message}</p>}
@@ -79,7 +110,12 @@ const ContactForm = () => {
             <input
               type="text"
               placeholder="Enter your phone"
-              className="w-full px-4.5 py-3.5 rounded-2xl border border-slate-200/80 bg-white/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm"
+              readOnly={!!user}
+              className={`w-full px-4.5 py-3.5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary text-sm font-medium transition-all shadow-sm ${
+                user
+                  ? "border-slate-200/50 bg-slate-100/80 text-slate-500 cursor-not-allowed"
+                  : "border-slate-200/80 bg-white/70 focus:bg-white"
+              }`}
               {...register("phone")}
             />
             {errors.phone && <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wide mt-1">{errors.phone.message}</p>}

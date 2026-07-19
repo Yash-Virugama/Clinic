@@ -43,3 +43,22 @@ export const adminOnly = (req, res, next) => {
 
   next();
 };
+
+// Optional Protect Routes
+export const optionalProtect = asyncHandler(async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("-password");
+      if (user) {
+        req.user = user;
+      }
+    } catch (error) {
+      // Ignore token verification errors for public routes
+    }
+  }
+
+  next();
+});
