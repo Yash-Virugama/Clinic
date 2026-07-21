@@ -347,7 +347,7 @@ You can also use the repository's **Issues** section to report bugs or suggest i
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the **[MIT License](LICENSE)**.
 
 ---
 
