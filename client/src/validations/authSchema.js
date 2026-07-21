@@ -18,7 +18,7 @@ export const registerSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters."),
 
-  phone: z.string().min(1, "Phone number is required."),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit phone number"),
 
   age: z
     .number({ invalid_type_error: "Age is required." })
