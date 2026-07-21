@@ -1,4 +1,4 @@
-<h1 align="center">PhysioCare — Physiotherapy Clinic Management Platform</h1>
+# PhysioCare — Physiotherapy Clinic Management Platform
 
 [![React 19](https://img.shields.io/badge/React-19.0-blue.svg?logo=react)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-v20+-green.svg?logo=nodedotjs)](https://nodejs.org/)
