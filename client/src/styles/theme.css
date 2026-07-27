@@ -10,8 +10,9 @@
   --primary-dark: hsl(var(--primary-h), var(--primary-s), 25%);
   --primary-glow: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.15);
   
-  --secondary: #0b0f19; /* Sleek dark slate */
+  --secondary: #0b0f19;
   --darkblue: #090d16;
+  --semidarkblue: #1e3a8a;
 
 --accent-h: calc(var(--primary-h) - 22);
   --accent-s: calc(var(--primary-s) + 6%);

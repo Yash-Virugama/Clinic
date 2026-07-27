@@ -40,6 +40,19 @@ import AdminNotifications from "../pages/Admin/AdminNotifications/AdminNotificat
 import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 
+// Clinic
+import ClinicLayout from "../layouts/ClinicLayout/ClinicLayout";
+import ClinicDashboard from "../pages/Clinic/ClinicDashboard";
+import ClinicAppointments from "../pages/Clinic/ClinicAppointments";
+import ClinicPatients from "../pages/Clinic/ClinicPatients";
+import ClinicReport from "../pages/Clinic/ClinicReport";
+import ClinicPatientDetails from "../pages/Clinic/ClinicPatientDetails";
+import ClinicPayments from "../pages/Clinic/ClinicPayments";
+import ClinicPaymentIndividual from "../pages/Clinic/ClinicPaymentIndividual";
+import ClinicTodayVisits from "../pages/Clinic/ClinicTodayVisits";
+import ClinicTodayAppointments from "../pages/Clinic/ClinicTodayAppointments";
+import ClinicUnpaidCases from "../pages/Clinic/ClinicUnpaidCases";
+
 
 const AppRoutes = () => {
   return (
@@ -80,13 +93,8 @@ const AppRoutes = () => {
 
       {/* Admin */}
       <Route
-        path="/admin"
-        element={
-          <AdminProtectedRoute>
-            <AdminLayout />
-          </AdminProtectedRoute>
-        }
-      >
+        path="/admin" element={<AdminProtectedRoute><AdminLayout /></AdminProtectedRoute>}>
+
         <Route index element={<AdminDashboard />} />
         <Route path="services" element={<AdminServices />} />
         <Route path="blogs" element={<AdminBlogs />} />
@@ -96,6 +104,27 @@ const AppRoutes = () => {
         <Route path="profile" element={<DashboardProfile />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="notifications" element={<AdminNotifications />} />
+      </Route>
+
+      {/* Clinic */}
+      <Route
+        path="/clinic"
+        element={
+          <AdminProtectedRoute>
+            <ClinicLayout />
+          </AdminProtectedRoute>
+        }
+      >
+        <Route index element={<ClinicDashboard />} />
+        <Route path="dashboard/visits" element={<ClinicTodayVisits />} />
+        <Route path="dashboard/appointments" element={<ClinicTodayAppointments />} />
+        <Route path="unpaid" element={<ClinicUnpaidCases />} />
+        <Route path="appointments" element={<ClinicAppointments />} />
+        <Route path="patients" element={<ClinicPatients />} />
+        <Route path="patients/:id" element={<ClinicPatientDetails />} />
+        <Route path="report" element={<ClinicReport />} />
+        <Route path="payments" element={<ClinicPayments />} />
+        <Route path="payments/:id" element={<ClinicPaymentIndividual />} />
       </Route>
 
       {/* 404 */}

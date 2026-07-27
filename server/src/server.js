@@ -17,6 +17,12 @@ import adminRoutes from "./routes/adminRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
 import exportRoutes from "./routes/exportRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import clinicPatientRoutes from "./routes/clinicPatientRoutes.js";
+import clinicCaseRoutes from "./routes/clinicCaseRoutes.js";
+import clinicVisitRoutes from "./routes/clinicVisitRoutes.js";
+import clinicCaseFileRoutes from "./routes/clinicCaseFileRoutes.js";
+import clinicalRecordRoutes from "./routes/clinicalRecordRoutes.js";
+import clinicAppointmentRoutes from "./routes/clinicAppointmentRoutes.js";
 import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
@@ -53,6 +59,12 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/export", exportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/clinic/patients", clinicPatientRoutes);
+app.use("/api/clinic/cases", clinicCaseRoutes);
+app.use("/api/clinic/visits", clinicVisitRoutes);
+app.use("/api/clinic/files", clinicCaseFileRoutes);
+app.use("/api/clinic/records", clinicalRecordRoutes);
+app.use("/api/clinic/appointments", clinicAppointmentRoutes);
 
 app.use((req, res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found`));

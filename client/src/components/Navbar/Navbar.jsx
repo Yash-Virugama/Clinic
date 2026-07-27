@@ -111,7 +111,7 @@ const Navbar = () => {
               </NavLink>
             </li>
           ))}
-          <li>
+          {/* <li>
              {(isPwa || !isInstallable) ? <></> :
                 <a
                   onClick={handleInstall}
@@ -120,7 +120,7 @@ const Navbar = () => {
                   Download App
                 </a>
               }
-          </li>
+          </li> */}
 
         </ul>
 
@@ -130,12 +130,22 @@ const Navbar = () => {
           {user ? (
             <>
               {user?.role === "admin" ? (
-                <NavLink
-                  to="/admin"
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-slate-100 hover:bg-slate-200 text-secondary transition-premium"
-                >
-                  Admin Panel
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/clinic"
+                    className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-slate-100 hover:bg-slate-200 text-secondary transition-premium"
+                  >
+                    Clinic Panel
+                  </NavLink>
+
+                  <NavLink
+                    to="/admin"
+                    className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-slate-100 hover:bg-slate-200 text-secondary transition-premium"
+                  >
+                    Admin Panel
+                  </NavLink>
+                </>
+
               ) : (
                 <NavLink
                   to="/dashboard"
@@ -215,24 +225,24 @@ const Navbar = () => {
 
           {user ? (
             <>
-
-              {(isPwa || !isInstallable) ? <></> :
-                <button
-                  onClick={handleInstall}
-                  className="lg:hidden w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
-                >
-                  Download Our App
-                </button>
-              }
-
               {user?.role === "admin" ? (
-                <NavLink
-                  to="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
-                >
-                  Admin Panel
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/clinic"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
+                  >
+                    Clinic Panel
+                  </NavLink>
+
+                  <NavLink
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 text-sm font-bold uppercase tracking-wider rounded-xl bg-slate-100 text-secondary"
+                  >
+                    Admin Panel
+                  </NavLink>
+                </>
               ) : (
                 <NavLink
                   to="/dashboard"

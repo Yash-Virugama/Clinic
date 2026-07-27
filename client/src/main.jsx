@@ -8,6 +8,7 @@ import App from "./App";
 import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
 import { BrandingProvider } from "./context/BrandingContext";
+import { ClinicProvider } from "./context/ClinicContext";
 
 import "./styles/index.css";
 
@@ -17,8 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <ErrorBoundary>
         <AuthProvider>
           <BrandingProvider>
-            <AppToaster />
-            <App />
+            <ClinicProvider>
+              <AppToaster />
+              <App />
+            </ClinicProvider>
           </BrandingProvider>
         </AuthProvider>
       </ErrorBoundary>

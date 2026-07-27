@@ -39,6 +39,7 @@ const AppToaster = () => {
                     fontFamily: "Inter, sans-serif",
                     fontSize: "14px",
                     fontWeight: "500",
+                    maxWidth: "95vw"
                 },
                 success: {
                     style: {
