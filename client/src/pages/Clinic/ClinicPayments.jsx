@@ -65,7 +65,7 @@ const ClinicPayments = () => {
   };
 
   return (
-    <div className="space-y-8 relative text-left">
+    <div className="space-y-8 relative text-left animate-page-entrance">
       {/* Header and Search */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="relative w-full sm:w-80 shrink-0">

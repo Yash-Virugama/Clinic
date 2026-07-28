@@ -74,7 +74,7 @@ const ClinicDashboard = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-8 text-left">
+    <div className="flex flex-col gap-8 text-left animate-page-entrance">
 
       {/* 1. Greeting Banner */}
       <div className="w-full bg-white border border-slate-200/60 rounded-[32px] p-6 sm:p-10 shadow-sm relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-6">

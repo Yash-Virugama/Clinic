@@ -101,7 +101,7 @@ const ClinicTodayVisits = () => {
   }
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left animate-page-entrance">
       {/* Header and Back Button */}
       <div className="flex items-center gap-3 w-full sm:w-auto py-1">
         <Link

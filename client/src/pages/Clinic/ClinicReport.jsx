@@ -50,7 +50,7 @@ const ClinicReport = () => {
   };
 
   return (
-    <div className="space-y-8 text-left">
+    <div className="space-y-8 text-left animate-page-entrance">
       {/* Header and Date Range Selector */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white border border-slate-200/60 p-5 rounded-3xl shadow-sm">
         <div>

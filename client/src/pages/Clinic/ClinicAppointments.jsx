@@ -333,7 +333,7 @@ const ClinicAppointments = () => {
   }, []);
 
   return (
-    <div className="space-y-8 relative text-left">
+    <div className="space-y-8 relative text-left animate-page-entrance">
       <AppointmentFilters
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}

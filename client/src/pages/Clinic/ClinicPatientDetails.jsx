@@ -692,7 +692,7 @@ const ClinicPatientDetails = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+    <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 animate-page-entrance">
       {/* Top Header bar */}
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl sm:text-3xl font-heading font-bold text-semidarkblue">Patient Profile</h1>

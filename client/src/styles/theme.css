@@ -1,6 +1,8 @@
 :root {
   /* HSL base for primary theme color - Easy to replace later (e.g. 221 is Blue, 142 is Green, 0 is Red, 262 is Purple) */
-  --primary-h: 221;
+
+  /* default- 221, 83, 53 */
+  --primary-h: 221; 
   --primary-s: 83%;
   --primary-l: 53%;
 

@@ -93,7 +93,7 @@ const ClinicPatients = () => {
   };
 
   return (
-    <div className="space-y-8 relative">
+    <div className="space-y-8 relative animate-page-entrance">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full md:w-auto">
           <div className="relative flex-1 sm:w-80">

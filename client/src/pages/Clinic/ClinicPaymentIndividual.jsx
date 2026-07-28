@@ -243,7 +243,7 @@ const ClinicPaymentIndividual = () => {
   const isActive = cases.some((c) => c.status === "Active");
 
   return (
-    <div className="space-y-8 relative text-left">
+    <div className="space-y-8 relative text-left animate-page-entrance">
       {/* Top Navigation Back Action */}
       <div className="flex justify-between items-center">
         <Link
