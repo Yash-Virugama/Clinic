@@ -208,6 +208,10 @@ const ClinicPatientDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const triggerEditPatient = () => {
     if (!patient) return;
     setEditPatientName(patient.name || "");
@@ -1023,8 +1027,9 @@ const CaseListCard = ({ clinicCase, index, visits, records, files, onEdit, onUpd
     };
   }, [showStatusMenu]);
 
+  // bhai
   return (
-    <div className="border border-slate-150 rounded-2xl p-4.5 bg-white shadow-sm flex flex-col justify-between hover:border-primary/20 transition-all">
+    <div className="border border-slate-150 rounded-2xl p-4.5 bg-bg-offwhite shadow-sm flex flex-col justify-between hover:border-primary/20 transition-all">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-sm font-bold shrink-0">
@@ -1041,7 +1046,7 @@ const CaseListCard = ({ clinicCase, index, visits, records, files, onEdit, onUpd
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => onEdit(clinicCase)}
-            className="w-8 h-8 rounded-xl border border-slate-200 hover:border-primary/40 text-slate-400 hover:text-primary flex items-center justify-center shrink-0 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+            className="w-8 h-8 rounded-xl border border-slate-200 hover:border-primary/40 text-slate-400 hover:text-primary flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
           >
             <svg className="w-3.5 h-3.5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -1183,7 +1188,7 @@ const VisitCard = ({ visit, index, cases, expanded, onToggleExpand, onEdit, onUp
       : "border-indigo-500/30 text-indigo-600 bg-indigo-50/20"; // Scheduled
 
   return (
-    <div className="bg-white border border-slate-150 hover:border-slate-200/80 rounded-2xl p-4 shadow-[0_4px_20px_rgb(0,0,0,0.01)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] transition-all duration-300">
+    <div className="bg-bg-offwhite border border-slate-150 hover:border-slate-200/80 rounded-2xl p-4 shadow-[0_4px_20px_rgb(0,0,0,0.01)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] transition-all duration-300">
       {/* Header section (Clickable to toggle expand) */}
       <div className="flex items-center justify-between gap-3 cursor-pointer" onClick={onToggleExpand}>
         <div className="flex items-center gap-3">
@@ -1222,7 +1227,7 @@ const VisitCard = ({ visit, index, cases, expanded, onToggleExpand, onEdit, onUp
               e.stopPropagation(); // prevent expanding when clicking edit
               onEdit();
             }}
-            className="w-8 h-8 rounded-xl border border-slate-200 hover:border-primary/40 text-slate-400 hover:text-primary flex items-center justify-center shrink-0 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+            className="w-8 h-8 rounded-xl border border-slate-200 hover:border-primary/40 text-slate-400 hover:text-primary flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
           >
             <svg className="w-3.5 h-3.5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />

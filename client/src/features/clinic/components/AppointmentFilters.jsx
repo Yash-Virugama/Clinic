@@ -34,18 +34,6 @@ const AppointmentFilters = ({
       )}
     </div>
 
-    <CustomSelect
-      value={statusFilter}
-      onChange={(value) => setStatusFilter(value)}
-      options={[
-        { value: "all", label: "All Statuses" },
-        { value: "scheduled", label: "Scheduled" },
-        { value: "complete", label: "Complete" },
-        { value: "missed", label: "Missed" },
-        { value: "cancel", label: "Cancelled" },
-      ]}
-    />
-
     <div className="relative">
       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -56,7 +44,7 @@ const AppointmentFilters = ({
         type="date"
         value={dateFilter}
         onChange={(event) => setDateFilter(event.target.value)}
-        className="w-full bg-slate-50 border border-slate-200/70 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-secondary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium transition-all shadow-sm cursor-pointer"
+        className="w-full bg-slate-50 border border-slate-200/70 rounded-2xl pl-10 pr-3 py-2.5 text-xs text-secondary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium transition-all shadow-sm cursor-pointer"
       />
       {dateFilter && (
         <button
@@ -70,6 +58,18 @@ const AppointmentFilters = ({
         </button>
       )}
     </div>
+
+    <CustomSelect
+      value={statusFilter}
+      onChange={(value) => setStatusFilter(value)}
+      options={[
+        { value: "all", label: "All Statuses" },
+        { value: "scheduled", label: "Scheduled" },
+        { value: "complete", label: "Complete" },
+        { value: "missed", label: "Missed" },
+        { value: "cancel", label: "Cancelled" },
+      ]}
+    />
 
     <button
       onClick={onAdd}

@@ -23,7 +23,7 @@ const ClinicPatients = () => {
     isOpen: false,
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const triggerDeletePatient = (patientId) => {
@@ -52,6 +52,10 @@ const ClinicPatients = () => {
   useEffect(() => {
     fetchPatients();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
   }, []);
 
   const getPatientCode = useCallback(

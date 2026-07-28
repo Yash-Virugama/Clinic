@@ -86,6 +86,10 @@ const ClinicUnpaidCases = () => {
     fetchUnpaidCases();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const filtered = unpaidCases.filter((c) => {
     const q = searchQuery.toLowerCase();
     return (

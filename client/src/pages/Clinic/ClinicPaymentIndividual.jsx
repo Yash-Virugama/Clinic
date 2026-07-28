@@ -48,6 +48,7 @@ const ClinicPaymentIndividual = () => {
   const [visitStatus, setVisitStatus] = useState("Unpaid");
   const [visitAmount, setVisitAmount] = useState("");
   const [visitSubmitting, setVisitSubmitting] = useState(false);
+  const [activeVisitMenuId, setActiveVisitMenuId] = useState(null);
 
   const fetchWorkspace = async () => {
     try {
@@ -94,6 +95,10 @@ const ClinicPaymentIndividual = () => {
       }, 250);
     }
   }, [location.search, loading]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleCaseExpand = (caseId) => {
     setExpandedCaseIds((prev) => ({
@@ -199,6 +204,20 @@ const ClinicPaymentIndividual = () => {
       toast.error(err.response?.data?.message || "Failed to update visit payment");
     } finally {
       setVisitSubmitting(false);
+    }
+  };
+
+  const updateVisitPaymentStatus = async (visit, newStatus) => {
+    try {
+      await api.put(`/clinic/visits/${visit._id}`, {
+        paymentStatus: newStatus,
+        paymentAmount: visit.paymentAmount || 0,
+      });
+      toast.success(`Visit marked as ${newStatus}`);
+      await fetchWorkspace();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update visit status");
     }
   };
 
@@ -387,21 +406,36 @@ const ClinicPaymentIndividual = () => {
                               {caseVisits.map((visit, index) => (
                                 <div key={visit._id} className="flex justify-between items-center p-2.5 sm:p-4 hover:bg-slate-50/40 transition-colors">
                                   <div className="text-left space-y-1">
-                                    <span className="text-[10px] bg-slate-100 text-slate-650 px-1.5 py-0.5 rounded font-mono font-bold">
-                                      #{caseVisits.length - index}
-                                    </span>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <span className="text-xs font-bold text-slate-700">
+
+                                    <div className="flex gap-2 items-center">
+                                      <span className="text-[10px] bg-slate-100 text-semidarkblue px-1.5 py-0.5 rounded font-mono font-bold">
+                                        #{caseVisits.length - index}
+                                      </span>
+                                      <span className="text-xs font-bold sm:hidden text-slate-700">
                                         {formatDateDDMMYYYY(visit.visitDate)}
                                       </span>
-                                      <span className="text-slate-300">•</span>
-                                      <span className="text-xs text-slate-500 font-medium">
-                                        {visit.visitTime} ({visit.duration}m)
-                                      </span>
                                     </div>
-                                    <p className="text-[10px] text-slate-400 font-semibold">
-                                      Therapist: {visit.therapist?.name || "—"}
-                                    </p>
+
+                                    <div className="flex flex-col justify-center sm:flex-row sm:items-center gap-1 sm:gap-2 mt-2 sm:mt-2">
+                                      <span className="text-xs hidden sm:inline font-bold text-slate-700">
+                                        {formatDateDDMMYYYY(visit.visitDate)}
+                                      </span>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="text-slate-300">•</span>
+                                        <span className="text-xs text-slate-500 font-medium">
+                                          {visit.visitTime} ({visit.duration}m)
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex gap-1 sm:gap-2 items-center">
+                                      <svg className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                      </svg>
+                                      <p className="text-[10px] sm:text-[12px] text-slate-400 font-semibold">
+                                        {visit.therapist?.name || "—"}
+                                      </p>
+                                    </div>
                                   </div>
 
                                   <div className="flex items-center gap-2 sm:gap-4">
@@ -427,6 +461,59 @@ const ClinicPaymentIndividual = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                       </svg>
                                     </button>
+
+                                    {/* Three Dot Dropdown Button */}
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setActiveVisitMenuId(activeVisitMenuId === visit._id ? null : visit._id);
+                                        }}
+                                        className="w-4 h-4 text-slate-400 hover:text-primary flex items-center justify-center shrink-0 transition-all cursor-pointer"
+                                        title="Change Status"
+                                      >
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                                        </svg>
+                                      </button>
+                                      {activeVisitMenuId === visit._id && (
+                                        <>
+                                          <div
+                                            className="fixed inset-0 z-40 cursor-default"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setActiveVisitMenuId(null);
+                                            }}
+                                          />
+                                          <div
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="absolute right-6 -top-7 sm:-top-5 sm:right-5 mt-1 w-28 bg-white border border-slate-200/80 backdrop-blur-md rounded-2xl shadow-xl z-50 py-1 animate-page-entrance slide-in-from-top-1 duration-200"
+                                          >
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                setActiveVisitMenuId(null);
+                                                updateVisitPaymentStatus(visit, "Paid");
+                                              }}
+                                              className="w-full px-4 py-2 text-xs font-bold font-accent text-emerald-600 hover:bg-emerald-50/40 flex items-center gap-2 transition-colors cursor-pointer text-left"
+                                            >
+                                              Paid
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                setActiveVisitMenuId(null);
+                                                updateVisitPaymentStatus(visit, "Unpaid");
+                                              }}
+                                              className="w-full px-4 py-2 text-xs font-bold font-accent text-rose-600 hover:bg-rose-50/40 flex items-center gap-2 transition-colors cursor-pointer text-left"
+                                            >
+                                              Unpaid
+                                            </button>
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               ))}
@@ -440,7 +527,8 @@ const ClinicPaymentIndividual = () => {
               );
             })}
           </div>
-        )}
+        )
+        }
       </div>
 
       {/* Case Bulk Settle Payment Modal */}

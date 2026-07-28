@@ -69,7 +69,7 @@ const ClinicAppointments = () => {
     isOpen: false,
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const triggerDeleteAppointment = (appId) => {
@@ -327,6 +327,10 @@ const ClinicAppointments = () => {
     if (!patientIdValue) return;
     navigate(`/clinic/patients/${patientIdValue}`);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="space-y-8 relative text-left">

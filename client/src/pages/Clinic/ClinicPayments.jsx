@@ -22,6 +22,10 @@ const ClinicPayments = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const getPatientCode = (patientId) => generateClinicPatientId(patientId, settings?.name);
 
   // Filter patients by name, phone or code AND billing status
@@ -134,16 +138,16 @@ const ClinicPayments = () => {
                       </span>
                       <div className="flex items-center gap-1.5">
                         <span className={`px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded border font-accent ${patient.isActive
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                            : "bg-amber-50 text-amber-500 border-amber-200"
+                          ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                          : "bg-amber-50 text-amber-500 border-amber-200"
                           }`}>
                           {patient.isActive ? "Active" : "Inactive"}
                         </span>
                         <span className={`px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded border font-accent ${patient.gender === "Male"
-                            ? "bg-blue-50 text-blue-600 border-blue-100"
-                            : patient.gender === "Female"
-                              ? "bg-purple-50 text-purple-600 border-purple-100"
-                              : "bg-amber-50 text-amber-600 border-amber-100"
+                          ? "bg-blue-50 text-blue-600 border-blue-100"
+                          : patient.gender === "Female"
+                            ? "bg-purple-50 text-purple-600 border-purple-100"
+                            : "bg-amber-50 text-amber-600 border-amber-100"
                           }`}>
                           {patient.gender}
                         </span>

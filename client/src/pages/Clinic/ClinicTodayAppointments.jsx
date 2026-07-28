@@ -49,7 +49,7 @@ const ClinicTodayAppointments = () => {
     isOpen: false,
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const fetchTodayAppointments = async () => {
@@ -87,6 +87,10 @@ const ClinicTodayAppointments = () => {
     setCaseId("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const appointmentForm = {
     patientId,

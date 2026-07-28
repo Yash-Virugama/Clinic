@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import useClinicDashboard from "../../hooks/useClinicDashboard";
 import ClinicSkeleton from "../../components/ClinicSkeleton/ClinicSkeleton";
@@ -12,6 +12,10 @@ const ClinicDashboard = () => {
     month: "long",
     day: "numeric",
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading) {
     return <ClinicSkeleton type="grid" count={4} />;
@@ -132,7 +136,7 @@ const ClinicDashboard = () => {
               <svg className="w-5 h-5 text-primary stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Upcoming Scheduled Sessions
+              Upcoming Sessions
             </h3>
 
             {upcomingAppointments.length === 0 ? (
@@ -156,7 +160,7 @@ const ClinicDashboard = () => {
                         <td className="py-3.5 px-2 font-semibold text-secondary">{appt.patient?.name}</td>
                         <td className="py-3.5 px-2 text-slate-650">{appt.therapist?.name}</td>
                         <td className="py-3.5 px-2 font-mono text-slate-500">
-                          {new Date(appt.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} @ {appt.time}
+                          <span>{new Date(appt.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} @ {appt.time}</span>
                         </td>
                         <td className="py-3.5 ps-4 pe-2 sm:px-2">
                           <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${appt.location === "clinic"

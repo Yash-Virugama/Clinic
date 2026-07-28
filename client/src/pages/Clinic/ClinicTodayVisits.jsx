@@ -73,6 +73,10 @@ const ClinicTodayVisits = () => {
     fetchTodayVisits();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const filteredVisits = visits.filter((v) => {
     const q = searchQuery.toLowerCase();
     const patientName = v.clinicCase?.patient?.name || "";
@@ -240,9 +244,8 @@ const TodayVisitCard = ({ visit, patientCode, navigate, onRefresh, onDelete }) =
         </div>
 
         <div className="flex items-center gap-3">
-          <span className={`text-base font-mono font-black transition-colors ${
-            visit.paymentStatus === "Paid" ? "text-emerald-600" : "text-rose-600"
-          }`}>
+          <span className={`text-base font-mono font-black transition-colors ${visit.paymentStatus === "Paid" ? "text-emerald-600" : "text-rose-600"
+            }`}>
             ₹{(visit.paymentAmount || 0).toFixed(2)}
           </span>
 
@@ -333,7 +336,7 @@ const TodayVisitCard = ({ visit, patientCode, navigate, onRefresh, onDelete }) =
 
       <div className="pt-3 mt-3 sm:pt-4 sm:mt-4 border-t border-slate-200/80 flex items-center justify-between gap-2">
 
-        <div className="flex gap-2 iteams-center">
+        <div className="flex gap-2 items-center">
           <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
           </svg>

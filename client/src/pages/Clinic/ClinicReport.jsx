@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useClinicReport from "../../hooks/useClinicReport";
 import ClinicSkeleton from "../../components/ClinicSkeleton/ClinicSkeleton";
 import CustomSelect from "../../components/CustomSelect/CustomSelect";
@@ -8,6 +8,10 @@ const ClinicReport = () => {
   const [dateRangeOption, setDateRangeOption] = useState("this month");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading) {
     return <ClinicSkeleton type="details" />;
@@ -108,31 +112,31 @@ const ClinicReport = () => {
         <div className="bg-white border border-slate-200/60 p-6 rounded-[24px] shadow-sm relative overflow-hidden">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block font-heading mb-2">Net Revenue</span>
           <span className="text-3.5xl font-extrabold text-emerald-600 font-heading tracking-tight leading-none">₹{netRevenue.toFixed(2)}</span>
-          <div className="absolute right-4 bottom-4 text-emerald-100 font-extrabold text-5xl sm:text-4xl select-none font-heading">RV</div>
+          <div className="absolute right-4 bottom-4 text-emerald-100/80 font-extrabold text-5xl sm:text-4xl select-none font-heading">RV</div>
         </div>
 
         <div className="bg-white border border-slate-200/60 p-6 rounded-[24px] shadow-sm relative overflow-hidden">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block font-heading mb-2">Outstanding Balance</span>
           <span className="text-3.5xl font-extrabold text-rose-600 font-heading tracking-tight leading-none">₹{outstanding.toFixed(2)}</span>
-          <div className="absolute right-4 bottom-4 text-rose-100 font-extrabold text-5xl sm:text-4xl select-none font-heading">OS</div>
+          <div className="absolute right-4 bottom-4 text-rose-100/80 font-extrabold text-5xl sm:text-4xl select-none font-heading">OS</div>
         </div>
 
         <div className="bg-white border border-slate-200/60 p-6 rounded-[24px] shadow-sm relative overflow-hidden">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block font-heading mb-2">Total Patients Enrolled</span>
           <span className="text-3.5xl font-extrabold text-secondary font-heading tracking-tight leading-none">{totalPatients}</span>
-          <div className="absolute right-4 bottom-4 text-slate-200 font-extrabold text-5xl sm:text-4xl select-none font-heading">PT</div>
+          <div className="absolute right-4 bottom-4 text-slate-200/80 font-extrabold text-5xl sm:text-4xl select-none font-heading">PT</div>
         </div>
       </div>
 
       {/* Analytics Dashboard Grid - Two in a row for md, lg screens */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
+
         {/* 1. Today's Session Visits */}
         <div className="bg-white border border-slate-200/60 p-6 sm:p-8 rounded-[32px] shadow-sm order-1">
           <h3 className="text-md font-bold text-semidarkblue font-heading mb-6 flex items-center gap-2">
             📅 Today's Session Visits
           </h3>
-          
+
           <div className="space-y-5">
             {/* Total Today */}
             <div className="bg-slate-50/50 p-4.5 rounded-2xl border border-slate-150/40 text-center mb-6">
@@ -189,7 +193,7 @@ const ClinicReport = () => {
         </div>
 
         {/* 2. Outstanding Payments */}
-        <div className="bg-white border border-slate-200/60 p-6 sm:p-8 rounded-[32px] shadow-sm order-2">
+        <div className="bg-white border border-slate-200/60 p-4.5 sm:p-8 rounded-[32px] shadow-sm order-2">
           <h3 className="text-md font-bold text-semidarkblue font-heading mb-6 flex items-center gap-2">
             💸 Outstanding Payments
           </h3>
@@ -235,7 +239,7 @@ const ClinicReport = () => {
           <h3 className="text-md font-bold text-semidarkblue font-heading mb-6 flex items-center gap-2">
             📂 Case Status Distribution
           </h3>
-          
+
           <div className="space-y-5">
             {/* Active */}
             <div>
@@ -286,7 +290,7 @@ const ClinicReport = () => {
           <h3 className="text-md font-bold text-semidarkblue font-heading mb-6 flex items-center gap-2">
             🏁 Appointment Outcomes
           </h3>
-          
+
           <div className="space-y-5">
             {/* Completed */}
             <div>
@@ -349,9 +353,9 @@ const ClinicReport = () => {
         {/* 5. Location Preference Shares */}
         <div className="bg-white border border-slate-200/60 p-6 sm:p-8 rounded-[32px] shadow-sm order-5">
           <h3 className="text-md font-bold text-semidarkblue font-heading mb-6 flex items-center gap-2">
-            📍 Location Preference Shares
+            📍 Location
           </h3>
-          
+
           <div className="space-y-5">
             {/* Clinic */}
             <div>
@@ -402,7 +406,7 @@ const ClinicReport = () => {
           <h3 className="text-md font-bold text-semidarkblue font-heading mb-6 flex items-center gap-2">
             🩺 Therapist Performance
           </h3>
-          
+
           {!therapistPerformance || therapistPerformance.length === 0 ? (
             <div className="text-center py-10">
               <span className="text-xs text-slate-400 italic block">
@@ -414,7 +418,7 @@ const ClinicReport = () => {
               {therapistPerformance.map((tp, idx) => {
                 const totalSessionsCombined = therapistPerformance.reduce((sum, item) => sum + item.totalVisits, 0);
                 const percentShare = totalSessionsCombined ? Math.round((tp.totalVisits / totalSessionsCombined) * 100) : 0;
-                
+
                 return (
                   <div key={idx} className="space-y-2.5 pb-5 border-b border-slate-100 last:border-b-0 last:pb-0">
                     <div className="flex justify-between items-center text-xs font-semibold">

@@ -145,7 +145,7 @@ const VisitFormModal = ({
               type="date"
               value={visitDate}
               onChange={(e) => setVisitDate(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200/80 focus:border-primary/50 focus:bg-white rounded-xl text-slate-700 text-sm font-medium transition-all outline-none"
+              className="w-full px-2 sm:px-4 py-2.5 bg-slate-50/50 border border-slate-200/80 focus:border-primary/50 focus:bg-white rounded-xl text-slate-700 text-sm font-medium transition-all outline-none"
             />
           </div>
           <div>
