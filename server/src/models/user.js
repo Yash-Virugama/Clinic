@@ -35,8 +35,18 @@ const userSchema = new Schema(
 
         role: {
             type: String,
-            enum: ["patient", "admin"],
+            enum: ["patient", "admin", "assistant", "intern", "physiotherapist", "receptionist"],
             default: "patient"
+        },
+
+        permissions: {
+            type: [String],
+            default: []
+        },
+
+        isActive: {
+            type: Boolean,
+            default: true
         },
 
         image: {

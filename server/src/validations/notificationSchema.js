@@ -23,6 +23,16 @@ export const sendNotificationSchema = z.object({
     .startsWith("/", "Target URL must be a relative internal path starting with '/'")
     .max(200, "Target URL cannot exceed 200 characters")
     .optional(),
-  recipientType: z.enum(["all", "admin", "specific"]),
+  recipientType: z.enum([
+    "all",
+    "admin",
+    "staff",
+    "patient",
+    "assistant",
+    "intern",
+    "physiotherapist",
+    "receptionist",
+    "specific"
+  ]),
   userId: z.string().optional(),
 });

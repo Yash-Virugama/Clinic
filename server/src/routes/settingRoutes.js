@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getSettings, updateSettings, getManifest } from "../controllers/settingController.js";
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/upload.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import { settingSchema } from "../validations/settingSchema.js";
@@ -12,7 +12,7 @@ router.get("/manifest", getManifest);
 router.put(
   "/",
   protect,
-  adminOnly,
+  authorizePermissions("settings:manage"),
   upload.fields([
     { name: "logo", maxCount: 1 },
     { name: "heroImage", maxCount: 1 },

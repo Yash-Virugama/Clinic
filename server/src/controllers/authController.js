@@ -64,6 +64,10 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid email or password.");
   }
 
+  if (user.isActive === false) {
+    throw new ApiError(403, "Your account has been deactivated. Please contact administration.");
+  }
+
   const isPasswordMatched = await bcrypt.compare(
     password,
     user.password
@@ -315,3 +319,92 @@ export const changePassword = asyncHandler(async (req, res) => {
     message: "Password changed successfully.",
   });
 });
+
+// Setup Initial Admin
+export const setupInitialAdmin = asyncHandler(async (req, res) => {
+  const adminExists = await User.exists({ role: "admin" });
+  if (adminExists) {
+    throw new ApiError(403, "Initial setup has already been completed.");
+  }
+
+  const { name, email, password, phone, age, gender, secret } = req.body;
+
+  if (process.env.INITIAL_SETUP_SECRET && secret !== process.env.INITIAL_SETUP_SECRET) {
+    throw new ApiError(401, "Invalid setup secret.");
+  }
+
+  if (!name || !email || !password || !phone || !age || !gender) {
+    throw new ApiError(400, "Please fill all required fields.");
+  }
+
+  const existingUser = await User.findOne({ email: email.toLowerCase() });
+  if (existingUser) {
+    throw new ApiError(409, "User with this email already exists.");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    name,
+    email: email.toLowerCase(),
+    password: hashedPassword,
+    phone,
+    age,
+    gender,
+    role: "admin",
+    isActive: true,
+    permissions: []
+  });
+
+  generateToken(res, user._id);
+
+  res.status(201).json({
+    success: true,
+    message: "Initial admin setup successful.",
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      image: user.image,
+    },
+  });
+});
+
+// Bootstrap default Admin from Env vars if none exists
+export const bootstrapAdmin = async () => {
+  try {
+    const adminExists = await User.exists({ role: "admin" });
+    if (!adminExists) {
+      const email = process.env.ADMIN_EMAIL;
+      const password = process.env.ADMIN_PASSWORD;
+
+      if (!email || !password) {
+        console.log("⚠️ No admin found, and ADMIN_EMAIL/ADMIN_PASSWORD env vars are not set. Skipping bootstrapping.");
+        return;
+      }
+
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
+        console.log(`⚠️ User with email ${email} already exists but is not an Admin. Cannot bootstrap.`);
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await User.create({
+        name: "Clinic Administrator",
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        phone: process.env.ADMIN_PHONE || "0000000000",
+        age: Number(process.env.ADMIN_AGE) || 35,
+        gender: process.env.ADMIN_GENDER || "Male",
+        role: "admin",
+        isActive: true,
+        permissions: []
+      });
+      console.log(`🚀 Default Admin booted successfully: ${email}`);
+    }
+  } catch (error) {
+    console.error("❌ Error bootstrapping default Admin:", error);
+  }
+};

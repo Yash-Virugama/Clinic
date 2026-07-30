@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import ModalShell from "./ModalShell";
-import CustomSelect from "../../../components/CustomSelect/CustomSelect";
+import ModalShell from "../../../components/ui/ModalShell";
+import CustomSelect from "../../../components/ui/CustomSelect";
 
 const docTypeOptions = [
   { value: "MRI report", label: "MRI Report" },

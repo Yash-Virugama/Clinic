@@ -43,8 +43,8 @@ const uploadToCloudinary = (
       options.public_id = isRaw
         ? `${cleanName}-${uniqueSuffix}${ext}`
         : `${cleanName}-${uniqueSuffix}`;
-      options.use_filename = true;
-      options.unique_filename = true;
+      options.use_filename = false;
+      options.unique_filename = false;
     }
 
     const stream = cloudinary.uploader.upload_stream(

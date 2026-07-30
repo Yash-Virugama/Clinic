@@ -2,17 +2,13 @@ import { PushSubscription } from "../models/pushSubscription.js";
 import { User } from "../models/user.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
-import { subscriptionSchema, sendNotificationSchema } from "../validations/notificationSchema.js";
 import { sendPushToUser, sendPushToAll } from "../utils/pushNotification.js";
 
 // @desc    Subscribe to push notifications
 // @route   POST /api/notifications/subscribe
 // @access  Private
 export const subscribe = asyncHandler(async (req, res) => {
-  // Validate incoming subscription data
-  const validatedData = subscriptionSchema.parse(req.body);
-
-  const { endpoint, keys } = validatedData;
+  const { endpoint, keys } = req.body;
   const userAgent = req.headers["user-agent"] || "";
 
   // Upsert the subscription (update if endpoint already exists)
@@ -135,9 +131,7 @@ export const getUsersList = asyncHandler(async (req, res) => {
 // @route   POST /api/notifications/send
 // @access  Private/Admin
 export const sendAdminNotification = asyncHandler(async (req, res) => {
-  // Validate request body
-  const validatedPayload = sendNotificationSchema.parse(req.body);
-  const { title, message, targetUrl, recipientType, userId } = validatedPayload;
+  const { title, message, targetUrl, recipientType, userId } = req.body;
 
   const payload = {
     title,
@@ -154,6 +148,21 @@ export const sendAdminNotification = asyncHandler(async (req, res) => {
     const admins = await User.find({ role: "admin" });
     const adminPromises = admins.map((admin) => sendPushToUser(admin._id, payload, "account"));
     await Promise.allSettled(adminPromises);
+  } else if (recipientType === "staff") {
+    // Send to all staff members
+    const staff = await User.find({ role: { $in: ["assistant", "intern", "physiotherapist", "receptionist"] } });
+    const staffPromises = staff.map((member) => sendPushToUser(member._id, payload, "account"));
+    await Promise.allSettled(staffPromises);
+  } else if (recipientType === "patient") {
+    // Send only to patients
+    const patients = await User.find({ role: "patient" });
+    const patientPromises = patients.map((patient) => sendPushToUser(patient._id, payload, "account"));
+    await Promise.allSettled(patientPromises);
+  } else if (["assistant", "intern", "physiotherapist", "receptionist"].includes(recipientType)) {
+    // Send to a specific staff role
+    const usersOfRole = await User.find({ role: recipientType });
+    const rolePromises = usersOfRole.map((usr) => sendPushToUser(usr._id, payload, "account"));
+    await Promise.allSettled(rolePromises);
   } else if (recipientType === "specific") {
     if (!userId) {
       throw new ApiError(400, "User ID is required for recipient type 'specific'.");

@@ -116,9 +116,13 @@ const DocCard = ({ file, index, expanded, onToggleExpand, onEdit, onDelete }) =>
             {showMenu && (
               <div className="absolute right-5 -top-8 sm:-top-5 sm:right-5 mt-1.5 w-36 bg-white border border-slate-200/80 backdrop-blur-md rounded-2xl shadow-xl py-1 z-50 animate-page-entrance slide-in-from-top-1 duration-200">
                 <a
-                  href={file.fileUrl}
+                  href={
+                    (import.meta.env.VITE_API_URL || "").endsWith("/api")
+                      ? `${import.meta.env.VITE_API_URL}/clinic/files/${file._id}/view`
+                      : `${import.meta.env.VITE_API_URL || ""}/api/clinic/files/${file._id}/view`
+                  }
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowMenu(false);

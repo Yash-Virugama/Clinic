@@ -1,5 +1,5 @@
-import CustomSelect from "../../../components/CustomSelect/CustomSelect";
-import ModalShell from "./ModalShell";
+import CustomSelect from "../../../components/ui/CustomSelect";
+import ModalShell from "../../../components/ui/ModalShell";
 
 const AppointmentFormModal = ({
   isOpen,

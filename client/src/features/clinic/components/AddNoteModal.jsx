@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ModalShell from "./ModalShell";
+import ModalShell from "../../../components/ui/ModalShell";
 
 const AddNoteModal = ({ isOpen, onClose, onSubmit, submitting }) => {
   const [noteType, setNoteType] = useState("general");

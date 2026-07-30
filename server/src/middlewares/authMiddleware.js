@@ -29,6 +29,16 @@ export const protect = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, "User no longer exists.");
   }
 
+  if (user.isActive === false) {
+    const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
+    throw new ApiError(403, "Your account has been deactivated. Please contact administration.");
+  }
+
   // Attach user to request
   req.user = user;
 
@@ -42,6 +52,35 @@ export const adminOnly = (req, res, next) => {
   }
 
   next();
+};
+
+// Staff Only Middleware
+export const staffOnly = (req, res, next) => {
+  const staffRoles = ["admin", "assistant", "intern", "physiotherapist", "receptionist"];
+  if (!staffRoles.includes(req.user.role)) {
+    throw new ApiError(403, "Access denied. Staff only.");
+  }
+
+  next();
+};
+
+// Authorize Permissions Middleware
+export const authorizePermissions = (...requiredPermissions) => {
+  return (req, res, next) => {
+    if (req.user.role === "admin") {
+      return next();
+    }
+
+    const hasPermission = requiredPermissions.every((perm) =>
+      req.user.permissions && req.user.permissions.includes(perm)
+    );
+
+    if (!hasPermission) {
+      throw new ApiError(403, "You do not have the required permissions to access this resource.");
+    }
+
+    next();
+  };
 };
 
 // Optional Protect Routes

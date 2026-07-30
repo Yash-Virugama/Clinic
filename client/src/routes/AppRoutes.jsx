@@ -1,57 +1,62 @@
 import { Routes, Route } from "react-router-dom";
 
-import MainLayout from "../layouts/MainLayout/MainLayout";
-import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
-import Home from "../pages/Home/Home";
-import Services from "../pages/Services/Services";
-import Testimonials from "../pages/Testimonials/Testimonials";
-import Blog from "../pages/Blog/Blog";
-import BlogDetails from "../pages/Blog/BlogDetails";
-import Resources from "../pages/Resources/Resources";
-import Contact from "../pages/Contact/Contact";
-import Login from "../pages/Login/Login";
-import Register from "../pages/Register/Register";
-import NotFound from "../pages/NotFound/NotFound";
-import PrivacyPolicy from "../pages/PrivacyPolicy/PrivacyPolicy";
-import TermsAndConditions from "../pages/TermsAndConditions/TermsAndConditions";
+import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "../components/routing/ProtectedRoute";
+import Home from "../features/home/pages/Home";
+import Services from "../features/services/pages/Services";
+import Testimonials from "../features/testimonials/pages/Testimonials";
+import Blog from "../features/blog/pages/Blog";
+import BlogDetails from "../features/blog/pages/BlogDetails";
+import Resources from "../features/resources/pages/Resources";
+import Contact from "../features/contact/pages/Contact";
+import Login from "../features/auth/pages/Login";
+import Register from "../features/auth/pages/Register";
+import NotFound from "../features/NotFound/NotFound";
+import PrivacyPolicy from "../features/legal/pages/PrivacyPolicy";
+import TermsAndConditions from "../features/legal/pages/TermsAndConditions";
 
 // Admin
-import AdminProtectedRoute from "../components/AdminProtectedRoute/AdminProtectedRoute";
-import AdminLayout from "../layouts/AdminLayout/AdminLayout";
-import AdminDashboard from "../pages/Admin/AdminDashboard/AdminDashboard";
-import AdminServices from "../pages/Admin/AdminServices/AdminServices";
-import AdminBlogs from "../pages/Admin/AdminBlogs/AdminBlogs";
-import AdminResources from "../pages/Admin/AdminResources/AdminResources";
-import AdminTestimonials from "../pages/Admin/AdminTestimonials/AdminTestimonials";
-import AdminContacts from "../pages/Admin/AdminContacts/AdminContacts";
-import AdminSettings from "../pages/Admin/AdminSettings/AdminSettings";
+import AdminProtectedRoute from "../components/routing/AdminProtectedRoute";
+import AdminLayout from "../layouts/AdminLayout";
+import AdminDashboard from "../features/admin/pages/AdminDashboard";
+import AdminServices from "../features/admin/pages/AdminServices";
+import AdminBlogs from "../features/admin/pages/AdminBlogs";
+import AdminResources from "../features/admin/pages/AdminResources";
+import AdminTestimonials from "../features/admin/pages/AdminTestimonials";
+import AdminContacts from "../features/admin/pages/AdminContacts";
+import AdminSettings from "../features/admin/pages/AdminSettings";
 
 //dashboard
-import DashboardLayout from "../layouts/DashboardLayout/DashboardLayout";
-import DashboardHome from "../pages/Dashboard/DashboardHome/DashboardHome";
-import DashboardProfile from "../pages/Dashboard/DashboardProfile/DashboardProfile";
-import DashboardTestimonials from "../pages/Dashboard/DashboardTestimonials/DashboardTestimonials";
-import ChangePassword from "../pages/Dashboard/ChangePassword/ChangePassword"
-import DashboardNotifications from "../pages/Dashboard/DashboardNotifications/DashboardNotifications";
-import DashboardContact from "../pages/Dashboard/DashboardContact/DashboardContact";
-import AdminNotifications from "../pages/Admin/AdminNotifications/AdminNotifications";
+import DashboardLayout from "../layouts/DashboardLayout";
+import DashboardHome from "../features/dashboard/pages/DashboardHome";
+import DashboardProfile from "../features/dashboard/pages/DashboardProfile";
+import DashboardTestimonials from "../features/dashboard/pages/DashboardTestimonials";
+import ChangePassword from "../features/dashboard/pages/ChangePassword"
+import DashboardNotifications from "../features/dashboard/pages/DashboardNotifications";
+import DashboardContact from "../features/dashboard/pages/DashboardContact";
+import AdminNotifications from "../features/admin/pages/AdminNotifications";
 
 //forget password
-import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
-import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
+import ForgotPassword from "../features/auth/pages/ForgotPassword";
+import ResetPassword from "../features/auth/pages/ResetPassword";
+
+// Staff and Permissions
+import StaffProtectedRoute from "../components/routing/StaffProtectedRoute";
+import StaffRegister from "../features/auth/pages/StaffRegister";
+import AdminStaffManagement from "../features/admin/pages/AdminStaffManagement";
 
 // Clinic
-import ClinicLayout from "../layouts/ClinicLayout/ClinicLayout";
-import ClinicDashboard from "../pages/Clinic/ClinicDashboard";
-import ClinicAppointments from "../pages/Clinic/ClinicAppointments";
-import ClinicPatients from "../pages/Clinic/ClinicPatients";
-import ClinicReport from "../pages/Clinic/ClinicReport";
-import ClinicPatientDetails from "../pages/Clinic/ClinicPatientDetails";
-import ClinicPayments from "../pages/Clinic/ClinicPayments";
-import ClinicPaymentIndividual from "../pages/Clinic/ClinicPaymentIndividual";
-import ClinicTodayVisits from "../pages/Clinic/ClinicTodayVisits";
-import ClinicTodayAppointments from "../pages/Clinic/ClinicTodayAppointments";
-import ClinicUnpaidCases from "../pages/Clinic/ClinicUnpaidCases";
+import ClinicLayout from "../layouts/ClinicLayout";
+import ClinicDashboard from "../features/clinic/pages/ClinicDashboard";
+import ClinicAppointments from "../features/clinic/pages/ClinicAppointments";
+import ClinicPatients from "../features/clinic/pages/ClinicPatients";
+import ClinicReport from "../features/clinic/pages/ClinicReport";
+import ClinicPatientDetails from "../features/clinic/pages/ClinicPatientDetails";
+import ClinicPayments from "../features/clinic/pages/ClinicPayments";
+import ClinicPaymentIndividual from "../features/clinic/pages/ClinicPaymentIndividual";
+import ClinicTodayVisits from "../features/clinic/pages/ClinicTodayVisits";
+import ClinicTodayAppointments from "../features/clinic/pages/ClinicTodayAppointments";
+import ClinicUnpaidCases from "../features/clinic/pages/ClinicUnpaidCases";
 
 
 const AppRoutes = () => {
@@ -75,6 +80,7 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/staff/register/:token" element={<StaffRegister />} />
 
       {/* Protected */}
       <Route path="/dashboard" element={<ProtectedRoute> <DashboardLayout /> </ProtectedRoute>} >
@@ -104,6 +110,7 @@ const AppRoutes = () => {
         <Route path="profile" element={<DashboardProfile />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="notifications" element={<AdminNotifications />} />
+        <Route path="staff" element={<AdminStaffManagement />} />
       </Route>
 
       {/* Clinic */}
@@ -126,6 +133,54 @@ const AppRoutes = () => {
         <Route path="payments" element={<ClinicPayments />} />
         <Route path="payments/:id" element={<ClinicPaymentIndividual />} />
       </Route>
+
+      {/* Staff Routes */}
+      {["assistant", "intern", "physiotherapist", "receptionist"].map((role) => (
+        <Route
+          key={role}
+          path={`/staff/${role}`}
+          element={
+            <StaffProtectedRoute allowedRole={role}>
+              <AdminLayout />
+            </StaffProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="services" element={<AdminServices />} />
+          <Route path="blogs" element={<AdminBlogs />} />
+          <Route path="resources" element={<AdminResources />} />
+          <Route path="testimonials" element={<AdminTestimonials />} />
+          <Route path="contacts" element={<AdminContacts />} />
+          <Route path="profile" element={<DashboardProfile />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="change-password" element={<ChangePassword />} />
+        </Route>
+      ))}
+
+      {/* Staff Clinic Panels */}
+      {["assistant", "intern", "physiotherapist", "receptionist"].map((role) => (
+        <Route
+          key={`clinic-${role}`}
+          path={`/staff/${role}/clinic`}
+          element={
+            <StaffProtectedRoute allowedRole={role}>
+              <ClinicLayout />
+            </StaffProtectedRoute>
+          }
+        >
+          <Route index element={<ClinicDashboard />} />
+          <Route path="dashboard/visits" element={<ClinicTodayVisits />} />
+          <Route path="dashboard/appointments" element={<ClinicTodayAppointments />} />
+          <Route path="unpaid" element={<ClinicUnpaidCases />} />
+          <Route path="appointments" element={<ClinicAppointments />} />
+          <Route path="patients" element={<ClinicPatients />} />
+          <Route path="patients/:id" element={<ClinicPatientDetails />} />
+          <Route path="report" element={<ClinicReport />} />
+          <Route path="payments" element={<ClinicPayments />} />
+          <Route path="payments/:id" element={<ClinicPaymentIndividual />} />
+        </Route>
+      ))}
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />

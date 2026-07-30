@@ -159,8 +159,16 @@ export const updateVisit = asyncHandler(async (req, res) => {
   if (visitTime !== undefined) visit.visitTime = visitTime;
   if (location !== undefined) visit.location = location;
   if (duration !== undefined) visit.duration = duration;
-  if (paymentAmount !== undefined) visit.paymentAmount = paymentAmount;
-  if (paymentStatus !== undefined) visit.paymentStatus = paymentStatus;
+  if (paymentAmount !== undefined || paymentStatus !== undefined) {
+    if (req.user.role !== "admin") {
+      const hasPaymentPermission = req.user.permissions && req.user.permissions.includes("payments:manage");
+      if (!hasPaymentPermission) {
+        throw new ApiError(403, "You do not have permission to manage payment details.");
+      }
+    }
+    if (paymentAmount !== undefined) visit.paymentAmount = paymentAmount;
+    if (paymentStatus !== undefined) visit.paymentStatus = paymentStatus;
+  }
   if (status !== undefined) visit.status = status;
 
   const updatedVisit = await visit.save();

@@ -23,6 +23,9 @@ import clinicVisitRoutes from "./routes/clinicVisitRoutes.js";
 import clinicCaseFileRoutes from "./routes/clinicCaseFileRoutes.js";
 import clinicalRecordRoutes from "./routes/clinicalRecordRoutes.js";
 import clinicAppointmentRoutes from "./routes/clinicAppointmentRoutes.js";
+import staffInvitationRoutes from "./routes/staffInvitationRoutes.js";
+import staffRoutes from "./routes/staffRoutes.js";
+import { setupInitialAdmin, bootstrapAdmin } from "./controllers/authController.js";
 import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
@@ -50,6 +53,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.post("/api/setup/admin", setupInitialAdmin);
+app.use("/api/staff/invitations", staffInvitationRoutes);
+app.use("/api/staff", staffRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/blogs", blogRoutes);
@@ -78,6 +84,9 @@ const PORT = process.env.PORT || 5000;
 try {
   // Connect Database
   await connectDB();
+
+  // Bootstrap default admin if configured
+  await bootstrapAdmin();
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

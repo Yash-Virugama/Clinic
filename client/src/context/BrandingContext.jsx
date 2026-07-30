@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios";
-import Loader from "../components/Loader/Loader";
+import Loader from "../components/ui/Loader";
 
 const BrandingContext = createContext(null);
 

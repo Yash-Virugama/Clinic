@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import ModalShell from "./ModalShell";
-import CustomSelect from "../../../components/CustomSelect/CustomSelect";
+import ModalShell from "../../../components/ui/ModalShell";
+import CustomSelect from "../../../components/ui/CustomSelect";
 
 const ClinicalRecordFormModal = ({
   isOpen,

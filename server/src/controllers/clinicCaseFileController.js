@@ -1,10 +1,12 @@
 import path from "path";
+import axios from "axios";
 import { ClinicCaseFile } from "../models/clinicCaseFile.js";
 import { ClinicCase } from "../models/clinicCase.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 import deleteFromCloudinary from "../utils/deleteFromCloudinary.js";
+import cloudinary from "../config/cloudinary.js";
 
 // @desc    Upload a new clinic case file
 // @route   POST /api/clinic/files
@@ -55,18 +57,26 @@ export const uploadCaseFile = asyncHandler(async (req, res) => {
     req.file.originalname
   );
 
+  let finalFileName = fileName;
+  if (!finalFileName.toLowerCase().endsWith(ext)) {
+    finalFileName = `${finalFileName}${ext}`;
+  }
+
   const fileRecord = await ClinicCaseFile.create({
     fileUrl: uploaded.secure_url,
-    fileName,
+    fileName: finalFileName,
     fileType: fileType || "other",
     clinicCase: caseId,
     patient: patientId,
     notes,
   });
 
+  const responseFile = fileRecord.toObject();
+  delete responseFile.fileUrl;
+
   return res.status(201).json({
     message: "File uploaded successfully",
-    file: fileRecord,
+    file: responseFile,
   });
 });
 
@@ -89,6 +99,7 @@ export const getCaseFiles = asyncHandler(async (req, res) => {
   }
 
   const files = await ClinicCaseFile.find(query)
+    .select("-fileUrl")
     .populate({
       path: "clinicCase",
       select: "title patient",
@@ -108,14 +119,16 @@ export const getCaseFiles = asyncHandler(async (req, res) => {
 export const getCaseFileById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const fileRecord = await ClinicCaseFile.findById(id).populate({
-    path: "clinicCase",
-    select: "title patient",
-    populate: {
-      path: "patient",
-      select: "name phone",
-    },
-  });
+  const fileRecord = await ClinicCaseFile.findById(id)
+    .select("-fileUrl")
+    .populate({
+      path: "clinicCase",
+      select: "title patient",
+      populate: {
+        path: "patient",
+        select: "name phone",
+      },
+    });
 
   if (!fileRecord) {
     throw new ApiError(404, "Clinic case file not found");
@@ -192,15 +205,25 @@ export const updateCaseFile = asyncHandler(async (req, res) => {
     fileRecord.patient = patient === "" ? null : patient;
   }
 
-  if (fileName !== undefined) fileRecord.fileName = fileName;
+  if (fileName !== undefined) {
+    const currentExt = path.extname(fileRecord.fileUrl).toLowerCase();
+    let finalFileName = fileName;
+    if (!finalFileName.toLowerCase().endsWith(currentExt)) {
+      finalFileName = `${finalFileName}${currentExt}`;
+    }
+    fileRecord.fileName = finalFileName;
+  }
   if (fileType !== undefined) fileRecord.fileType = fileType;
   if (notes !== undefined) fileRecord.notes = notes;
 
   const updatedFile = await fileRecord.save();
 
+  const responseFile = updatedFile.toObject();
+  delete responseFile.fileUrl;
+
   return res.status(200).json({
     message: "File updated successfully",
-    file: updatedFile,
+    file: responseFile,
   });
 });
 
@@ -226,4 +249,100 @@ export const deleteCaseFile = asyncHandler(async (req, res) => {
   return res.status(200).json({
     message: "File deleted successfully",
   });
+});
+
+const getMimeType = (ext) => {
+  const mimeTypes = {
+    ".pdf": "application/pdf",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  };
+  return mimeTypes[ext] || "application/octet-stream";
+};
+
+const parseCloudinaryUrl = (url) => {
+  if (!url) return null;
+  const parts = url.split("/upload/");
+  if (parts.length < 2) return null;
+
+  const afterUpload = parts[1];
+  const versionMatch = afterUpload.match(/^v\d+\//);
+  const publicIdWithExt = versionMatch ? afterUpload.replace(versionMatch[0], "") : afterUpload;
+
+  const beforeUpload = parts[0];
+  const resourceType = beforeUpload.split("/").pop();
+
+  let publicId = publicIdWithExt;
+  if (resourceType !== "raw") {
+    const lastDotIndex = publicIdWithExt.lastIndexOf(".");
+    if (lastDotIndex !== -1) {
+      publicId = publicIdWithExt.substring(0, lastDotIndex);
+    }
+  }
+
+  return {
+    resourceType,
+    publicId,
+  };
+};
+
+// @desc    View clinic case file securely
+// @route   GET /api/clinic/files/:id/view
+// @access  Private/Admin
+export const viewCaseFile = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const fileRecord = await ClinicCaseFile.findById(id);
+  if (!fileRecord) {
+    throw new ApiError(404, "File not found.");
+  }
+
+  const ext = path.extname(fileRecord.fileUrl || fileRecord.fileName).toLowerCase();
+  const isImage = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext);
+
+  if (isImage) {
+    return res.redirect(fileRecord.fileUrl);
+  }
+
+  // Generate a signed API URL for secure Cloudinary resource download
+  let downloadUrl = fileRecord.fileUrl;
+  const parsed = parseCloudinaryUrl(fileRecord.fileUrl);
+  if (parsed) {
+    const format = ext.startsWith(".") ? ext.substring(1) : ext;
+    downloadUrl = cloudinary.utils.private_download_url(parsed.publicId, format, {
+      resource_type: parsed.resourceType,
+      type: "upload",
+      expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+    });
+  }
+
+  try {
+    const response = await axios({
+      method: "get",
+      url: downloadUrl,
+      responseType: "stream",
+    });
+
+    const mimeType = getMimeType(ext);
+    res.setHeader("Content-Type", mimeType);
+    res.setHeader("Cache-Control", "private, no-store");
+
+    const encodedFileName = encodeURIComponent(fileRecord.fileName);
+
+    if (ext === ".pdf") {
+      res.setHeader("Content-Disposition", `inline; filename*=UTF-8''${encodedFileName}`);
+    } else {
+      res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodedFileName}`);
+    }
+
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Cloudinary stream error:", error);
+    throw new ApiError(502, "Failed to retrieve file from storage provider.");
+  }
 });

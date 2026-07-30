@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { exportPatients } from "../controllers/exportController.js";
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
 router.get(
   "/patients",
   protect,
-  adminOnly,
+  authorizePermissions("reports:view"),
   exportPatients
 );
 

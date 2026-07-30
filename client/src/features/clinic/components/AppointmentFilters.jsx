@@ -1,4 +1,4 @@
-import CustomSelect from "../../../components/CustomSelect/CustomSelect";
+import CustomSelect from "../../../components/ui/CustomSelect";
 
 const AppointmentFilters = ({
   searchQuery,

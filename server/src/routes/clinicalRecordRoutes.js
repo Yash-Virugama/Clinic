@@ -6,7 +6,7 @@ import {
   updateRecord,
   deleteRecord,
 } from "../controllers/clinicalRecordController.js";
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import {
   clinicalRecordCreateSchema,
@@ -17,17 +17,16 @@ const router = Router();
 
 // Apply auth middleware to all routes in this router (doctor/admin panel access only)
 router.use(protect);
-router.use(adminOnly);
 
 router
   .route("/")
-  .post(validate(clinicalRecordCreateSchema), createRecord)
-  .get(getRecords);
+  .post(authorizePermissions("patients:manage"), validate(clinicalRecordCreateSchema), createRecord)
+  .get(authorizePermissions("patients:view"), getRecords);
 
 router
   .route("/:id")
-  .get(getRecordById)
-  .put(validate(clinicalRecordUpdateSchema), updateRecord)
-  .delete(deleteRecord);
+  .get(authorizePermissions("patients:view"), getRecordById)
+  .put(authorizePermissions("patients:manage"), validate(clinicalRecordUpdateSchema), updateRecord)
+  .delete(authorizePermissions("patients:manage"), deleteRecord);
 
 export default router;

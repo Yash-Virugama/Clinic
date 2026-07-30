@@ -7,7 +7,7 @@ import {
   deleteCase,
   updateCasePayments,
 } from "../controllers/clinicCaseController.js";
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import {
   clinicCaseCreateSchema,
@@ -18,19 +18,18 @@ const router = Router();
 
 // Apply auth middleware to all routes in this router (doctor/admin panel access only)
 router.use(protect);
-router.use(adminOnly);
 
 router
   .route("/")
-  .post(validate(clinicCaseCreateSchema), createCase)
-  .get(getCases);
+  .post(authorizePermissions("patients:manage"), validate(clinicCaseCreateSchema), createCase)
+  .get(authorizePermissions("patients:view"), getCases);
 
 router
   .route("/:id")
-  .get(getCaseById)
-  .put(validate(clinicCaseUpdateSchema), updateCase)
-  .delete(deleteCase);
+  .get(authorizePermissions("patients:view"), getCaseById)
+  .put(authorizePermissions("patients:manage"), validate(clinicCaseUpdateSchema), updateCase)
+  .delete(authorizePermissions("patients:manage"), deleteCase);
 
-router.put("/:id/payments", updateCasePayments);
+router.put("/:id/payments", authorizePermissions("payments:manage"), updateCasePayments);
 
 export default router;

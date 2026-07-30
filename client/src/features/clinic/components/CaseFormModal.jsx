@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import ModalShell from "./ModalShell";
-import CustomSelect from "../../../components/CustomSelect/CustomSelect";
+import ModalShell from "../../../components/ui/ModalShell";
+import CustomSelect from "../../../components/ui/CustomSelect";
 
 const CaseFormModal = ({ isOpen, onClose, onSubmit, isEdit = false, caseData = null, doctors = [], submitting }) => {
   const [title, setTitle] = useState("");

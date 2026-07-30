@@ -8,7 +8,7 @@ import {
   addPatientNote,
   deletePatientNote,
 } from "../controllers/clinicPatientController.js";
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import {
   clinicPatientCreateSchema,
@@ -20,20 +20,19 @@ const router = Router();
 
 // Apply auth middleware to all routes in this router since it's for the doctor panel only
 router.use(protect);
-router.use(adminOnly);
 
 router
   .route("/")
-  .post(validate(clinicPatientCreateSchema), createPatient)
-  .get(getPatients);
+  .post(authorizePermissions("patients:manage"), validate(clinicPatientCreateSchema), createPatient)
+  .get(authorizePermissions("patients:view"), getPatients);
 
 router
   .route("/:id")
-  .get(getPatientById)
-  .put(validate(clinicPatientUpdateSchema), updatePatient)
-  .delete(deletePatient);
+  .get(authorizePermissions("patients:view"), getPatientById)
+  .put(authorizePermissions("patients:manage"), validate(clinicPatientUpdateSchema), updatePatient)
+  .delete(authorizePermissions("patients:manage"), deletePatient);
 
-router.post("/:id/notes", validate(patientNoteCreateSchema), addPatientNote);
-router.delete("/:id/notes/:noteId", deletePatientNote);
+router.post("/:id/notes", authorizePermissions("patients:manage"), validate(patientNoteCreateSchema), addPatientNote);
+router.delete("/:id/notes/:noteId", authorizePermissions("patients:manage"), deletePatientNote);
 
 export default router;

@@ -8,7 +8,7 @@ import {
   getBlogs,
   updateBlog,
 } from "../controllers/blogController.js";
-import { protect, adminOnly } from "../middlewares/authMiddleware.js";
+import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/upload.js";
 import { validate } from "../middlewares/validateMiddleware.js";
 import { blogSchema } from "../validations/blogSchema.js";
@@ -19,14 +19,14 @@ const router = express.Router();
 router.get("/", getBlogs);
 
 // Admin
-router.post("/", protect, adminOnly, upload.single("coverImage"), validate(blogSchema), createBlog);
+router.post("/", protect, authorizePermissions("blogs:manage"), upload.single("coverImage"), validate(blogSchema), createBlog);
 
-router.get("/admin", protect, adminOnly, getAllBlogs);
-router.get("/admin/:id", protect, adminOnly, getBlogById);
+router.get("/admin", protect, authorizePermissions("blogs:view"), getAllBlogs);
+router.get("/admin/:id", protect, authorizePermissions("blogs:view"), getBlogById);
 
-router.put("/:id", protect, adminOnly, upload.single("coverImage"), validate(blogSchema), updateBlog);
+router.put("/:id", protect, authorizePermissions("blogs:manage"), upload.single("coverImage"), validate(blogSchema), updateBlog);
 
-router.delete("/:id", protect, adminOnly, deleteBlog);
+router.delete("/:id", protect, authorizePermissions("blogs:manage"), deleteBlog);
 
 // Public
 router.get("/:slug", getBlogBySlug);

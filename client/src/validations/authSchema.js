@@ -26,3 +26,30 @@ export const registerSchema = z.object({
 
   gender: z.string().min(1, "Gender is required."),
 });
+
+export const staffRegisterSchema = z
+  .object({
+    name: z
+      .string()
+      .min(3, "Name must be at least 3 characters."),
+
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters."),
+
+    confirmPassword: z
+      .string()
+      .min(1, "Please confirm your password."),
+
+    phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit phone number"),
+
+    age: z.coerce
+      .number({ invalid_type_error: "Age is required." })
+      .min(1, "Age must be greater than 0."),
+
+    gender: z.string().min(1, "Gender is required."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match.",
+  });
