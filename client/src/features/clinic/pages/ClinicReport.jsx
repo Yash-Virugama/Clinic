@@ -4,7 +4,7 @@ import ClinicSkeleton from "../components/ClinicSkeleton";
 import CustomSelect from "../../../components/ui/CustomSelect";
 
 const ClinicReport = () => {
-  const { reportData, loading, fetchReportData } = useClinicReport();
+  const { reportData, loading, fetchReportData, handleDownloadClinicPatients } = useClinicReport();
   const [dateRangeOption, setDateRangeOption] = useState("this month");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -59,7 +59,18 @@ const ClinicReport = () => {
           </h2>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 items-center w-full md:w-auto flex-wrap justify-end">
+        <div className="flex flex-col sm:flex-row gap-4 items-center w-full md:w-auto flex-wrap justify-end">
+          <button
+            type="button"
+            onClick={handleDownloadClinicPatients}
+            className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm shrink-0 flex items-center justify-center gap-2 font-accent"
+          >
+            <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V3m0 0L7.5 7.5M12 3l4.5 4.5M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5" />
+            </svg>
+            <span>Download Patients</span>
+          </button>
+
           <div className="w-full sm:w-48 shrink-0">
             <CustomSelect
               value={dateRangeOption}

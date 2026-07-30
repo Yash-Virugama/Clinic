@@ -44,7 +44,7 @@ const ServicesPreview = () => {
               <div>
                 {/* Uploaded Service Image Container */}
                 {service.image && (
-                  <div className="w-full h-48 rounded-2xl overflow-hidden mb-6 bg-slate-100 border border-slate-100/50 relative z-10">
+                  <div className="w-full aspect-video rounded-2xl overflow-hidden mb-6 bg-slate-100 border border-slate-100/50 relative z-10">
                     <img
                       src={service.image}
                       alt={service.title}

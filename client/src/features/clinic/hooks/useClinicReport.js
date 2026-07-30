@@ -251,10 +251,35 @@ const useClinicReport = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleDownloadClinicPatients = async () => {
+    try {
+      const response = await api.get("/export/clinic-patients", {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "Clinic_Patients.xlsx";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to download clinic patients report.");
+    }
+  };
+
   return {
     reportData,
     loading,
     fetchReportData,
+    handleDownloadClinicPatients,
   };
 };
 

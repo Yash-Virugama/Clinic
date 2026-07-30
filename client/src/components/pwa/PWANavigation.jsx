@@ -1,47 +1,15 @@
 import { NavLink } from "react-router-dom";
-import { FaHome, FaBriefcaseMedical, FaFolderOpen, FaUser, FaEnvelope, FaQuoteLeft, FaNewspaper, FaUserShield, FaClinicMedical } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
+import { FaHome, FaBriefcaseMedical, FaFolderOpen, FaEnvelope, FaQuoteLeft, FaNewspaper } from "react-icons/fa";
 
 const PWANavigation = () => {
-  const { user } = useAuth();
-
-  const getPanelTabs = () => {
-    const baseTabs = [
-      { name: "Home", path: "/", icon: <FaHome className="w-5 h-5" /> },
-      { name: "Services", path: "/services", icon: <FaBriefcaseMedical className="w-5 h-5" /> },
-      { name: "Blogs", path: "/blog", icon: <FaNewspaper className="w-5 h-5" /> },
-    ];
-
-    if (!user) {
-      return [
-        ...baseTabs,
-        { name: "Contact", path: "/contact", icon: <FaEnvelope className="w-5 h-5" /> },
-        { name: "Login", path: "/login", icon: <FaUser className="w-5 h-5" /> }
-      ];
-    }
-
-    if (user.role === "patient") {
-      return [
-        ...baseTabs,
-        { name: "Contact", path: "/contact", icon: <FaEnvelope className="w-5 h-5" /> },
-        { name: "Panel", path: "/dashboard", icon: <FaUser className="w-5 h-5" /> }
-      ];
-    }
-
-    // For Admin and Staff roles: show both Panel and Clinic links
-    const isAdmin = user.role === "admin";
-    const panelName = isAdmin ? "Admin" : "Staff";
-    const panelPath = isAdmin ? "/admin" : `/staff/${user.role}`;
-    const clinicPath = isAdmin ? "/clinic" : `/staff/${user.role}/clinic`;
-
-    return [
-      ...baseTabs,
-      { name: panelName, path: panelPath, icon: <FaUserShield className="w-5 h-5" /> },
-      { name: "Clinic", path: clinicPath, icon: <FaClinicMedical className="w-5 h-5" /> }
-    ];
-  };
-
-  const tabs = getPanelTabs();
+  const tabs = [
+    { name: "Home", path: "/", icon: <FaHome className="w-5 h-5" /> },
+    { name: "Services", path: "/services", icon: <FaBriefcaseMedical className="w-5 h-5" /> },
+    { name: "Blogs", path: "/blog", icon: <FaNewspaper className="w-5 h-5" /> },
+    { name: "Resources", path: "/resources", icon: <FaFolderOpen className="w-5 h-5" /> },
+    { name: "Reviews", path: "/testimonials", icon: <FaQuoteLeft className="w-5 h-5" /> },
+    { name: "Contact", path: "/contact", icon: <FaEnvelope className="w-5 h-5" /> }
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-primary backdrop-blur-xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] pb-[env(safe-area-inset-bottom,0px)] h-[calc(3.8rem+env(safe-area-inset-bottom,0px))] transition-all duration-300 ease-out lg:hidden">

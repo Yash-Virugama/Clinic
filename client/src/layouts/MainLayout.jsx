@@ -8,7 +8,7 @@ import { useIsPWA } from "../hooks/useIsPWA";
 import { useBranding } from "../context/BrandingContext";
 import { useAuth } from "../context/AuthContext";
 import OfflineView from "../components/pwa/OfflineView";
-import { FaChevronLeft, FaUser } from "react-icons/fa";
+import { FaChevronLeft, FaUser, FaHome, FaUserShield, FaClinicMedical, FaSignInAlt, FaUserPlus, FaSignOutAlt } from "react-icons/fa";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -57,15 +57,11 @@ const MainLayout = () => {
       return (
         <>
           <Link to="/admin" onClick={clickHandler} className={itemClass}>
-            <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
-            </svg>
+            <FaUserShield className="w-5 h-5 text-slate-400 group-hover:text-slate-200" />
             <span>Admin Panel</span>
           </Link>
           <Link to="/clinic" onClick={clickHandler} className={itemClass}>
-            <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-            </svg>
+            <FaClinicMedical className="w-5 h-5 text-slate-400 group-hover:text-slate-200" />
             <span>Clinic Panel</span>
           </Link>
         </>
@@ -77,16 +73,12 @@ const MainLayout = () => {
       return (
         <>
           <Link to={`/staff/${user.role}`} onClick={clickHandler} className={itemClass}>
-            <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+            <FaUserShield className="w-5 h-5 text-slate-400 group-hover:text-slate-200" />
             <span>Staff Panel</span>
           </Link>
           {hasClinicAccess && (
             <Link to={`/staff/${user.role}/clinic`} onClick={clickHandler} className={itemClass}>
-              <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-              </svg>
+              <FaClinicMedical className="w-5 h-5 text-slate-400 group-hover:text-slate-200" />
               <span>Clinic Panel</span>
             </Link>
           )}
@@ -97,9 +89,7 @@ const MainLayout = () => {
     // Patient
     return (
       <Link to="/dashboard" onClick={clickHandler} className={itemClass}>
-        <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
+        <FaUser className="w-5 h-5 text-slate-400 group-hover:text-slate-200" />
         <span>Dashboard</span>
       </Link>
     );
@@ -253,6 +243,7 @@ const MainLayout = () => {
                 </svg>
               </button>
             </div>            {/* Navigation Links - Always styled vertically as a Sidebar */}
+            {/* Navigation Links - Always styled vertically as a Sidebar */}
             <nav className="flex-1 px-4 py-6 flex flex-col gap-1.5 overflow-y-auto no-scrollbar">
               {/* Home link */}
               <Link
@@ -260,9 +251,7 @@ const MainLayout = () => {
                 onClick={() => setSidebarOpen(false)}
                 className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
               >
-                <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                </svg>
+                <FaHome className="w-5 h-5" />
                 <span>Home</span>
               </Link>
 
@@ -275,9 +264,7 @@ const MainLayout = () => {
                     onClick={() => setSidebarOpen(false)}
                     className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
                   >
-                    <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3h4a3 3 0 013 3v1" />
-                    </svg>
+                    <FaSignInAlt className="w-5 h-5" />
                     <span>Login</span>
                   </Link>
 
@@ -286,9 +273,7 @@ const MainLayout = () => {
                     onClick={() => setSidebarOpen(false)}
                     className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
                   >
-                    <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
+                    <FaUserPlus className="w-5 h-5" />
                     <span>Register</span>
                   </Link>
                 </>
@@ -302,9 +287,7 @@ const MainLayout = () => {
                   onClick={handleLogout}
                   className="w-full py-3 px-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-500 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-premium cursor-pointer"
                 >
-                  <svg className="w-4 h-4 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
+                  <FaSignOutAlt className="w-4 h-4" />
                   Logout
                 </button>
               </div>

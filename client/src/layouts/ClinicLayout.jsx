@@ -21,7 +21,7 @@ const ClinicLayout = () => {
       )}
 
       {/* Main Workspace Frame */}
-      <div className="flex-1 flex flex-col min-h-screen pb-20 lg:pb-0 w-full lg:pl-72">
+      <div className="flex-1 flex flex-col min-h-screen pb-16 lg:pb-0 w-full lg:pl-72">
         {/* Top Header */}
         <ClinicHeader onMenuClick={() => setSidebarOpen(true)} />
 

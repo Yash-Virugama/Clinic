@@ -1,5 +1,7 @@
 import ExcelJS from "exceljs";
 import { User } from "../models/user.js";
+import { ClinicPatient } from "../models/clinicPatient.js";
+import { ClinicCase } from "../models/clinicCase.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { Setting } from "../models/setting.js";
 
@@ -182,6 +184,203 @@ export const exportPatients = asyncHandler(async (req, res) => {
     res.setHeader(
         "Content-Disposition",
         `attachment; filename="${sanitizedName}_Patients.xlsx"`
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+});
+
+export const exportClinicPatients = asyncHandler(async (req, res) => {
+    const patients = await ClinicPatient.find()
+        .sort({ createdAt: -1 });
+
+    // Fetch all clinic cases and populate their consulting doctor
+    const cases = await ClinicCase.find().populate("consultingDoctor", "name");
+
+    // Group cases by patient ID
+    const casesByPatient = {};
+    cases.forEach((c) => {
+        if (!c.patient) return;
+        const patientId = c.patient.toString();
+        if (!casesByPatient[patientId]) {
+            casesByPatient[patientId] = [];
+        }
+        casesByPatient[patientId].push(c);
+    });
+
+    const setting = await Setting.findOne();
+    const clinicName = setting?.name || "PhysioCare";
+
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = clinicName;
+    workbook.lastModifiedBy = "Staff";
+    workbook.created = new Date();
+    workbook.modified = new Date();
+
+    const worksheet = workbook.addWorksheet("Clinic Patients");
+
+    worksheet.getColumn(1).width = 8;   // No.
+    worksheet.getColumn(2).width = 25;  // Name
+    worksheet.getColumn(3).width = 18;  // Phone
+    worksheet.getColumn(4).width = 15;  // Gender
+    worksheet.getColumn(5).width = 20;  // Registered On
+    worksheet.getColumn(6).width = 40;  // Clinic Cases
+    worksheet.getColumn(7).width = 45;  // Notes Summary
+
+    // Centered titles layout
+    worksheet.mergeCells("A1:G1");
+    const titleCell = worksheet.getCell("A1");
+    titleCell.value = clinicName;
+    titleCell.font = {
+        name: "Calibri",
+        size: 20,
+        bold: true,
+        color: { argb: "1E293B" }, // Slate-800
+    };
+    titleCell.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+    };
+    worksheet.getRow(1).height = 35;
+
+    worksheet.mergeCells("A2:G2");
+    const reportTitle = worksheet.getCell("A2");
+    reportTitle.value = "Clinic Patients Registry Directory";
+    reportTitle.font = {
+        name: "Calibri",
+        size: 13,
+        bold: true,
+        color: { argb: "475569" }, // Slate-600
+    };
+    reportTitle.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+    };
+    worksheet.getRow(2).height = 25;
+
+    // Generated Metadata
+    worksheet.getCell("A4").value = `Generated On: ${new Date().toLocaleString()}`;
+    worksheet.getCell("A4").font = { name: "Calibri", size: 10, italic: true, color: { argb: "64748B" } };
+
+    worksheet.getCell("G4").value = `Total Clinic Patients: ${patients.length}`;
+    worksheet.getCell("G4").font = { name: "Calibri", size: 11, bold: true, color: { argb: "0F172A" } };
+    worksheet.getCell("G4").alignment = { horizontal: "right" };
+
+    // Header Table Row
+    const headerRow = worksheet.getRow(6);
+    headerRow.values = [
+        "No.",
+        "Name",
+        "Phone",
+        "Gender",
+        "Registered On",
+        "Clinic Cases",
+        "Notes Summary",
+    ];
+    headerRow.height = 26;
+    headerRow.font = {
+        name: "Calibri",
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+    };
+    headerRow.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+    };
+    headerRow.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "2563EB" }, // Primary theme blue
+    };
+
+    const thinBorder = {
+        top: { style: "thin", color: { argb: "E2E8F0" } },
+        left: { style: "thin", color: { argb: "E2E8F0" } },
+        bottom: { style: "thin", color: { argb: "E2E8F0" } },
+        right: { style: "thin", color: { argb: "E2E8F0" } },
+    };
+
+    headerRow.eachCell((cell) => {
+        cell.border = thinBorder;
+    });
+
+    // Populate patient records
+    patients.forEach((patient, index) => {
+        // Format cases list
+        const patientCases = casesByPatient[patient._id.toString()] || [];
+        const casesText = patientCases.length > 0
+            ? patientCases.map(c => {
+                const docPart = c.consultingDoctor?.name ? ` - Dr. ${c.consultingDoctor.name}` : "";
+                return `${c.title} (${c.status}${docPart})`;
+              }).join(" | ")
+            : "-";
+
+        const notesText = patient.notes && patient.notes.length > 0
+            ? patient.notes.map(n => `[${n.noteType}] ${n.note}`).join(" | ")
+            : "-";
+
+        const row = worksheet.addRow([
+            index + 1,
+            patient.name,
+            patient.phone || "-",
+            patient.gender || "-",
+            patient.createdAt ? new Date(patient.createdAt).toLocaleDateString() : "-",
+            casesText,
+            notesText,
+        ]);
+
+        row.height = 22;
+
+        row.eachCell((cell, colNumber) => {
+            cell.font = {
+                name: "Calibri",
+                size: 11,
+            };
+            cell.border = thinBorder;
+            
+            cell.alignment = {
+                vertical: "middle",
+                horizontal: colNumber === 2 || colNumber === 6 || colNumber === 7 ? "left" : "center",
+            };
+        });
+
+        if (index % 2 === 1) {
+            row.fill = {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "F8FAFC" },
+            };
+        }
+    });
+
+    worksheet.views = [
+        {
+            state: "frozen",
+            ySplit: 6,
+        },
+    ];
+
+    worksheet.autoFilter = {
+        from: "A6",
+        to: "G6",
+    };
+
+    worksheet.pageSetup = {
+        orientation: "landscape",
+        fitToPage: true,
+        fitToWidth: 1,
+        fitToHeight: 0,
+    };
+
+    const sanitizedName = clinicName.replace(/[^a-zA-Z0-9]/g, "_");
+
+    res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${sanitizedName}_Clinic_Patients.xlsx"`
     );
 
     await workbook.xlsx.write(res);

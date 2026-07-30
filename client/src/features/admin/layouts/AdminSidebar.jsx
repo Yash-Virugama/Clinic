@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useBranding } from "../../../context/BrandingContext";
 import SidebarLink from "../../../components/ui/SidebarLink";
+import { FaClinicMedical } from "react-icons/fa";
 
 const AdminSidebar = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuth();
@@ -120,6 +121,13 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
       )
+    },
+     {
+      to: user?.role === "admin" ? "/clinic" : `/staff/${user?.role}/clinic`,
+      label: "Clinic Panel",
+      exact: true,
+      visible: true,
+      icon: <FaClinicMedical className="w-5 h-5" />
     },
     {
       to: "/",

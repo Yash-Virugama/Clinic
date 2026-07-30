@@ -42,7 +42,6 @@ const staffInvitationSchema = new Schema(
 );
 
 // Indexes
-staffInvitationSchema.index({ token: 1 });
 staffInvitationSchema.index({ email: 1 });
 staffInvitationSchema.index({ expiresAt: 1 });
 

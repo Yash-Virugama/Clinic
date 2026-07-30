@@ -43,7 +43,7 @@ const TestimonialsPreview = () => {
 
             return (
               <div 
-                className="glass-card p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden" 
+                className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/60 transition-premium hover:-translate-y-1.5 hover:shadow-xl hover:border-primary/20 relative flex flex-col justify-between overflow-hidden" 
                 key={testimonial._id}
               >
                 {/* Large Background Quote Icon */}
@@ -72,7 +72,7 @@ const TestimonialsPreview = () => {
                   </div>
 
                   {/* Testimonial Content */}
-                  <p className="text-sm sm:text-base text-secondary font-body italic leading-relaxed mb-4 relative pr-24 text-left">
+                  <p className="text-sm sm:text-base text-secondary font-body italic leading-relaxed mb-4 relative pr-26 sm:pr-24 text-left">
                     {testimonial.content.length > 50 ? (
                       <>
                         "{testimonial.content.substring(0, 50)}..."{" "}
