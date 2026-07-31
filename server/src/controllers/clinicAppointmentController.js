@@ -32,8 +32,9 @@ export const createAppointment = asyncHandler(async (req, res) => {
   if (!doctor) {
     throw new ApiError(404, "Therapist user not found");
   }
-  if (doctor.role !== "admin") {
-    throw new ApiError(400, "Therapist must have an 'admin' role");
+  const allowedRoles = ["admin", "intern", "physiotherapist"];
+  if (!allowedRoles.includes(doctor.role)) {
+    throw new ApiError(400, "Therapist must be an admin, intern, or physiotherapist");
   }
 
   // 3. Resolve and verify case ID
@@ -163,8 +164,9 @@ export const updateAppointment = asyncHandler(async (req, res) => {
     if (!doctor) {
       throw new ApiError(404, "Therapist user not found");
     }
-    if (doctor.role !== "admin") {
-      throw new ApiError(400, "Therapist must have an 'admin' role");
+    const allowedRoles = ["admin", "intern", "physiotherapist"];
+    if (!allowedRoles.includes(doctor.role)) {
+      throw new ApiError(400, "Therapist must be an admin, intern, or physiotherapist");
     }
     appointment.therapist = therapist;
   }

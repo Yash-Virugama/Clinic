@@ -14,8 +14,9 @@ const useClinicAppointments = () => {
       setLoadingTherapists(true);
       const res = await api.get("/notifications/users");
       
-      // Filter list to keep only users with 'admin' role
-      const admins = (res.data.users || []).filter((user) => user.role === "admin");
+      // Filter list to keep users with 'admin', 'intern', or 'physiotherapist' roles
+      const allowedRoles = ["admin", "intern", "physiotherapist"];
+      const admins = (res.data.users || []).filter((user) => allowedRoles.includes(user.role));
       setTherapists(admins);
     } catch (error) {
       console.error("Failed to load therapists list:", error);

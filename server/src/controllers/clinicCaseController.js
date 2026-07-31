@@ -22,8 +22,9 @@ export const createCase = asyncHandler(async (req, res) => {
   if (!doctor) {
     throw new ApiError(404, "Consulting doctor user not found");
   }
-  if (doctor.role !== "admin") {
-    throw new ApiError(400, "Consulting doctor must have an 'admin' role");
+  const allowedRoles = ["admin", "intern", "physiotherapist"];
+  if (!allowedRoles.includes(doctor.role)) {
+    throw new ApiError(400, "Consulting doctor must be an admin, intern, or physiotherapist");
   }
 
   const newCase = await ClinicCase.create({
@@ -105,8 +106,9 @@ export const updateCase = asyncHandler(async (req, res) => {
     if (!doctor) {
       throw new ApiError(404, "Consulting doctor user not found");
     }
-    if (doctor.role !== "admin") {
-      throw new ApiError(400, "Consulting doctor must have an 'admin' role");
+    const allowedRoles = ["admin", "intern", "physiotherapist"];
+    if (!allowedRoles.includes(doctor.role)) {
+      throw new ApiError(400, "Consulting doctor must be an admin, intern, or physiotherapist");
     }
     clinicCase.consultingDoctor = consultingDoctor;
   }

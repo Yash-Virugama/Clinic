@@ -23,7 +23,7 @@ const AppointmentFormModal = ({
     }`;
 
   return (
-    <ModalShell isOpen={isOpen} onClose={onClose} title={title} panelClassName="max-h-[90vh] overflow-y-auto">
+    <ModalShell isOpen={isOpen} onClose={onClose} title={title} panelClassName="sm:max-w-lg max-h-[90vh] overflow-y-auto">
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         {isEdit ? (
           <div>

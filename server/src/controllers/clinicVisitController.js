@@ -31,8 +31,9 @@ export const createVisit = asyncHandler(async (req, res) => {
     if (!doctor) {
       throw new ApiError(404, "Therapist user not found");
     }
-    if (doctor.role !== "admin") {
-      throw new ApiError(400, "Therapist must have an 'admin' role");
+    const allowedRoles = ["admin", "intern", "physiotherapist"];
+    if (!allowedRoles.includes(doctor.role)) {
+      throw new ApiError(400, "Therapist must be an admin, intern, or physiotherapist");
     }
   }
 
@@ -148,8 +149,9 @@ export const updateVisit = asyncHandler(async (req, res) => {
       if (!doctor) {
         throw new ApiError(404, "Therapist user not found");
       }
-      if (doctor.role !== "admin") {
-        throw new ApiError(400, "Therapist must have an 'admin' role");
+      const allowedRoles = ["admin", "intern", "physiotherapist"];
+      if (!allowedRoles.includes(doctor.role)) {
+        throw new ApiError(400, "Therapist must be an admin, intern, or physiotherapist");
       }
       visit.therapist = therapist;
     }

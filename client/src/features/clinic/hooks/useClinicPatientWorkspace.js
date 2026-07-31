@@ -93,7 +93,8 @@ export const useClinicPatientWorkspace = () => {
   const fetchDoctors = async () => {
     try {
       const res = await api.get("/notifications/users");
-      const admins = (res.data.users || []).filter((u) => u.role === "admin");
+      const allowedRoles = ["admin", "intern", "physiotherapist"];
+      const admins = (res.data.users || []).filter((u) => allowedRoles.includes(u.role));
       setDoctors(admins);
     } catch (err) {
       console.error("Failed to load doctor registry:", err);

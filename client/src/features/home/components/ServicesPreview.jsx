@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useServices from "../hooks/useServices";
+import useServices from "../../services/hooks/useServices";
 
 // Helper component to render modern medical SVG artwork based on service title
 const ServicesPreview = () => {
@@ -31,7 +31,7 @@ const ServicesPreview = () => {
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
           {services.slice(0, 3).map((service) => (
             <Link 
               to={`/services#service-${service._id}`}

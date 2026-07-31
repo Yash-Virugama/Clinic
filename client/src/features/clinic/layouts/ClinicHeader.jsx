@@ -17,23 +17,32 @@ const ClinicHeader = ({ onMenuClick }) => {
 
   // Determine title based on active path
   const getPageTitle = (path) => {
-    if (path.endsWith("/clinic") || path.endsWith("/clinic/")) {
+    if (path.endsWith("/clinic")) {
       return "Clinic Dashboard";
     }
+    if (path.endsWith("/clinic/dashboard/visits")) {
+      return "Today's Visits";
+    }
+    if (path.endsWith("/clinic/dashboard/appointments")) {
+      return "Today's Appointments";
+    }
+    if (path.endsWith("/clinic/unpaid")) {
+      return "Unpaid Payments";
+    }
     if (path.endsWith("/appointments")) {
-      return "Appointments Manager";
+      return "Appointments";
     }
     if (path.endsWith("/patients")) {
       return "Patient Records";
     }
     if (path.endsWith("/report")) {
-      return "Clinic Analytics & Report";
+      return "Clinic Analytics";
     }
     if (path.includes("/patients/")) {
       return "Patient Workspace";
     }
     if (path.includes("/payments")) {
-      return "Clinic Billing & Payments";
+      return "Clinic Payments";
     }
     return "Clinic Panel";
   };

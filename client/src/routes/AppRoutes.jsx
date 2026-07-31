@@ -154,6 +154,7 @@ const AppRoutes = () => {
           <Route path="profile" element={<DashboardProfile />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="staff" element={<AdminStaffManagement />} />
           <Route path="change-password" element={<ChangePassword />} />
         </Route>
       ))}

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useTestimonials from "../hooks/useTestimonials";
+import useTestimonials from "../../testimonials/hooks/useTestimonials";
 
 const TestimonialsPreview = () => {
   const { testimonials, loading } = useTestimonials();
@@ -33,7 +33,7 @@ const TestimonialsPreview = () => {
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
           {testimonials.slice(0, 3).map((testimonial, idx) => {
             const rating = testimonial.rating || 5;
             const hasImage = !!testimonial.user?.image;
