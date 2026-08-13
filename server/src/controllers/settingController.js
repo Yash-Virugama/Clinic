@@ -14,6 +14,7 @@ export const getSettings = asyncHandler(async (req, res) => {
       heroImage: "", 
       favicon: "",
       pwaIcon: "",
+      receivedSign: "",
       appName: "PhysioCare",
       shortName: "PhysioCare"
     });
@@ -31,6 +32,7 @@ export const updateSettings = asyncHandler(async (req, res) => {
       heroImage: "", 
       favicon: "",
       pwaIcon: "",
+      receivedSign: "",
       appName: "PhysioCare",
       shortName: "PhysioCare"
     });
@@ -72,6 +74,7 @@ export const updateSettings = asyncHandler(async (req, res) => {
   const heroImageFile = req.files?.["heroImage"]?.[0];
   const faviconFile = req.files?.["favicon"]?.[0];
   const pwaIconFile = req.files?.["pwaIcon"]?.[0];
+  const receivedSignFile = req.files?.["receivedSign"]?.[0];
 
   if (logoFile) {
     if (logoFile.size > 5 * 1024 * 1024) {
@@ -139,6 +142,22 @@ export const updateSettings = asyncHandler(async (req, res) => {
       "physio-clinic/brand"
     );
     settings.heroImage = uploaded.secure_url;
+  }
+
+  if (receivedSignFile) {
+    if (receivedSignFile.size > 5 * 1024 * 1024) {
+      throw new ApiError(400, "Signature image size must be under 5MB.");
+    }
+
+    if (settings.receivedSign) {
+      await deleteFromCloudinary(settings.receivedSign);
+    }
+
+    const uploaded = await uploadToCloudinary(
+      receivedSignFile.buffer,
+      "physio-clinic/brand"
+    );
+    settings.receivedSign = uploaded.secure_url;
   }
 
   await settings.save();

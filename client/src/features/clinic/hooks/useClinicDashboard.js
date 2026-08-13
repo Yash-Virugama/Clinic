@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 const useClinicDashboard = () => {
   const [metrics, setMetrics] = useState({
-    totalPatients: 0,
+    visitsTomorrow: 0,
     visitsToday: 0,
     appointmentsToday: 0,
     unpaidPayments: "₹0.00",
@@ -39,6 +39,15 @@ const useClinicDashboard = () => {
         return new Date(v.visitDate).toDateString() === todayStr;
       });
 
+      // Tomorrow's appointments (sessions)
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toDateString();
+      const tomorrowAppointments = appointments.filter((app) => {
+        if (!app.date) return false;
+        return new Date(app.date).toDateString() === tomorrowStr;
+      });
+
       // Filter upcoming scheduled sessions (limit to top 5, today onwards)
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
@@ -52,8 +61,7 @@ const useClinicDashboard = () => {
           appDate.setHours(0, 0, 0, 0);
           return appDate >= todayStart;
         })
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 5);
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
       // Sum unpaid visit amounts
       const unpaidSum = visits
@@ -118,7 +126,7 @@ const useClinicDashboard = () => {
       const recent = Array.from(recentPatientsMap.values()).slice(0, 10);
 
       setMetrics({
-        totalPatients: patients.length,
+        visitsTomorrow: tomorrowAppointments.length,
         visitsToday: todayVisits.length,
         appointmentsToday: todayAppointments.length,
         unpaidPayments: `₹${unpaidSum.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,

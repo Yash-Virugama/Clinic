@@ -74,6 +74,10 @@ const settingSchema = new Schema(
       type: String,
       default: "https://youtube.com",
     },
+    receivedSign: {
+      type: String,
+      default: "", // Stores Cloudinary URL of uploaded signature image
+    },
   },
   { timestamps: true }
 );

@@ -36,6 +36,10 @@ const clinicPatientSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    age: {
+      type: Number,
+      required: true,
+    },
     notes: [noteSchema],
   },
   {

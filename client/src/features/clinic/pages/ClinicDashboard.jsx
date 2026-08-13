@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useClinicDashboard from "../hooks/useClinicDashboard";
 import ClinicSkeleton from "../components/ClinicSkeleton";
 import { useAuth } from "../../../context/AuthContext";
@@ -7,6 +7,8 @@ import { useAuth } from "../../../context/AuthContext";
 const ClinicDashboard = () => {
   const { metrics, upcomingAppointments, recentPatients, loading } = useClinicDashboard();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -64,18 +66,19 @@ const ClinicDashboard = () => {
       )
     },
     {
-      title: "Total Patients",
-      count: metrics.totalPatients,
-      to: `${clinicPrefix}/patients`,
-      label: "Open Directory",
+      title: "Tomorrow's Sessions",
+      count: metrics.visitsTomorrow,
+      to: `${clinicPrefix}/dashboard/tomorrow-visits`,
+      label: "View Sessions",
       color: "border-slate-200/60",
       icon: (
         <svg className="w-6 h-6 text-primary stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.947 11.947 0 0112 20.25a11.953 11.953 0 01-3-1.013v-.11c0-1.112.285-2.16.786-3.07M14.25 5.75a3 3 0 11-6 0 3 3 0 016 0zm-2.23 8.354A11.947 11.947 0 009.65 14.5a11.953 11.953 0 00-3-1.013v-.11a6.002 6.002 0 00-3-5.231m9-3.013A3 3 0 1118 7.5a3 3 0 01-6 0zm-6-2.25a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       )
     },
   ];
+  const displayedAppointments = isExpanded ? upcomingAppointments : upcomingAppointments.slice(0, 5);
 
   return (
     <div className="flex flex-col gap-8 text-left animate-page-entrance">
@@ -159,8 +162,12 @@ const ClinicDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {upcomingAppointments.map((appt) => (
-                      <tr key={appt._id} className="border-b border-slate-200/80 hover:bg-slate-50/50 transition-colors">
+                    {displayedAppointments.map((appt) => (
+                      <tr
+                        key={appt._id}
+                        onClick={() => navigate(`${clinicPrefix}/patients/${appt.patient?._id || appt.patient}`)}
+                        className="border-b border-slate-200/80 hover:bg-slate-50/50 transition-colors cursor-pointer"
+                      >
                         <td className="py-3.5 px-2 font-semibold text-secondary">{appt.patient?.name}</td>
                         <td className="py-3.5 px-2 text-slate-650">{appt.therapist?.name}</td>
                         <td className="py-3.5 px-2 font-mono text-slate-500">
@@ -184,17 +191,18 @@ const ClinicDashboard = () => {
             )}
           </div>
 
-          {upcomingAppointments.length > 0 && (
+          {upcomingAppointments.length > 5 && (
             <div className="mt-6 text-right">
-              <Link
-                to={`${clinicPrefix}/appointments`}
-                className="text-xs font-bold text-primary hover:text-primary-hover uppercase tracking-wider flex items-center justify-end gap-1.5"
+              <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-xs font-bold text-primary hover:text-primary-hover uppercase tracking-wider flex items-center justify-end gap-1.5 cursor-pointer ml-auto"
               >
-                Manage Full Schedule
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                {isExpanded ? "Show Less" : "View All"}
+                <svg className={`w-4 h-4 transform transition-transform duration-250 ${isExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
-              </Link>
+              </button>
             </div>
           )}
         </div>

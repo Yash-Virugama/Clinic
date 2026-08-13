@@ -2,7 +2,7 @@ export const generateClinicPatientId = (patientId, clinicName) => {
   if (!patientId) return "";
   const prefix = clinicName ? clinicName.substring(0, 3).toLowerCase() : "phy";
   const suffix = patientId.substring(patientId.length - 4);
-  return `${prefix}-${suffix}`;
+  return `${prefix}-${suffix}`.toLowerCase();
 };
 
 export const formatDateDDMMYYYY = (dateStr) => {

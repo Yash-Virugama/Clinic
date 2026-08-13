@@ -17,6 +17,7 @@ const useClinicReport = () => {
     todayVisits: { completed: 0, scheduled: 0, cancelled: 0, total: 0 },
   });
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   const fetchReportData = async (option = "this month", customStart = null, customEnd = null) => {
     try {
@@ -138,6 +139,7 @@ const useClinicReport = () => {
               caseId,
               caseName: v.clinicCase.title || "General",
               patientName: v.clinicCase.patient?.name || "Unknown Patient",
+              patientId: v.clinicCase.patient?._id || null,
               paid: 0,
               unpaid: 0,
             };
@@ -153,6 +155,8 @@ const useClinicReport = () => {
       const outstandingPayments = Object.values(casePaymentsMap)
         .filter((item) => item.unpaid > 0)
         .map((item) => ({
+          caseId: item.caseId,
+          patientId: item.patientId,
           patientName: item.patientName,
           caseName: item.caseName,
           totalFee: item.paid + item.unpaid,
@@ -247,12 +251,25 @@ const useClinicReport = () => {
   };
 
   useEffect(() => {
-    fetchReportData("this month");
+    const savedOption = localStorage.getItem("clinic_report_date_range") || "this month";
+    const savedStart = localStorage.getItem("clinic_report_custom_start") || null;
+    const savedEnd = localStorage.getItem("clinic_report_custom_end") || null;
+
+    if (savedOption === "custom" && savedStart && savedEnd) {
+      fetchReportData("custom", savedStart, savedEnd);
+    } else {
+      const fallbackOption = savedOption === "custom" ? "this month" : savedOption;
+      if (savedOption === "custom") {
+        localStorage.setItem("clinic_report_date_range", "this month");
+      }
+      fetchReportData(fallbackOption);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDownloadClinicPatients = async () => {
     try {
+      setDownloading(true);
       const response = await api.get("/export/clinic-patients", {
         responseType: "blob",
       });
@@ -272,12 +289,15 @@ const useClinicReport = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to download clinic patients report.");
+    } finally {
+      setDownloading(false);
     }
   };
 
   return {
     reportData,
     loading,
+    downloading,
     fetchReportData,
     handleDownloadClinicPatients,
   };

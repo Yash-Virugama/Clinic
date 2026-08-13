@@ -8,7 +8,7 @@ import ApiError from "../utils/apiError.js";
 // @route   POST /api/clinic/patients
 // @access  Private/Admin
 export const createPatient = asyncHandler(async (req, res) => {
-  const { name, gender, phone } = req.body;
+  const { name, gender, phone, age } = req.body;
 
   // Optional: check if a patient with the same name and phone already exists to prevent duplicate entry
   const existingPatient = await ClinicPatient.findOne({ name, phone });
@@ -20,6 +20,7 @@ export const createPatient = asyncHandler(async (req, res) => {
     name,
     gender,
     phone,
+    age,
   });
 
   return res.status(201).json({
@@ -99,7 +100,7 @@ export const getPatientById = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 export const updatePatient = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, gender, phone } = req.body;
+  const { name, gender, phone, age } = req.body;
 
   const patient = await ClinicPatient.findById(id);
   if (!patient) {
@@ -109,6 +110,7 @@ export const updatePatient = asyncHandler(async (req, res) => {
   if (name !== undefined) patient.name = name;
   if (gender !== undefined) patient.gender = gender;
   if (phone !== undefined) patient.phone = phone;
+  if (age !== undefined) patient.age = age;
 
   const updatedPatient = await patient.save();
 

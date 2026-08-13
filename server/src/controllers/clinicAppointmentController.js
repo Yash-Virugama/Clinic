@@ -221,3 +221,26 @@ export const deleteAppointment = asyncHandler(async (req, res) => {
     message: "Clinic appointment deleted successfully",
   });
 });
+
+// @desc    Mark appointment reminder as sent
+// @route   PUT /api/clinic/appointments/:id/reminder
+// @access  Private/Admin
+export const markReminderSent = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const appointment = await ClinicAppointment.findById(id);
+  if (!appointment) {
+    throw new ApiError(404, "Clinic appointment not found");
+  }
+
+  appointment.reminderSent = true;
+  appointment.reminderSentAt = new Date();
+
+  await appointment.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Appointment reminder marked as sent",
+    appointment,
+  });
+});

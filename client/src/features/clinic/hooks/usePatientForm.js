@@ -2,12 +2,13 @@ import { useState } from "react";
 import { patientCreateSchema } from "../../../validations/patientSchema";
 import { mapZodErrors } from "../utils/clinicFormatters";
 
-const emptyErrors = { name: "", phone: "" };
+const emptyErrors = { name: "", phone: "", age: "" };
 
 const usePatientForm = ({ addPatient, onSuccess } = {}) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("Male");
+  const [age, setAge] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState(emptyErrors);
 
@@ -15,6 +16,7 @@ const usePatientForm = ({ addPatient, onSuccess } = {}) => {
     setName("");
     setPhone("");
     setGender("Male");
+    setAge("");
     setErrors(emptyErrors);
   };
 
@@ -33,8 +35,15 @@ const usePatientForm = ({ addPatient, onSuccess } = {}) => {
     }
   };
 
+  const handleAgeChange = (value) => {
+    setAge(value);
+    if (value) {
+      setErrors((prev) => ({ ...prev, age: "" }));
+    }
+  };
+
   const validateForm = () => {
-    const result = patientCreateSchema.safeParse({ name, phone, gender });
+    const result = patientCreateSchema.safeParse({ name, phone, gender, age });
     if (!result.success) {
       setErrors(mapZodErrors(result.error.issues, emptyErrors));
       return false;
@@ -54,6 +63,7 @@ const usePatientForm = ({ addPatient, onSuccess } = {}) => {
         name: name.trim(),
         phone: phone.trim(),
         gender,
+        age: parseInt(age, 10),
       });
       resetForm();
       onSuccess?.(result);
@@ -65,13 +75,14 @@ const usePatientForm = ({ addPatient, onSuccess } = {}) => {
   };
 
   return {
-    values: { name, phone, gender },
+    values: { name, phone, gender, age },
     setGender,
     submitting,
     errors,
     resetForm,
     handleNameChange,
     handlePhoneChange,
+    handleAgeChange,
     handleSubmit,
   };
 };

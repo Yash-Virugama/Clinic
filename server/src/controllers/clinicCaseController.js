@@ -2,6 +2,7 @@ import { ClinicCase } from "../models/clinicCase.js";
 import { ClinicPatient } from "../models/clinicPatient.js";
 import { ClinicVisit } from "../models/clinicVisit.js";
 import { User } from "../models/user.js";
+import { Setting } from "../models/setting.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 
@@ -179,5 +180,40 @@ export const updateCasePayments = asyncHandler(async (req, res) => {
   return res.status(200).json({
     message: `Successfully updated payments for ${visits.length} sessions under this case.`,
     updatedCount: visits.length,
+  });
+});
+
+// @desc    Get public invoice details for a clinic case
+// @route   GET /api/clinic/cases/public/invoice/:id
+// @access  Public
+export const getPublicInvoiceData = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const clinicCase = await ClinicCase.findById(id)
+    .populate("patient")
+    .populate("consultingDoctor", "name");
+
+  if (!clinicCase) {
+    throw new ApiError(404, "Clinic case not found");
+  }
+
+  const patient = clinicCase.patient;
+  if (!patient) {
+    throw new ApiError(404, "Patient not found associated with this case");
+  }
+
+  // Fetch all visits for this case
+  const visits = await ClinicVisit.find({ clinicCase: id })
+    .populate("therapist", "name")
+    .sort({ date: 1, time: 1 });
+
+  // Fetch settings
+  const settings = await Setting.findOne() || {};
+
+  return res.status(200).json({
+    patient,
+    clinicCase,
+    visits,
+    settings,
   });
 });

@@ -7,6 +7,8 @@ import { formatDateDDMMYYYY } from "../utils/clinicFormatters";
 import ModalShell from "../../../components/ui/ModalShell";
 import CustomSelect from "../../../components/ui/CustomSelect";
 import useClinicPaymentWorkspace from "../hooks/useClinicPaymentWorkspace";
+import { printInvoice } from "../utils/invoicePrinter";
+import { normalizePhoneNumber, generateWhatsAppLink } from "../utils/whatsappUtils";
 
 const getCaseStatusClass = (status) => {
   switch (status) {
@@ -67,6 +69,49 @@ const ClinicPaymentIndividual = () => {
     updateVisitPaymentStatus,
   } = workspace;
 
+  const handleDownloadInvoiceDirect = (c) => {
+    const caseVisits = visits.filter((v) => (v.clinicCase?._id || v.clinicCase) === c._id);
+    printInvoice({
+      patient,
+      clinicCase: c,
+      visits: caseVisits,
+      settings,
+      patientCode: getPatientCode(),
+    });
+  };
+
+  const handleShareInvoiceDirect = (c) => {
+    const rawPhone = patient.phone;
+    if (!rawPhone) {
+      toast.error("Patient does not have a phone number registered.");
+      return;
+    }
+
+    const normalized = normalizePhoneNumber(rawPhone);
+    if (normalized.length < 10) {
+      toast.error("Patient phone number format is invalid.");
+      return;
+    }
+
+    const clinicName = settings?.name || "PhysioCare";
+    const caseTitle = c.title || "Physiotherapy Case";
+    const invoiceLink = `${window.location.origin}/public/invoice/${c._id}`;
+
+    const message = `Hello ${patient.name} \u{1F44B}
+
+This is an invoice update from ${clinicName}.
+
+Please find the link to view and print your invoice for ${caseTitle} below:
+
+${invoiceLink}
+
+Thank you!`;
+
+    const waUrl = generateWhatsAppLink(rawPhone, message);
+    window.open(waUrl, "_blank");
+    toast.success("Opening WhatsApp to share invoice...");
+  };
+
   if (loading) {
     return <ClinicSkeleton type="details" />;
   }
@@ -125,7 +170,7 @@ const ClinicPaymentIndividual = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
-              <span>Code: <strong className="font-mono  text-slate-650">{getPatientCode()}</strong></span>
+              <span>Code: <strong className="font-mono  text-slate-650 uppercase">{getPatientCode()}</strong></span>
               <span>Phone: <strong className="text-slate-650 ">{patient.phone}</strong></span>
             </p>
           </div>
@@ -190,15 +235,45 @@ const ClinicPaymentIndividual = () => {
                       </div>
                     </div>
 
-                    <svg
-                      className={`w-5 h-5 text-slate-400 transform transition-transform duration-250 ${isExpanded ? "rotate-180" : ""}`}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
+                    <div className="flex items-center gap-1.5 sm:gap-3">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadInvoiceDirect(c);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 rounded-lg transition-colors cursor-pointer animate-fade-in"
+                        title="Download Invoice"
+                      >
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShareInvoiceDirect(c);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer animate-fade-in"
+                        title="Share Invoice via WhatsApp"
+                      >
+                        {/* WhatsApp icon */}
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.835-2.277c1.662.986 3.29 1.48 4.908 1.48 5.61 0 10.174-4.567 10.177-10.177.002-2.72-1.055-5.277-2.978-7.202-1.92-1.923-4.474-2.98-7.193-2.98-5.617 0-10.183 4.568-10.187 10.18-.001 1.716.46 3.39 1.332 4.887L1.134 22.86l4.758-1.248c1.33.727 2.298 1.057 3.821.111zm11.758-7.795c-.29-.145-1.72-.848-1.986-.944-.266-.096-.46-.145-.653.145-.193.29-.747.944-.916 1.137-.168.193-.337.217-.627.072-2.31-1.036-3.873-2.247-5.068-4.298-.266-.458.266-.426.762-1.417.085-.17.042-.317-.02-.462-.064-.145-.653-1.572-.895-2.152-.236-.569-.475-.49-.653-.5-.17-.008-.363-.01-.556-.01-.193 0-.507.072-.772.36-.266.29-1.014.992-1.014 2.417s1.037 2.802 1.182 2.995c.145.193 2.036 3.11 4.931 4.36.688.297 1.226.475 1.643.607.69.219 1.32.188 1.817.114.553-.082 1.72-.703 1.961-1.383.24-.68.24-1.263.168-1.383-.072-.12-.265-.192-.555-.337z" />
+                        </svg>
+                      </button>
+                      <svg
+                        className={`w-4 h-4 sm:w-5 sm:h-5 text-slate-400 hover:text-primary transform transition-transform duration-250 ${isExpanded ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </div>
                   </div>
 
                   {/* Case Content Accordion */}

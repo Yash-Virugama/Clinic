@@ -13,6 +13,11 @@ export const clinicPatientCreateSchema = z.object({
     .string()
     .trim()
     .regex(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+  age: z.coerce
+    .number({ invalid_type_error: "Age must be a valid number" })
+    .int("Age must be a whole number")
+    .min(0, "Age must be at least 0")
+    .max(120, "Age cannot exceed 120"),
 });
 
 export const clinicPatientUpdateSchema = z.object({
@@ -29,6 +34,12 @@ export const clinicPatientUpdateSchema = z.object({
     .string()
     .trim()
     .regex(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
+    .optional(),
+  age: z.coerce
+    .number()
+    .int("Age must be a whole number")
+    .min(0, "Age must be at least 0")
+    .max(120, "Age cannot exceed 120")
     .optional(),
 });
 

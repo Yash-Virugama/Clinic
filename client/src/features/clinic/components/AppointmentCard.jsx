@@ -1,4 +1,5 @@
 import { formatDateDDMMYYYY, formatTimeRange } from "../utils/clinicFormatters";
+import WhatsAppReminderButton from "./WhatsAppReminderButton";
 
 const statusClassName = (status) => {
   if (status === "complete") return "bg-emerald-50 text-emerald-600 border-emerald-200";
@@ -16,6 +17,7 @@ const AppointmentCard = ({
   onOpenPatient,
   onUpdateStatus,
   onDelete,
+  isTomorrowPage = false,
 }) => {
   const isMenuOpen = activeMenuId === appointment._id;
   const statusLabel = appointment.status
@@ -91,6 +93,7 @@ const AppointmentCard = ({
                     >
                       Complete
                     </button>
+                    
                     <button
                       type="button"
                       onClick={(event) => {
@@ -126,11 +129,25 @@ const AppointmentCard = ({
                     >
                       Missed
                     </button>
+                    {isTomorrowPage && (
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onEdit(appointment);
+                          setActiveMenuId(null);
+                        }}
+                        className="w-full px-4 py-2 text-xs font-extrabold font-accent text-blue-600 hover:bg-blue-50/40 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+                      >
+                        Edit
+                      </button>
+                    )}
 
                     {/* Divider */}
                     <div className="border-t border-slate-200 my-0.5"></div>
 
                     {onDelete && (
+                      
                       <button
                         type="button"
                         onClick={(event) => {
@@ -183,19 +200,27 @@ const AppointmentCard = ({
           <span>{appointment.therapist?.name}</span>
         </div>
 
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onEdit(appointment);
-          }}
-          className="flex gap-1 border border-primary/80 text-primary hover:bg-primary/5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer"
-        >
-          <svg className="w-3.5 h-3.5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-          </svg>
-          Edit
-        </button>
+        <div className="flex items-center gap-2">
+          {isTomorrowPage && appointment.status === "scheduled" && (
+            <WhatsAppReminderButton appointment={appointment} />
+          )}
+
+          {!isTomorrowPage && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdit(appointment);
+              }}
+              className="flex gap-1 border border-primary/80 text-primary hover:bg-primary/5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+              </svg>
+              Edit
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -223,12 +223,13 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
     worksheet.getColumn(2).width = 25;  // Name
     worksheet.getColumn(3).width = 18;  // Phone
     worksheet.getColumn(4).width = 15;  // Gender
-    worksheet.getColumn(5).width = 20;  // Registered On
-    worksheet.getColumn(6).width = 40;  // Clinic Cases
-    worksheet.getColumn(7).width = 45;  // Notes Summary
+    worksheet.getColumn(5).width = 10;  // Age
+    worksheet.getColumn(6).width = 20;  // Registered On
+    worksheet.getColumn(7).width = 40;  // Clinic Cases
+    worksheet.getColumn(8).width = 45;  // Notes Summary
 
     // Centered titles layout
-    worksheet.mergeCells("A1:G1");
+    worksheet.mergeCells("A1:H1");
     const titleCell = worksheet.getCell("A1");
     titleCell.value = clinicName;
     titleCell.font = {
@@ -243,7 +244,7 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
     };
     worksheet.getRow(1).height = 35;
 
-    worksheet.mergeCells("A2:G2");
+    worksheet.mergeCells("A2:H2");
     const reportTitle = worksheet.getCell("A2");
     reportTitle.value = "Clinic Patients Registry Directory";
     reportTitle.font = {
@@ -262,9 +263,9 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
     worksheet.getCell("A4").value = `Generated On: ${new Date().toLocaleString()}`;
     worksheet.getCell("A4").font = { name: "Calibri", size: 10, italic: true, color: { argb: "64748B" } };
 
-    worksheet.getCell("G4").value = `Total Clinic Patients: ${patients.length}`;
-    worksheet.getCell("G4").font = { name: "Calibri", size: 11, bold: true, color: { argb: "0F172A" } };
-    worksheet.getCell("G4").alignment = { horizontal: "right" };
+    worksheet.getCell("H4").value = `Total Clinic Patients: ${patients.length}`;
+    worksheet.getCell("H4").font = { name: "Calibri", size: 11, bold: true, color: { argb: "0F172A" } };
+    worksheet.getCell("H4").alignment = { horizontal: "right" };
 
     // Header Table Row
     const headerRow = worksheet.getRow(6);
@@ -273,6 +274,7 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
         "Name",
         "Phone",
         "Gender",
+        "Age",
         "Registered On",
         "Clinic Cases",
         "Notes Summary",
@@ -324,6 +326,7 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
             patient.name,
             patient.phone || "-",
             patient.gender || "-",
+            patient.age || "-",
             patient.createdAt ? new Date(patient.createdAt).toLocaleDateString() : "-",
             casesText,
             notesText,
@@ -340,7 +343,7 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
             
             cell.alignment = {
                 vertical: "middle",
-                horizontal: colNumber === 2 || colNumber === 6 || colNumber === 7 ? "left" : "center",
+                horizontal: colNumber === 2 || colNumber === 7 || colNumber === 8 ? "left" : "center",
             };
         });
 
@@ -362,7 +365,7 @@ export const exportClinicPatients = asyncHandler(async (req, res) => {
 
     worksheet.autoFilter = {
         from: "A6",
-        to: "G6",
+        to: "H6",
     };
 
     worksheet.pageSetup = {

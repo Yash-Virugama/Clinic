@@ -1,13 +1,32 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 import useClinicReport from "../hooks/useClinicReport";
 import ClinicSkeleton from "../components/ClinicSkeleton";
 import CustomSelect from "../../../components/ui/CustomSelect";
 
 const ClinicReport = () => {
-  const { reportData, loading, fetchReportData, handleDownloadClinicPatients } = useClinicReport();
-  const [dateRangeOption, setDateRangeOption] = useState("this month");
-  const [customStartDate, setCustomStartDate] = useState("");
-  const [customEndDate, setCustomEndDate] = useState("");
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const clinicPrefix = user?.role === "admin" ? "/clinic" : `/staff/${user?.role}/clinic`;
+
+  const { reportData, loading, downloading, fetchReportData, handleDownloadClinicPatients } = useClinicReport();
+  const [dateRangeOption, setDateRangeOption] = useState(() => {
+    const savedOption = localStorage.getItem("clinic_report_date_range") || "this month";
+    const savedStart = localStorage.getItem("clinic_report_custom_start") || null;
+    const savedEnd = localStorage.getItem("clinic_report_custom_end") || null;
+    if (savedOption === "custom" && (!savedStart || !savedEnd)) {
+      return "this month";
+    }
+    return savedOption;
+  });
+  const [customStartDate, setCustomStartDate] = useState(() => {
+    return localStorage.getItem("clinic_report_custom_start") || "";
+  });
+  const [customEndDate, setCustomEndDate] = useState(() => {
+    return localStorage.getItem("clinic_report_custom_end") || "";
+  });
+  const [showAllOutstanding, setShowAllOutstanding] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -39,6 +58,7 @@ const ClinicReport = () => {
 
   const handleRangeChange = (opt) => {
     setDateRangeOption(opt);
+    localStorage.setItem("clinic_report_date_range", opt);
     if (opt !== "custom") {
       fetchReportData(opt);
     }
@@ -46,6 +66,8 @@ const ClinicReport = () => {
 
   const applyCustomRange = () => {
     if (!customStartDate || !customEndDate) return;
+    localStorage.setItem("clinic_report_custom_start", customStartDate);
+    localStorage.setItem("clinic_report_custom_end", customEndDate);
     fetchReportData("custom", customStartDate, customEndDate);
   };
 
@@ -63,12 +85,25 @@ const ClinicReport = () => {
           <button
             type="button"
             onClick={handleDownloadClinicPatients}
-            className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm shrink-0 flex items-center justify-center gap-2 font-accent"
+            disabled={downloading}
+            className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm shrink-0 flex items-center justify-center gap-2 font-accent disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V3m0 0L7.5 7.5M12 3l4.5 4.5M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5" />
-            </svg>
-            <span>Download Patients</span>
+            {downloading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span>Downloading...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V3m0 0L7.5 7.5M12 3l4.5 4.5M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5" />
+                </svg>
+                <span>Download Patients</span>
+              </>
+            )}
           </button>
 
           <div className="w-full sm:w-48 shrink-0">
@@ -218,30 +253,73 @@ const ClinicReport = () => {
               <p className="text-xs text-slate-500 mt-1">There are no pending balances across all cases at this time.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto border border-slate-100 rounded-2xl">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/75 border-b border-slate-100">
-                    <th className="ps-5 pe-15 sm:pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Patient</th>
-                    <th className="pe-15 sm:pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Case</th>
-                    <th className="pe-3.5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Total Fee</th>
-                    <th className="ps-3 pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Paid</th>
-                    <th className="ps-3 pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Unpaid</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {outstandingPayments.map((p, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/30 transition-colors">
-                      <td className="px-5 py-3.5 text-xs font-bold text-slate-700">{p.patientName}</td>
-                      <td className="pe-5 py-3.5 text-xs text-slate-650 font-medium">{p.caseName}</td>
-                      <td className="pe-5 py-3.5 text-xs font-mono font-bold text-slate-650">₹{p.totalFee.toFixed(2)}</td>
-                      <td className="ps-3 pe-5 py-3.5 text-xs font-mono font-bold text-emerald-600">₹{p.paid.toFixed(2)}</td>
-                      <td className="ps-3 pe-5 py-3.5 text-xs font-mono font-bold text-rose-600">₹{p.unpaid.toFixed(2)}</td>
+            <>
+              <div className="overflow-x-auto border border-slate-100 rounded-2xl">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/75 border-b border-slate-100">
+                      <th className="ps-5 pe-15 sm:pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Patient</th>
+                      <th className="pe-15 sm:pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Case</th>
+                      <th className="pe-3.5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Total Fee</th>
+                      <th className="ps-3 pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Paid</th>
+                      <th className="ps-3 pe-5 py-3.5 text-[10px] font-bold text-slate-450 uppercase tracking-wider">Unpaid</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(showAllOutstanding ? outstandingPayments : outstandingPayments.slice(0, 5)).map((p, idx) => (
+                      <tr
+                        key={idx}
+                        onClick={() => p.patientId && navigate(`${clinicPrefix}/payments/${p.patientId}?openCase=${p.caseId}`)}
+                        className="hover:bg-slate-50 cursor-pointer transition-colors"
+                        title="Click to view billing details and open case"
+                      >
+                        <td className="px-5 py-3.5 text-xs font-bold text-slate-700">{p.patientName}</td>
+                        <td className="pe-5 py-3.5 text-xs text-slate-650 font-medium">{p.caseName}</td>
+                        <td className="pe-5 py-3.5 text-xs font-mono font-bold text-slate-650">₹{p.totalFee.toFixed(2)}</td>
+                        <td className="ps-3 pe-5 py-3.5 text-xs font-mono font-bold text-emerald-600">₹{p.paid.toFixed(2)}</td>
+                        <td className="ps-3 pe-5 py-3.5 text-xs font-mono font-bold text-rose-600">₹{p.unpaid.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {outstandingPayments.length > 5 && (
+                <div className="mt-4 flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllOutstanding(!showAllOutstanding)}
+                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    {showAllOutstanding ? (
+                      <>
+                        <span>Show Less</span>
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        <span>View All ({outstandingPayments.length - 5} more)</span>
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+
+                  <Link
+                    to={`${clinicPrefix}/unpaid`}
+                    className="text-[10px] font-bold text-slate-450 hover:text-secondary uppercase tracking-wider font-accent transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Full Ledger</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </div>
 

@@ -38,6 +38,24 @@ const PatientFormModal = ({ isOpen, onClose, title, form, submitLabel = "Registe
 
       <div>
         <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-accent block mb-1.5">
+          Age (in years)
+        </label>
+        <input
+          type="number"
+          value={form.values.age}
+          onChange={(e) => form.handleAgeChange(e.target.value)}
+          placeholder="e.g. 28"
+          min="0"
+          max="120"
+          className={`w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-xs text-secondary placeholder:text-slate-400 focus:outline-none focus:bg-white transition-all font-medium ${
+            form.errors.age ? "border-rose-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-200" : "border-slate-200 focus:border-primary"
+          }`}
+        />
+        {form.errors.age && <p className="text-[10px] text-rose-500 font-bold uppercase mt-1">{form.errors.age}</p>}
+      </div>
+
+      <div>
+        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-accent block mb-1.5">
           Gender
         </label>
         <CustomSelect

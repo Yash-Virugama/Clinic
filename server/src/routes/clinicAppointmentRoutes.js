@@ -5,6 +5,7 @@ import {
   getAppointmentById,
   updateAppointment,
   deleteAppointment,
+  markReminderSent,
 } from "../controllers/clinicAppointmentController.js";
 import { protect, authorizePermissions } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validateMiddleware.js";
@@ -28,5 +29,7 @@ router
   .get(authorizePermissions("appointments:view"), getAppointmentById)
   .put(authorizePermissions("appointments:manage"), validate(clinicAppointmentUpdateSchema), updateAppointment)
   .delete(authorizePermissions("appointments:manage"), deleteAppointment);
+
+router.put("/:id/reminder", authorizePermissions("appointments:manage"), markReminderSent);
 
 export default router;

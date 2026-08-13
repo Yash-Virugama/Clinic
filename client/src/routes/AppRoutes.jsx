@@ -57,6 +57,8 @@ import ClinicPaymentIndividual from "../features/clinic/pages/ClinicPaymentIndiv
 import ClinicTodayVisits from "../features/clinic/pages/ClinicTodayVisits";
 import ClinicTodayAppointments from "../features/clinic/pages/ClinicTodayAppointments";
 import ClinicUnpaidCases from "../features/clinic/pages/ClinicUnpaidCases";
+import ClinicTomorrowVisits from "../features/clinic/pages/ClinicTomorrowVisits";
+import PublicInvoiceView from "../features/clinic/pages/PublicInvoiceView";
 
 
 const AppRoutes = () => {
@@ -81,6 +83,7 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/staff/register/:token" element={<StaffRegister />} />
+      <Route path="/public/invoice/:caseId" element={<PublicInvoiceView />} />
 
       {/* Protected */}
       <Route path="/dashboard" element={<ProtectedRoute> <DashboardLayout /> </ProtectedRoute>} >
@@ -124,6 +127,7 @@ const AppRoutes = () => {
       >
         <Route index element={<ClinicDashboard />} />
         <Route path="dashboard/visits" element={<ClinicTodayVisits />} />
+        <Route path="dashboard/tomorrow-visits" element={<ClinicTomorrowVisits />} />
         <Route path="dashboard/appointments" element={<ClinicTodayAppointments />} />
         <Route path="unpaid" element={<ClinicUnpaidCases />} />
         <Route path="appointments" element={<ClinicAppointments />} />
@@ -172,6 +176,7 @@ const AppRoutes = () => {
         >
           <Route index element={<ClinicDashboard />} />
           <Route path="dashboard/visits" element={<ClinicTodayVisits />} />
+          <Route path="dashboard/tomorrow-visits" element={<ClinicTomorrowVisits />} />
           <Route path="dashboard/appointments" element={<ClinicTodayAppointments />} />
           <Route path="unpaid" element={<ClinicUnpaidCases />} />
           <Route path="appointments" element={<ClinicAppointments />} />

@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../../api/axios";
 import { useBranding } from "../../../context/BrandingContext";
+import { generateClinicPatientId } from "../utils/clinicFormatters";
 
 export const useClinicPaymentWorkspace = () => {
   const { id } = useParams();
@@ -84,7 +85,7 @@ export const useClinicPaymentWorkspace = () => {
 
   const getPatientCode = () => {
     if (!patient) return "—";
-    return ((settings?.name?.slice(0, 3).toUpperCase() || "PT") + "-" + id.slice(-4).toUpperCase());
+    return generateClinicPatientId(id, settings?.name);
   };
 
   const getInitials = (name = "") => {

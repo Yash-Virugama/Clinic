@@ -21,7 +21,7 @@ const PatientCard = ({ patient, patientCode, onClick, onDelete }) => (
               ? "bg-purple-50 text-purple-600 border-purple-100"
               : "bg-amber-50 text-amber-600 border-amber-100"
             }`}>
-            {patient.gender}
+            {patient.gender}{patient.age !== undefined ? `, ${patient.age} yrs` : ""}
           </span>
         </div>
       </div>

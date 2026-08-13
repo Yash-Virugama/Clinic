@@ -18,6 +18,7 @@ router.put(
     { name: "heroImage", maxCount: 1 },
     { name: "favicon", maxCount: 1 },
     { name: "pwaIcon", maxCount: 1 },
+    { name: "receivedSign", maxCount: 1 },
   ]),
   validate(settingSchema),
   updateSettings

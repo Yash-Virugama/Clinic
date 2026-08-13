@@ -15,6 +15,11 @@ export const patientCreateSchema = z.object({
     .enum(["Male", "Female", "Other"], {
       errorMap: () => ({ message: "Select a valid gender" }),
     }),
+  age: z.coerce
+    .number({ invalid_type_error: "Age is required and must be a number" })
+    .int("Age must be a whole number")
+    .min(0, "Age must be at least 0")
+    .max(120, "Age cannot exceed 120"),
 });
 
 // Schema for creating a progress note

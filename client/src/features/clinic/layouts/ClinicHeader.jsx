@@ -23,6 +23,9 @@ const ClinicHeader = ({ onMenuClick }) => {
     if (path.endsWith("/clinic/dashboard/visits")) {
       return "Today's Visits";
     }
+    if (path.endsWith("/clinic/dashboard/tomorrow-visits")) {
+      return "Tomorrow's Sessions";
+    }
     if (path.endsWith("/clinic/dashboard/appointments")) {
       return "Today's Appointments";
     }

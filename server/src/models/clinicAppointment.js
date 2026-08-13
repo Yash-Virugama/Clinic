@@ -48,6 +48,13 @@ const clinicAppointmentSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    reminderSent: {
+      type: Boolean,
+      default: false,
+    },
+    reminderSentAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

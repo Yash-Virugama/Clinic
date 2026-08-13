@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const Icon = ({ name, className = "w-4 h-4" }) => {
   const common = { className, fill: "none", stroke: "currentColor", strokeWidth: "2", viewBox: "0 0 24 24" };
@@ -46,6 +48,9 @@ const ProfileRow = ({ icon, label, value }) => (
 );
 
 const PatientProfileCard = ({ patient, patientCode, settings, selectedCase, onEdit, isActive }) => {
+  const { user } = useAuth();
+  const clinicPrefix = user?.role === "admin" ? "/clinic" : `/staff/${user?.role}/clinic`;
+
   return (
     <section className="bg-white border border-slate-200/50 rounded-[28px] shadow-sm p-6">
       <div className="flex gap-5 items-center">
@@ -63,6 +68,13 @@ const PatientProfileCard = ({ patient, patientCode, settings, selectedCase, onEd
             >
               <Icon name="edit" className="w-4 h-4" />
             </button>
+            <Link
+              to={`${clinicPrefix}/payments/${patient._id}`}
+              className="text-slate-400 hover:text-primary flex items-center justify-center transition-colors cursor-pointer text-sm font-bold ml-0.5"
+              title="View billing and payments"
+            >
+              ₹
+            </Link>
           </div>
 
           <div className="flex flex-wrap gap-2 mt-3">
@@ -85,7 +97,7 @@ const PatientProfileCard = ({ patient, patientCode, settings, selectedCase, onEd
       <div className="my-5 border-t border-slate-100" />
 
       <div className="space-y-1">
-        <ProfileRow icon="user" label="Age / Gender" value={`-- / ${patient.gender}`} />
+        <ProfileRow icon="user" label="Age / Gender" value={`${patient.age !== undefined ? patient.age : "--"} / ${patient.gender}`} />
         {/* <ProfileRow icon="calendar" label="Date of Birth" value="—" /> */}
         <ProfileRow icon="phone" label="Phone" value={patient.phone} />
         {/* <ProfileRow icon="mail" label="Email" value="—" /> */}

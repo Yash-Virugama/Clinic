@@ -52,7 +52,8 @@ export const useClinicPatientWorkspace = () => {
   const [editPatientName, setEditPatientName] = useState("");
   const [editPatientPhone, setEditPatientPhone] = useState("");
   const [editPatientGender, setEditPatientGender] = useState("Male");
-  const [editPatientErrors, setEditPatientErrors] = useState({ name: "", phone: "" });
+  const [editPatientAge, setEditPatientAge] = useState("");
+  const [editPatientErrors, setEditPatientErrors] = useState({ name: "", phone: "", age: "" });
   const [editPatientSubmitting, setEditPatientSubmitting] = useState(false);
 
   const fetchPatientWorkspace = async () => {
@@ -112,7 +113,8 @@ export const useClinicPatientWorkspace = () => {
     setEditPatientName(patient.name || "");
     setEditPatientPhone(patient.phone || "");
     setEditPatientGender(patient.gender || "Male");
-    setEditPatientErrors({ name: "", phone: "" });
+    setEditPatientAge(patient.age !== undefined ? patient.age.toString() : "");
+    setEditPatientErrors({ name: "", phone: "", age: "" });
     setIsEditPatientOpen(true);
   };
 
@@ -131,10 +133,17 @@ export const useClinicPatientWorkspace = () => {
     }
   };
 
+  const handleEditPatientAgeChange = (val) => {
+    setEditPatientAge(val);
+    if (val) {
+      setEditPatientErrors((prev) => ({ ...prev, age: "" }));
+    }
+  };
+
   const handleEditPatientSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
-    const newErrors = { name: "", phone: "" };
+    const newErrors = { name: "", phone: "", age: "" };
 
     if (!editPatientName.trim()) {
       newErrors.name = "Patient name is required";
@@ -143,6 +152,12 @@ export const useClinicPatientWorkspace = () => {
 
     if (editPatientPhone.length !== 10) {
       newErrors.phone = "Phone number must be exactly 10 digits";
+      hasError = true;
+    }
+
+    const parsedAge = parseInt(editPatientAge, 10);
+    if (isNaN(parsedAge) || parsedAge < 0 || parsedAge > 120) {
+      newErrors.age = "Age must be a number between 0 and 120";
       hasError = true;
     }
 
@@ -157,6 +172,7 @@ export const useClinicPatientWorkspace = () => {
         name: editPatientName.trim(),
         phone: editPatientPhone.trim(),
         gender: editPatientGender,
+        age: parsedAge,
       });
       setIsEditPatientOpen(false);
       await fetchPatientWorkspace();
@@ -172,11 +188,13 @@ export const useClinicPatientWorkspace = () => {
       name: editPatientName,
       phone: editPatientPhone,
       gender: editPatientGender,
+      age: editPatientAge,
     },
     errors: editPatientErrors,
     submitting: editPatientSubmitting,
     handleNameChange: handleEditPatientNameChange,
     handlePhoneChange: handleEditPatientPhoneChange,
+    handleAgeChange: handleEditPatientAgeChange,
     setGender: setEditPatientGender,
     handleSubmit: handleEditPatientSubmit,
   };
