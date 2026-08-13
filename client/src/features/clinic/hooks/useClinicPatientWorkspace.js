@@ -250,6 +250,7 @@ export const useClinicPatientWorkspace = () => {
           title: formData.title,
           consultingDoctor: formData.consultingDoctor,
           status: formData.status,
+          treatment: formData.treatment,
         });
         toast.success("Case file updated successfully");
       } else {
@@ -258,6 +259,7 @@ export const useClinicPatientWorkspace = () => {
           title: formData.title,
           consultingDoctor: formData.consultingDoctor,
           status: formData.status,
+          treatment: formData.treatment,
         });
         toast.success("New case file opened successfully");
       }
@@ -280,6 +282,7 @@ export const useClinicPatientWorkspace = () => {
         title: caseObj?.title,
         consultingDoctor: caseObj?.consultingDoctor?._id || caseObj?.consultingDoctor,
         status: newStatus,
+        treatment: caseObj?.treatment,
       });
       toast.success(`Case status updated to ${newStatus}`);
       await fetchPatientWorkspace();

@@ -3,12 +3,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { generateClinicPatientId } from "../utils/clinicFormatters";
 
-const getInitials = (name = "") => {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "—";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-};
 
 const PublicInvoiceView = () => {
   const { caseId } = useParams();
@@ -20,8 +14,9 @@ const PublicInvoiceView = () => {
     const fetchInvoiceData = async () => {
       try {
         setLoading(true);
-        // Direct public call bypassing auth interceptors
-        const res = await axios.get(`/api/clinic/cases/public/invoice/${caseId}`);
+        // Direct public call bypassing auth interceptors, targeting the backend server
+        const apiBase = import.meta.env.VITE_API_URL || "/api";
+        const res = await axios.get(`${apiBase}/clinic/cases/public/invoice/${caseId}`);
         setData(res.data);
       } catch (err) {
         console.error("Error fetching public invoice:", err);
@@ -60,8 +55,8 @@ const PublicInvoiceView = () => {
     );
   }
 
-  const { patient, clinicCase, visits, settings } = data;
-  const chargesPerDay = visits.length > 0 ? visits[0].paymentAmount : 0;
+  const { patient = {}, clinicCase = {}, visits = [], settings = {} } = data || {};
+  const chargesPerDay = visits.length > 0 ? (visits[0]?.paymentAmount || 0) : 0;
   const patientCode = generateClinicPatientId(patient._id, settings?.name);
 
   // Date day calculations matching invoicePrinter.js
@@ -82,12 +77,44 @@ const PublicInvoiceView = () => {
   const invoiceNo = patientCode;
   const currentDateStr = new Date().toLocaleDateString("en-IN");
 
+  const isPaid = visits.length > 0 && visits.every((v) => v.paymentStatus === "Paid");
+  const paymentStatus = isPaid ? "Paid" : "Unpaid";
+
   const handlePrint = () => {
     window.print();
   };
 
   return (
     <div className="min-h-screen bg-slate-100/50 py-10 px-4 flex flex-col items-center">
+      <style dangerouslySetInnerHTML={{__html: `
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          box-sizing: border-box;
+        }
+        .invoice-container {
+          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        }
+        @page {
+          margin: 10mm 12mm;
+        }
+        @media print {
+          body {
+            background-color: white !important;
+          }
+          .invoice-container {
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+        }
+      `}} />
       {/* Top Action Bar (hidden during printing) */}
       <div className="w-full max-w-[650px] bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center mb-6 print:hidden animate-fade-in">
         <div className="flex items-center gap-2">
@@ -108,109 +135,163 @@ const PublicInvoiceView = () => {
       </div>
 
       {/* Main Invoice Container */}
-      <div className="invoice-container w-full max-w-[650px] border-2 border-black p-6 flex flex-col bg-white box-border text-black shadow-sm print:shadow-none print:border-2 print:border-black print:my-0 print:mx-auto">
-        {/* Logos and Clinic Name Row */}
-        <div className="flex justify-between items-center gap-4 mb-1">
-          <div className="w-[20%] flex justify-start items-center">
-            {settings.logo ? (
-              <img src={settings.logo} alt="Logo" className="max-h-[70px] max-w-[120px] object-contain" />
-            ) : (
-              <div className="w-[70px] h-[70px] bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-500 text-2xl">
-                {getInitials(settings.name)}
-              </div>
-            )}
-          </div>
-          <div className="w-[60%] flex flex-col items-center justify-center text-center">
-            <h1 className="text-3xl font-black tracking-wide uppercase font-serif m-0">{settings.name}</h1>
-            <div className="flex items-center justify-center w-full mt-1.5">
-              <div className="flex-grow h-[2px] bg-black"></div>
-              <span className="px-2.5 text-xs font-bold uppercase tracking-wider shrink-0">Physiotherapy Clinic</span>
-              <div className="flex-grow h-[2px] bg-black"></div>
+      <div className="invoice-container w-full max-w-[650px] border border-slate-200 px-5 py-7 flex flex-col bg-white rounded-none shadow-md box-border text-slate-700 print:shadow-none print:border print:border-slate-200 print:my-0 print:mx-auto">
+        {/* Logo and Header block */}
+        <div className="flex justify-between items-start gap-6">
+          <div className="flex flex-col text-left">
+            <div className="px-5 py-2.5 text-white text-sm font-extrabold uppercase tracking-widest rounded-none shadow-sm" style={{ backgroundColor: "var(--primary)" }}>
+              {settings.name || "PhysioCare"}
+            </div>
+            <div className="text-[10px] text-slate-500 font-bold mt-4 space-y-1.5 leading-relaxed font-accent tracking-wider">
+              <p className="m-0 text-slate-600 font-semibold">{settings.address || "Address not available"}</p>
+              <p className="m-0 text-slate-500 font-medium">☎ {settings.phone || "Phone not available"}</p>
+              <p className="m-0 lowercase font-semibold text-slate-500">{(settings.emailGeneral || settings.email || "").toLowerCase()}</p>
             </div>
           </div>
-          <div className="w-[20%] flex justify-end items-center">
-            <img src="/caduceus.png" alt="Caduceus" className="max-h-[70px] max-w-[120px] object-contain" />
+
+          <div className="flex flex-col items-end">
+            <h1 className="text-3xl font-black tracking-widest uppercase m-0 leading-none" style={{ color: "var(--primary)" }}>INVOICE</h1>
+            
+            <table className="border border-slate-200 text-[10px] font-bold mt-4 w-52 border-collapse overflow-hidden rounded-none shadow-sm bg-white">
+              <tbody>
+                <tr className="border-b border-slate-200">
+                  <td className="px-3.5 py-2 text-white w-20 text-center uppercase tracking-wider font-extrabold border-r border-slate-250" style={{ backgroundColor: "var(--primary)" }}>DATE</td>
+                  <td className="px-3.5 py-2 text-slate-750 bg-white text-center font-mono font-medium">{currentDateStr}</td>
+                </tr>
+                <tr className="border-b border-slate-200">
+                  <td className="px-3.5 py-2 text-white w-20 text-center uppercase tracking-wider font-extrabold border-r border-slate-250" style={{ backgroundColor: "var(--primary)" }}>INVOICE NO.</td>
+                  <td className="px-3.5 py-2 text-slate-750 bg-white text-center font-mono font-medium">{invoiceNo}</td>
+                </tr>
+                <tr>
+                  <td className="px-3.5 py-2 text-white w-20 text-center uppercase tracking-wider font-extrabold border-r border-slate-250" style={{ backgroundColor: "var(--primary)" }}>STATUS</td>
+                  <td className={`px-3.5 py-2 text-slate-750 bg-white text-center uppercase font-black ${paymentStatus === "Paid" ? "text-emerald-600 font-black" : "text-amber-500 font-black"}`}>{paymentStatus}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="w-full h-[1.5px] bg-black my-2.5"></div>
+        <div className="w-full h-[1px] bg-slate-100 my-6"></div>
 
-        {/* Address and Phone centered */}
-        <div className="text-center text-[11px] font-bold leading-normal mb-1">
-          <p className="m-0.5">{settings.address || "Address not available"}</p>
-          <p className="m-0.5">☎ {settings.phone || "Phone not available"}</p>
-        </div>
-
-        <div className="w-full h-[1px] bg-black mt-1 mb-2.5"></div>
-
-        {/* Meta details layout */}
-        <div className="mt-3.5 text-xs font-bold leading-loose text-left">
-          <div className="flex justify-between mb-2">
-            <div className="flex w-[45%] items-baseline">
-              <span className="shrink-0">No.</span>
-              <div className="border-b border-black flex-grow ml-1.5 pl-1.5 font-normal">{invoiceNo}</div>
+        {/* Bill To & Invoice Details */}
+        <div className="grid grid-cols-2 gap-6">
+          <div className="border border-slate-200 rounded-none overflow-hidden flex flex-col text-left shadow-sm bg-white">
+            <div className="px-4 py-2.5 text-[10px] font-bold text-white uppercase tracking-wider" style={{ backgroundColor: "var(--primary)" }}>
+              BILL TO
             </div>
-            <div className="flex w-[45%] items-baseline">
-              <span className="shrink-0">Date:</span>
-              <div className="border-b border-black flex-grow ml-1.5 pl-1.5 font-normal">{currentDateStr}</div>
+            <div className="p-4 text-xs font-bold text-slate-700 space-y-1">
+              <p className="m-0 text-secondary text-sm font-extrabold">{patient.name}</p>
+              <p className="m-0 text-slate-500 font-semibold">{patient.phone || "—"}</p>
             </div>
           </div>
-          <div className="flex w-full items-baseline mb-2">
-            <span className="shrink-0">Name:</span>
-            <div className="border-b border-black flex-grow ml-1.5 pl-1.5 font-normal">
-              {patient.name} ({patient.phone || "—"})
+
+          <div className="border border-slate-200 rounded-none overflow-hidden flex flex-col text-left shadow-sm bg-white">
+            <div className="px-4 py-2.5 text-[10px] font-bold text-white uppercase tracking-wider" style={{ backgroundColor: "var(--primary)" }}>
+              INVOICE DETAILS
+            </div>
+            <div className="p-4 text-xs font-bold text-slate-750 space-y-1.5 leading-relaxed bg-bg-offwhite">
+              <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Patient Ref:</span> <span className="text-secondary font-extrabold font-mono">{patientCode}</span></div>
+              <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Due Date:</span> <span className="text-secondary font-extrabold">{endDateStr}</span></div>
+              <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Case:</span> <span className="text-secondary font-extrabold">{clinicCase.title}</span></div>
             </div>
           </div>
         </div>
 
         {/* Main Invoice Table */}
-        <table className="w-full border-collapse border border-black mt-4 table">
-          <thead>
-            <tr className="border-b border-black">
-              <th className="w-[10%] border-r border-black p-1.5 text-xs font-bold uppercase text-center">Sr. No.</th>
-              <th className="w-[90%] p-1.5 text-xs font-bold uppercase text-center">PHYSIOTHERAPY</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-black">
-              <td className="w-[10%] border-r border-black p-2.5 text-center align-top font-bold">1</td>
-              <td className="w-[90%] p-2.5 align-top text-left">
-                <div className="flex flex-col justify-between min-h-[220px] h-full w-full">
-                  <div className="text-sm font-bold mb-5">Case Name: {clinicCase.title}</div>
-                  
-                  <div className="text-xs font-bold leading-relaxed mt-auto pt-10">
-                    <div>Date : {startDateStr} to {endDateStr}</div>
-                    <div>Charges Per Day : ₹ {chargesPerDay.toFixed(2)}</div>
-                    <div>Days : {daysCount}</div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr className="h-10">
-              <td className="border-r border-black"></td>
-              <td className="text-right font-bold text-xs p-2">
-                Total &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₹ {totalAmount.toFixed(2)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="border border-slate-200 rounded-none overflow-hidden mt-6 shadow-sm">
+          <table className="w-full text-xs font-semibold text-slate-700 text-left border-collapse">
+            <thead>
+              <tr className="text-white text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: "var(--primary)" }}>
+                <th className="w-[5%] py-2.5 px-4 text-center border-r border-white/10">#</th>
+                <th className="w-[50%] py-2.5 px-4 border-r border-white/10">Description</th>
+                <th className="w-[10%] py-2.5 px-4 text-center border-r border-white/10">QTY</th>
+                <th className="w-[15%] py-2.5 px-4 text-right border-r border-white/10">Unit Price</th>
+                <th className="w-[20%] py-2.5 px-4 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-slate-200 hover:bg-slate-50/20 bg-white">
+                <td className="py-3 px-4 text-center border-r border-slate-200 font-bold">1</td>
+                <td className="py-3 px-4 border-r border-slate-200 text-left">
+                  <div className="font-extrabold text-secondary text-xs">{clinicCase.treatment || "Physiotherapy Session"}</div>
+                  <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">{startDateStr} – {endDateStr}</div>
+                </td>
+                <td className="py-3 px-4 text-center border-r border-slate-200 font-mono font-bold">{daysCount}</td>
+                <td className="py-3 px-4 text-right border-r border-slate-200 font-mono whitespace-nowrap">₹ {chargesPerDay.toFixed(2)}</td>
+                <td className="py-3 px-4 text-right font-mono font-bold whitespace-nowrap">₹ {totalAmount.toFixed(2)}</td>
+              </tr>
+              {/* Empty rows for design padding matching the screenshot */}
+              <tr className="bg-slate-50/10 border-b border-slate-200/50 min-h-[36px]">
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5"></td>
+              </tr>
+              <tr className="bg-white border-b border-slate-200/50 min-h-[36px]">
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5"></td>
+              </tr>
+              <tr className="bg-slate-50/10 min-h-[36px]">
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5 border-r border-slate-200/50"></td>
+                <td className="py-3.5"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        {/* Received Sign */}
-        <div className="mt-20 flex justify-end text-xs font-bold pr-2.5">
-          <div className="flex items-end gap-2">
-            <span className="pb-1">Received Sign:</span>
-            <div className="relative w-[160px] border-b border-black flex justify-center pb-0.5">
-              {settings.receivedSign ? (
-                <img
-                  src={settings.receivedSign}
-                  alt="Signature"
-                  className="absolute bottom-0 h-[65px] max-w-[150px] object-contain pointer-events-none"
-                />
-              ) : (
-                <div className="h-6"></div>
-              )}
+        <div className="grid grid-cols-2 gap-6 mt-6 items-start">
+          <div className="text-left text-xs font-bold text-slate-700 space-y-4 pt-1">
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Physiotherapist:</span>
+              <span className="text-secondary font-extrabold text-xs">{clinicCase.consultingDoctor?.name || "Yash Patel"}</span>
             </div>
+            
+            {settings.receivedSign && (
+              <div className="pt-2 flex items-center gap-3">
+                <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">Received Sign:</span>
+                <div className="relative border-b border-slate-200 w-36 h-10 flex items-center justify-center">
+                  <img src={settings.receivedSign} alt="Signature" className="absolute bottom-0.5 h-11 object-contain" />
+                </div>
+              </div>
+            )}
           </div>
+
+          <div className="border border-slate-200 rounded-none overflow-hidden shadow-sm ml-auto w-full max-w-[270px] bg-white">
+            <table className="w-full text-xs font-bold text-slate-700 border-collapse">
+              <tbody>
+                <tr className="border-b border-slate-200">
+                  <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">Subtotal</td>
+                  <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {totalAmount.toFixed(2)}</td>
+                </tr>
+                <tr className="border-b border-slate-200">
+                  <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">Amount Paid</td>
+                  <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {(paymentStatus === "Paid" ? totalAmount : 0).toFixed(2)}</td>
+                </tr>
+                <tr className="border-b border-slate-200">
+                  <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">Balance Due</td>
+                  <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {(paymentStatus === "Paid" ? 0 : totalAmount).toFixed(2)}</td>
+                </tr>
+                <tr className="text-white" style={{ backgroundColor: "var(--primary)" }}>
+                  <td className="px-4 py-3 text-xs uppercase tracking-widest font-black">Grand Total</td>
+                  <td className="px-4 py-3 text-right font-mono text-sm font-black">₹ {totalAmount.toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="w-full h-[1px] bg-slate-100 mt-10 mb-5"></div>
+        <div className="text-center space-y-1">
+          <h3 className="text-sm font-bold uppercase tracking-widest font-heading m-0" style={{ color: "var(--primary)" }}>THANK YOU</h3>
+          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-accent m-0">Generated on {currentDateStr} @ {new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</p>
+          <p className="text-[8px] font-bold text-slate-350 uppercase tracking-widest font-accent m-0">POWERED BY {settings.name?.toUpperCase() || "PHYSIOCARE"}</p>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ const CaseFormModal = ({ isOpen, onClose, onSubmit, isEdit = false, caseData = n
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState("Active");
   const [consultingDoctor, setConsultingDoctor] = useState("");
+  const [treatment, setTreatment] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -13,10 +14,12 @@ const CaseFormModal = ({ isOpen, onClose, onSubmit, isEdit = false, caseData = n
       setTitle(caseData.title || "");
       setStatus(caseData.status || "Active");
       setConsultingDoctor(caseData.consultingDoctor?._id || caseData.consultingDoctor || "");
+      setTreatment(caseData.treatment || "");
     } else {
       setTitle("");
       setStatus("Active");
       setConsultingDoctor(doctors[0]?._id || "");
+      setTreatment("");
     }
     setError("");
   }, [isOpen, isEdit, caseData, doctors]);
@@ -35,12 +38,21 @@ const CaseFormModal = ({ isOpen, onClose, onSubmit, isEdit = false, caseData = n
       setError("Please select a consulting doctor.");
       return;
     }
+    if (!treatment.trim()) {
+      setError("Treatment is required.");
+      return;
+    }
+    if (treatment.trim().length < 3) {
+      setError("Treatment must be at least 3 characters.");
+      return;
+    }
 
     setError("");
     onSubmit({
       title: title.trim(),
       status,
       consultingDoctor,
+      treatment: treatment.trim(),
     });
   };
 
@@ -82,6 +94,25 @@ const CaseFormModal = ({ isOpen, onClose, onSubmit, isEdit = false, caseData = n
               label: `${doc.name}`,
             }))}
             placeholder="Select Doctor"
+          />
+        </div>
+
+        {/* Treatment Details */}
+        <div>
+          <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-accent block mb-1.5">
+            Treatment Details
+          </label>
+          <input
+            type="text"
+            value={treatment}
+            onChange={(e) => {
+              setTreatment(e.target.value);
+              if (error) setError("");
+            }}
+            placeholder="e.g. Physiotherapy, Chiropractic, Exercises..."
+            className={`w-full bg-slate-50 border rounded-2xl px-4 py-2.5 text-xs text-secondary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium transition-all shadow-sm ${
+              error && (!treatment.trim() || treatment.trim().length < 3) ? "border-rose-400 focus:border-rose-400" : "border-slate-200/70"
+            }`}
           />
         </div>
 

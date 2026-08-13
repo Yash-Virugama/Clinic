@@ -17,6 +17,11 @@ export const clinicCaseCreateSchema = z.object({
   status: z
     .enum(["Active", "Resolved", "Closed", "Cancelled"])
     .optional(),
+  treatment: z
+    .string({ required_error: "Treatment is required" })
+    .trim()
+    .min(3, "Treatment must be at least 3 characters")
+    .max(500, "Treatment details cannot exceed 500 characters"),
 });
 
 export const clinicCaseUpdateSchema = z.object({
@@ -36,5 +41,11 @@ export const clinicCaseUpdateSchema = z.object({
     .optional(),
   status: z
     .enum(["Active", "Resolved", "Closed", "Cancelled"])
+    .optional(),
+  treatment: z
+    .string()
+    .trim()
+    .min(3, "Treatment must be at least 3 characters")
+    .max(500, "Treatment details cannot exceed 500 characters")
     .optional(),
 });

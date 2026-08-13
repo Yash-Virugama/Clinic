@@ -29,6 +29,11 @@ const CaseListCard = ({ clinicCase, index, visits, records, files, onEdit, onUpd
           </div>
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-secondary truncate">{clinicCase.title}</h3>
+            {clinicCase.treatment && (
+              <p className="text-xs text-slate-500 mt-1 font-medium italic">
+                Treatment: {clinicCase.treatment}
+              </p>
+            )}
             <div className="flex flex-wrap gap-1.5 mt-1.5">
               <StatusPill tone={getStatusTone(clinicCase.status)}>{clinicCase.status}</StatusPill>
             </div>

@@ -25,6 +25,11 @@ const clinicCaseSchema = new mongoose.Schema(
       default: "Active",
       required: true,
     },
+    treatment: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,

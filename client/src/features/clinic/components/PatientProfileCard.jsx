@@ -113,6 +113,11 @@ const PatientProfileCard = ({ patient, patientCode, settings, selectedCase, onEd
           label="Consult Dr."
           value={selectedCase?.consultingDoctor?.name ? `${selectedCase.consultingDoctor.name}` : "—"}
         />
+        <ProfileRow
+          icon="activity"
+          label="Treatment"
+          value={selectedCase?.treatment || "—"}
+        />
         <ProfileRow icon="id" label="ID" value={patientCode ? patientCode.toUpperCase() : "—"} />
       </div>
     </section>

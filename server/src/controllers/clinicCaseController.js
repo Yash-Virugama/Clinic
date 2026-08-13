@@ -10,7 +10,7 @@ import ApiError from "../utils/apiError.js";
 // @route   POST /api/clinic/cases
 // @access  Private/Admin
 export const createCase = asyncHandler(async (req, res) => {
-  const { patient, title, consultingDoctor, status } = req.body;
+  const { patient, title, consultingDoctor, status, treatment } = req.body;
 
   // 1. Verify patient exists
   const existingPatient = await ClinicPatient.findById(patient);
@@ -28,11 +28,20 @@ export const createCase = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Consulting doctor must be an admin, intern, or physiotherapist");
   }
 
+  // 3. Validate treatment
+  if (!treatment || typeof treatment !== "string" || !treatment.trim()) {
+    throw new ApiError(400, "Treatment is required");
+  }
+  if (treatment.trim().length < 3) {
+    throw new ApiError(400, "Treatment must be at least 3 characters");
+  }
+
   const newCase = await ClinicCase.create({
     patient,
     title,
     consultingDoctor,
     status: status || "Active",
+    treatment: treatment.trim(),
   });
 
   return res.status(201).json({
@@ -85,7 +94,7 @@ export const getCaseById = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 export const updateCase = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { patient, title, consultingDoctor, status } = req.body;
+  const { patient, title, consultingDoctor, status, treatment } = req.body;
 
   const clinicCase = await ClinicCase.findById(id);
   if (!clinicCase) {
@@ -116,6 +125,16 @@ export const updateCase = asyncHandler(async (req, res) => {
 
   if (title !== undefined) clinicCase.title = title;
   if (status !== undefined) clinicCase.status = status;
+
+  if (treatment !== undefined) {
+    if (typeof treatment !== "string" || !treatment.trim()) {
+      throw new ApiError(400, "Treatment is required");
+    }
+    if (treatment.trim().length < 3) {
+      throw new ApiError(400, "Treatment must be at least 3 characters");
+    }
+    clinicCase.treatment = treatment.trim();
+  }
 
   const updatedCase = await clinicCase.save();
 
