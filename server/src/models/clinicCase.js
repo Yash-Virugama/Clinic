@@ -30,6 +30,15 @@ const clinicCaseSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    discountAmount: {
+      type: Number,
+      default: 0,
+    },
+    discountType: {
+      type: String,
+      enum: ["percentage", "rupee", ""],
+      default: "",
+    },
   },
   {
     timestamps: true,

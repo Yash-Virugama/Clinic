@@ -47,6 +47,10 @@ const ClinicPaymentIndividual = () => {
     setCaseBulkStatus,
     caseBulkAmount,
     setCaseBulkAmount,
+    caseBulkDiscountAmount,
+    setCaseBulkDiscountAmount,
+    caseBulkDiscountType,
+    setCaseBulkDiscountType,
     caseSubmitting,
     isVisitModalOpen,
     setIsVisitModalOpen,
@@ -213,7 +217,21 @@ Thank you!`;
             {cases.map((c) => {
               const caseVisits = visits.filter((v) => (v.clinicCase?._id || v.clinicCase) === c._id);
               const casePaid = caseVisits.reduce((acc, v) => v.paymentStatus === "Paid" ? acc + (v.paymentAmount || 0) : acc, 0);
-              const caseUnpaid = caseVisits.reduce((acc, v) => v.paymentStatus !== "Paid" ? acc + (v.paymentAmount || 0) : acc, 0);
+              const rawCaseUnpaid = caseVisits.reduce((acc, v) => v.paymentStatus !== "Paid" ? acc + (v.paymentAmount || 0) : acc, 0);
+              const caseSubtotal = casePaid + rawCaseUnpaid;
+
+              // Discount calculation matching InvoiceTemplate
+              const discountAmountVal = c.discountAmount || 0;
+              const discountType = c.discountType || "";
+              let calculatedDiscount = 0;
+              if (discountType === "percentage") {
+                calculatedDiscount = (caseSubtotal * discountAmountVal) / 100;
+              } else if (discountType === "rupee") {
+                calculatedDiscount = discountAmountVal;
+              }
+              calculatedDiscount = Math.min(calculatedDiscount, caseSubtotal);
+              const caseTotal = caseSubtotal - calculatedDiscount;
+              const caseRemaining = Math.max(0, caseTotal - casePaid);
               const isExpanded = !!expandedCaseIds[c._id];
 
               return (
@@ -282,8 +300,38 @@ Thank you!`;
                       <div className="p-4 sm:p-6 space-y-6 border-t border-slate-100">
                         {/* Case Billing Summary Header Row */}
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-slate-50/50 p-4.5 rounded-2xl border border-slate-150/40">
-                          <div className="flex items-center justify-center sm:justify-start gap-4">
-                            <div className="text-left">
+                          <div className="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:flex-row sm:items-center sm:gap-6">
+                            <div className="text-center">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-455 font-accent block">
+                                Case Subtotal
+                              </span>
+                              <span className="text-sm font-bold text-slate-700 mt-0.5 block">
+                                ₹{caseSubtotal.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+
+                            <div className="text-center">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 font-accent block">
+                                Discount
+                              </span>
+                              <span className="text-sm font-bold text-amber-600 mt-0.5 block">
+                                ₹{calculatedDiscount.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+
+                            <div className="text-center">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary font-accent block">
+                                Case Total
+                              </span>
+                              <span className="text-sm font-bold text-primary mt-0.5 block">
+                                ₹{caseTotal.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+
+                            <div className="text-center">
                               <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-600 font-accent block">
                                 Case Paid
                               </span>
@@ -291,13 +339,14 @@ Thank you!`;
                                 ₹{casePaid.toFixed(2)}
                               </span>
                             </div>
-                            <div className="w-px h-8 bg-slate-200" />
-                            <div className="text-left">
+                            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+
+                            <div className="text-center col-span-2 sm:col-span-1">
                               <span className="text-[9px] font-extrabold uppercase tracking-wider text-rose-600 font-accent block">
                                 Case Unpaid
                               </span>
-                              <span className="text-sm font-bold text-rose-600 mt-0.5 block">
-                                ₹{caseUnpaid.toFixed(2)}
+                              <span className="text-sm font-bold text-rose-605 mt-0.5 block">
+                                ₹{caseRemaining.toFixed(2)}
                               </span>
                             </div>
                           </div>
@@ -498,7 +547,7 @@ Thank you!`;
 
             {/* Bulk Fee Amount */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">
+              <label className="text-[10px] font-bold text-slate-455 uppercase tracking-wider block">
                 Bulk Session Fee (₹)
               </label>
               <input
@@ -508,6 +557,40 @@ Thank you!`;
                 placeholder="Leave blank to keep existing visit fees"
                 className="w-full bg-slate-50 border border-slate-200/85 rounded-2xl px-4 py-3 text-xs text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium"
               />
+            </div>
+
+            {/* Discount Option */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">
+                    Discount Amount
+                  </label>
+                  <input
+                    type="number"
+                    value={caseBulkDiscountAmount}
+                    onChange={(e) => setCaseBulkDiscountAmount(e.target.value)}
+                    placeholder="0"
+                    className="w-full bg-slate-50 border border-slate-200/85 rounded-2xl px-4 py-3 text-xs text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wider block">
+                    Discount Type
+                  </label>
+                  <CustomSelect
+                    value={caseBulkDiscountType}
+                    onChange={(val) => setCaseBulkDiscountType(val || "rupee")}
+                    options={[
+                      { value: "rupee", label: "Rupee (₹)" },
+                      { value: "percentage", label: "Percentage (%)" },
+                    ]}
+                  />
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium italic mt-1 leading-normal">
+                * Note: The discount is applied to the overall case total subtotal, not per individual visit session.
+              </p>
             </div>
 
             <div className="flex gap-3 pt-2">

@@ -167,12 +167,21 @@ export const deleteCase = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 export const updateCasePayments = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { paymentStatus, paymentAmount } = req.body;
+  const { paymentStatus, paymentAmount, discountAmount, discountType } = req.body;
 
   const clinicCase = await ClinicCase.findById(id);
   if (!clinicCase) {
     throw new ApiError(404, "Clinic case not found");
   }
+
+  // Save discount info on the case
+  if (discountAmount !== undefined) {
+    clinicCase.discountAmount = discountAmount;
+  }
+  if (discountType !== undefined) {
+    clinicCase.discountType = discountType;
+  }
+  await clinicCase.save();
 
   // Find all visits under this case
   const visits = await ClinicVisit.find({ clinicCase: id });

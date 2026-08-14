@@ -23,6 +23,8 @@ export const useClinicPaymentWorkspace = () => {
   const [selectedCaseData, setSelectedCaseData] = useState(null);
   const [caseBulkStatus, setCaseBulkStatus] = useState("No Change");
   const [caseBulkAmount, setCaseBulkAmount] = useState("");
+  const [caseBulkDiscountAmount, setCaseBulkDiscountAmount] = useState("");
+  const [caseBulkDiscountType, setCaseBulkDiscountType] = useState("rupee");
   const [caseSubmitting, setCaseSubmitting] = useState(false);
 
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
@@ -103,6 +105,8 @@ export const useClinicPaymentWorkspace = () => {
     });
     setCaseBulkStatus("No Change");
     setCaseBulkAmount("");
+    setCaseBulkDiscountAmount(caseObj.discountAmount !== undefined ? caseObj.discountAmount.toString() : "");
+    setCaseBulkDiscountType(caseObj.discountType || "rupee");
     setIsCaseModalOpen(true);
   };
 
@@ -127,11 +131,15 @@ export const useClinicPaymentWorkspace = () => {
         payload.paymentAmount = parsedAmt;
       }
 
-      if (Object.keys(payload).length === 0) {
-        toast.error("Please select a status or specify a payment amount to update.");
+      // Add discount fields
+      const parsedDiscount = caseBulkDiscountAmount.trim() !== "" ? parseFloat(caseBulkDiscountAmount) : 0;
+      if (isNaN(parsedDiscount) || parsedDiscount < 0) {
+        toast.error("Please enter a valid positive discount amount");
         setCaseSubmitting(false);
         return;
       }
+      payload.discountAmount = parsedDiscount;
+      payload.discountType = caseBulkDiscountType;
 
       await api.put(`/clinic/cases/${selectedCaseData._id}/payments`, payload);
       toast.success("Case payment details updated successfully");
@@ -212,6 +220,10 @@ export const useClinicPaymentWorkspace = () => {
     setCaseBulkStatus,
     caseBulkAmount,
     setCaseBulkAmount,
+    caseBulkDiscountAmount,
+    setCaseBulkDiscountAmount,
+    caseBulkDiscountType,
+    setCaseBulkDiscountType,
     caseSubmitting,
     isVisitModalOpen,
     setIsVisitModalOpen,

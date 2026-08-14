@@ -2,7 +2,6 @@ import React from "react";
 import { generateClinicPatientId } from "../utils/clinicFormatters";
 
 export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], settings = {} }) => {
-  const chargesPerDay = visits.length > 0 ? (visits[0]?.paymentAmount || 0) : 0;
   const patientCode = generateClinicPatientId(patient._id, settings?.name);
 
   // Date day calculations matching invoicePrinter.js
@@ -12,19 +11,30 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
   const lastStatusChangedDate = clinicCase.updatedAt ? new Date(clinicCase.updatedAt) : new Date();
   const endDateStr = lastStatusChangedDate.toLocaleDateString("en-IN");
 
-  const startDay = new Date(caseOpenedDate);
-  const endDay = new Date(lastStatusChangedDate);
-  startDay.setHours(0, 0, 0, 0);
-  endDay.setHours(0, 0, 0, 0);
-  const diffTime = Math.abs(endDay - startDay);
-  const daysCount = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  const totalAmount = chargesPerDay * daysCount;
+  // Calculations derived from database visits
+  const visitsCount = visits.length;
+  const paidAmount = visits.filter(v => v.paymentStatus === "Paid").reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
+  const rawUnpaidAmount = visits.filter(v => v.paymentStatus === "Unpaid").reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
+  const subtotalAmount = paidAmount + rawUnpaidAmount;
+  const averageUnitPrice = visitsCount > 0 ? (subtotalAmount / visitsCount) : 0;
+
+  // Discount calculation
+  const discountAmountVal = clinicCase.discountAmount || 0;
+  const discountType = clinicCase.discountType || "";
+  let calculatedDiscount = 0;
+  if (discountType === "percentage") {
+    calculatedDiscount = (subtotalAmount * discountAmountVal) / 100;
+  } else if (discountType === "rupee") {
+    calculatedDiscount = discountAmountVal;
+  }
+  calculatedDiscount = Math.min(calculatedDiscount, subtotalAmount);
+  const grandTotalAmount = subtotalAmount - calculatedDiscount;
+  const balanceDueAmount = Math.max(0, grandTotalAmount - paidAmount);
 
   const invoiceNo = patientCode;
   const currentDateStr = new Date().toLocaleDateString("en-IN");
 
-  const isPaid = visits.length > 0 && visits.every((v) => v.paymentStatus === "Paid");
-  const paymentStatus = isPaid ? "Paid" : "Unpaid";
+  const paymentStatus = (visitsCount > 0 && balanceDueAmount === 0) ? "Paid" : "Unpaid";
 
   return (
     <div className="invoice-container w-full max-w-[650px] border border-slate-200 px-4 py-6 sm:px-5 sm:py-7 flex flex-col bg-white rounded-none shadow-md box-border text-slate-700 print:shadow-none print:border print:border-slate-200 print:my-0 print:mx-auto">
@@ -52,7 +62,7 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
               </tr>
               <tr className="border-b border-slate-200">
                 <td className="px-3.5 py-2 text-white w-26 text-center uppercase tracking-wider font-extrabold border-r border-slate-250" style={{ backgroundColor: "var(--primary)" }}>INVOICE NO.</td>
-                <td className="px-3.5 py-2 text-[11px] text-slate-750 bg-bg-offwhite text-center font-mono font-medium">{invoiceNo}</td>
+                <td className="px-3.5 py-2 text-[11px] uppercase text-slate-750 bg-bg-offwhite text-center font-mono font-medium">{invoiceNo}</td>
               </tr>
               <tr>
                 <td className="px-3.5 py-2 text-white w-26 text-center uppercase tracking-wider font-extrabold border-r border-slate-250" style={{ backgroundColor: "var(--primary)" }}>STATUS</td>
@@ -84,7 +94,7 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
             INVOICE DETAILS
           </div>
           <div className="p-4 text-xs font-bold bg-bg-offwhite text-slate-750 space-y-1.5 leading-relaxed">
-            <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Patient Ref:</span> <span className="text-secondary font-extrabold font-mono">{patientCode}</span></div>
+            <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Patient Ref:</span> <span className="text-secondary uppercase font-extrabold">{patientCode}</span></div>
             <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Due Date:</span> <span className="text-secondary font-extrabold">{endDateStr}</span></div>
             <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Case:</span> <span className="text-secondary font-extrabold">{clinicCase.title}</span></div>
           </div>
@@ -110,9 +120,9 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
                 <div className="font-extrabold text-secondary text-xs">{clinicCase.treatment || "Physiotherapy Session"}</div>
                 <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">{startDateStr} – {endDateStr}</div>
               </td>
-              <td className="py-3 px-4 text-center border-r border-slate-200 font-mono font-bold">{daysCount}</td>
-              <td className="py-3 px-4 text-right border-r border-slate-200 font-mono whitespace-nowrap">₹ {chargesPerDay.toFixed(2)}</td>
-              <td className="py-3 px-4 text-right font-mono font-bold whitespace-nowrap">₹ {totalAmount.toFixed(2)}</td>
+              <td className="py-3 px-4 text-center border-r border-slate-200 font-mono font-bold">{visitsCount}</td>
+              <td className="py-3 px-4 text-right border-r border-slate-200 font-mono whitespace-nowrap">₹ {averageUnitPrice.toFixed(2)}</td>
+              <td className="py-3 px-4 text-right font-mono font-bold whitespace-nowrap">₹ {subtotalAmount.toFixed(2)}</td>
             </tr>
             {/* Empty rows for design padding matching the screenshot */}
             <tr className="bg-bg-offwhite border-b border-slate-200/50 min-h-[36px]">
@@ -162,19 +172,29 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
             <tbody>
               <tr className="border-b border-slate-200 bg-bg-offwhite">
                 <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">Subtotal</td>
-                <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {totalAmount.toFixed(2)}</td>
+                <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {subtotalAmount.toFixed(2)}</td>
               </tr>
+              {calculatedDiscount > 0 && (
+                <tr className="border-b border-slate-200 bg-bg-offwhite">
+                  <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">
+                    Discount {discountType === "percentage" ? `(${discountAmountVal}%)` : ""}
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-mono font-medium text-rose-600">
+                    - ₹ {calculatedDiscount.toFixed(2)}
+                  </td>
+                </tr>
+              )}
               <tr className="border-b border-slate-200 bg-bg-offwhite">
                 <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">Amount Paid</td>
-                <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {(paymentStatus === "Paid" ? totalAmount : 0).toFixed(2)}</td>
+                <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {paidAmount.toFixed(2)}</td>
               </tr>
               <tr className="border-b border-slate-200 bg-bg-offwhite">
                 <td className="px-4 py-2.5 text-slate-450 font-semibold uppercase tracking-wider text-[10px]">Balance Due</td>
-                <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {(paymentStatus === "Paid" ? 0 : totalAmount).toFixed(2)}</td>
+                <td className="px-4 py-2.5 text-right font-mono font-medium">₹ {balanceDueAmount.toFixed(2)}</td>
               </tr>
               <tr className="text-white" style={{ backgroundColor: "var(--primary)" }}>
                 <td className="px-4 py-3 text-xs uppercase tracking-widest font-black">Grand Total</td>
-                <td className="px-4 py-3 text-right font-mono text-sm font-black">₹ {totalAmount.toFixed(2)}</td>
+                <td className="px-4 py-3 text-right font-mono text-sm font-black">₹ {grandTotalAmount.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
