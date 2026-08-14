@@ -29,6 +29,9 @@ const Icon = ({ name, className = "w-4 h-4" }) => {
   if (name === "edit") {
     return <svg {...common}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.651-1.65a1.875 1.875 0 112.652 2.651L9.75 16.904 6 18l1.096-3.75L18.512 2.837z" /></svg>;
   }
+  if (name === "rupee") {
+    return <svg {...common}><path strokeLinecap="round" strokeLinejoin="round" d="M6 3h12M6 8h12M6 13h3M9 13c6.667 0 6.667-10 0-10M6 13l8.5 8" /></svg>;
+  }
   return <svg {...common}><path strokeLinecap="round" strokeLinejoin="round" d="M12 17v-6m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 };
 
@@ -70,10 +73,10 @@ const PatientProfileCard = ({ patient, patientCode, settings, selectedCase, onEd
             </button>
             <Link
               to={`${clinicPrefix}/payments/${patient._id}`}
-              className="text-slate-400 hover:text-primary flex items-center justify-center transition-colors cursor-pointer text-sm font-bold ml-0.5"
+              className="text-slate-400 hover:text-primary flex items-center justify-center transition-colors cursor-pointer ml-0.5"
               title="View billing and payments"
             >
-              ₹
+              <Icon name="rupee" className="w-4 h-4" />
             </Link>
           </div>
 

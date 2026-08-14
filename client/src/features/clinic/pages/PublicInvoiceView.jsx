@@ -13,6 +13,7 @@ const PublicInvoiceView = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
+    const originalTitle = document.title;
     const fetchInvoiceData = async () => {
       try {
         setLoading(true);
@@ -20,6 +21,9 @@ const PublicInvoiceView = () => {
         const apiBase = import.meta.env.VITE_API_URL || "/api";
         const res = await axios.get(`${apiBase}/clinic/cases/public/invoice/${caseId}`);
         setData(res.data);
+        if (res.data?.patient?.name) {
+          document.title = `Invoice - ${res.data.patient.name}`;
+        }
       } catch (err) {
         console.error("Error fetching public invoice:", err);
         setError("Failed to load invoice details. The link may be invalid or expired.");
@@ -28,6 +32,10 @@ const PublicInvoiceView = () => {
       }
     };
     fetchInvoiceData();
+
+    return () => {
+      document.title = originalTitle;
+    };
   }, [caseId]);
 
   if (loading) {

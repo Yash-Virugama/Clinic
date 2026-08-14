@@ -391,7 +391,7 @@ const AdminStaffManagement = () => {
       ) : activeTab === "staff" ? (
         <div className="flex flex-col gap-6">
           {/* Staff Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Searchbar
               value={staffSearch}
               onChange={setStaffSearch}
@@ -476,19 +476,19 @@ const AdminStaffManagement = () => {
                   </div>
 
                   {/* Actions Row */}
-                  <div className="flex gap-2.5 mt-6 border-t border-slate-100 pt-4">
+                  <div className="flex gap-2.5 mt-6">
                     <button
                       onClick={() => handleEditOpen(staff)}
-                      className="flex-1 px-3 py-2 rounded-xl border border-slate-200 hover:border-primary hover:text-primary bg-white text-slate-500 font-bold text-xs cursor-pointer shadow-sm transition-all text-center"
+                      className="flex-1 px-3 py-2 rounded-xl border border-slate-200 hover:border-primary hover:text-primary bg-bg-offwhite text-slate-500 font-bold text-xs cursor-pointer shadow-sm transition-all text-center"
                     >
                       Permissions
                     </button>
                     <button
                       onClick={() => handleToggleStatus(staff._id, staff.isActive)}
-                      className={`flex-1 px-3 py-2 rounded-xl border font-bold text-xs cursor-pointer shadow-sm transition-all text-center ${
+                      className={`flex-1 px-3 py-2 bg-bg-offwhite rounded-xl border font-bold text-xs cursor-pointer shadow-sm transition-all text-center ${
                         staff.isActive
-                          ? "border-rose-200 hover:bg-rose-50 text-rose-600 bg-white"
-                          : "border-emerald-200 hover:bg-emerald-50 text-emerald-600 bg-white"
+                          ? "border-rose-200 hover:bg-rose-50 text-rose-600"
+                          : "border-emerald-200 hover:bg-emerald-50 text-emerald-600"
                       }`}
                     >
                       {staff.isActive ? "Deactivate" : "Activate"}

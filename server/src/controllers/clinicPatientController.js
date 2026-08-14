@@ -52,21 +52,50 @@ export const getPatients = asyncHandler(async (req, res) => {
   const activeCases = await ClinicCase.find({ status: "Active" });
   const activePatientIds = new Set(activeCases.map((c) => c.patient.toString()));
 
-  // Determine total payments for all patients
-  const allVisits = await ClinicVisit.find({}).populate("clinicCase");
-  const paymentsMap = {};
+  // Determine total payments for all patients incorporating discounts
+  const allCases = await ClinicCase.find({});
+  const casesMap = {};
+  allCases.forEach((c) => {
+    casesMap[c._id.toString()] = {
+      patientId: c.patient.toString(),
+      discountAmount: c.discountAmount || 0,
+      discountType: c.discountType || "",
+      subtotal: 0,
+      paid: 0,
+    };
+  });
+
+  const allVisits = await ClinicVisit.find({});
   allVisits.forEach((visit) => {
-    if (!visit.clinicCase || !visit.clinicCase.patient) return;
-    const pId = visit.clinicCase.patient.toString();
+    const caseId = visit.clinicCase ? visit.clinicCase.toString() : null;
+    if (caseId && casesMap[caseId]) {
+      casesMap[caseId].subtotal += visit.paymentAmount || 0;
+      if (visit.paymentStatus === "Paid") {
+        casesMap[caseId].paid += visit.paymentAmount || 0;
+      }
+    }
+  });
+
+  const paymentsMap = {};
+  Object.values(casesMap).forEach((cData) => {
+    const pId = cData.patientId;
     if (!paymentsMap[pId]) {
       paymentsMap[pId] = { totalPaid: 0, totalUnpaid: 0 };
     }
-    const amt = visit.paymentAmount || 0;
-    if (visit.paymentStatus === "Paid") {
-      paymentsMap[pId].totalPaid += amt;
-    } else {
-      paymentsMap[pId].totalUnpaid += amt;
+
+    let calculatedDiscount = 0;
+    if (cData.discountType === "percentage") {
+      calculatedDiscount = (cData.subtotal * cData.discountAmount) / 100;
+    } else if (cData.discountType === "rupee") {
+      calculatedDiscount = cData.discountAmount;
     }
+    calculatedDiscount = Math.min(calculatedDiscount, cData.subtotal);
+    const caseGrandTotal = cData.subtotal - calculatedDiscount;
+    const casePaid = cData.paid;
+    const caseRemaining = Math.max(0, caseGrandTotal - casePaid);
+
+    paymentsMap[pId].totalPaid += casePaid;
+    paymentsMap[pId].totalUnpaid += caseRemaining;
   });
 
   const patientsWithStatus = patients.map((patient) => {

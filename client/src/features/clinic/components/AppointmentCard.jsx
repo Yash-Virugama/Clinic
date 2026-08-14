@@ -1,5 +1,7 @@
+import React, { useState } from "react";
 import { formatDateDDMMYYYY, formatTimeRange } from "../utils/clinicFormatters";
 import WhatsAppReminderButton from "./WhatsAppReminderButton";
+import ModalShell from "../../../components/ui/ModalShell";
 
 const statusClassName = (status) => {
   if (status === "complete") return "bg-emerald-50 text-emerald-600 border-emerald-200";
@@ -19,13 +21,15 @@ const AppointmentCard = ({
   onDelete,
   isTomorrowPage = false,
 }) => {
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const isMenuOpen = activeMenuId === appointment._id;
   const statusLabel = appointment.status
     ? appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)
     : "Scheduled";
 
   return (
-    <div
+    <>
+      <div
       onClick={() => onOpenPatient(appointment.patient?._id)}
       className="bg-white border border-slate-200/50 hover:-translate-y-1 rounded-2xl p-5 shadow-sm hover:shadow-md transition-premium flex flex-col justify-between cursor-pointer"
       role="button"
@@ -82,6 +86,22 @@ const AppointmentCard = ({
                     onClick={(event) => event.stopPropagation()}
                     className="absolute right-6 -top-12 sm:-top-5 sm:right-5 mt-1.5 w-36 bg-white border border-slate-200/80 backdrop-blur-md rounded-2xl shadow-xl z-50 py-1.5 animate-page-entrance slide-in-from-top-1 duration-200"
                   >
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setIsViewOpen(true);
+                        setActiveMenuId(null);
+                      }}
+                      className="w-full px-4 py-2 text-xs font-extrabold font-accent text-blue-600 hover:bg-blue-50/40 flex items-center gap-2.5 transition-colors cursor-pointer text-left"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      View Details
+                    </button>
+
                     <button
                       type="button"
                       onClick={async (event) => {
@@ -222,7 +242,87 @@ const AppointmentCard = ({
           )}
         </div>
       </div>
-    </div>
+      </div>
+
+      <ModalShell
+        isOpen={isViewOpen}
+        onClose={() => setIsViewOpen(false)}
+        title="Appointment Details"
+      >
+        <div className="space-y-4.5 text-left text-xs font-bold text-slate-700">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Patient Name</span>
+              <span className="text-secondary text-sm font-extrabold">{appointment.patient?.name || "—"}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Patient Ref Code</span>
+              <span className="text-secondary font-mono font-extrabold uppercase">{patientCode || "—"}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Phone Number</span>
+              <span className="text-secondary font-extrabold">{appointment.patient?.phone || "—"}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Therapist</span>
+              <span className="text-secondary font-extrabold">{appointment.therapist?.name || "Unassigned"}</span>
+            </div>
+          </div>
+
+          <div className="w-full h-px bg-slate-100 my-2"></div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Date & Time</span>
+              <span className="text-secondary font-extrabold">
+                {appointment.date ? formatDateDDMMYYYY(appointment.date) : "—"} @ {appointment.time || "—"}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Duration & Location</span>
+              <span className="text-secondary font-extrabold uppercase">
+                {appointment.duration || 30} Mins / {appointment.location || "clinic"}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Case Folder</span>
+              <span className="text-secondary font-extrabold">{appointment.clinicCase?.title || "None (General)"}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Status</span>
+              <span className={`inline-block px-2 py-0.5 font-black uppercase text-[9px] tracking-wider rounded border mt-0.5 ${statusClassName(appointment.status)}`}>
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+
+          {appointment.notes && (
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Session Notes</span>
+              <p className="bg-slate-50 border border-slate-200/60 rounded-lg p-3.5 text-xs text-slate-650 font-medium leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap">
+                {appointment.notes}
+              </p>
+            </div>
+          )}
+
+          <div className="flex pt-4">
+            <button
+              type="button"
+              onClick={() => setIsViewOpen(false)}
+              className="flex-1 py-3 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider rounded-2xl transition-all shadow-md cursor-pointer text-center"
+            >
+              Close Details
+            </button>
+          </div>
+        </div>
+      </ModalShell>
+    </>
   );
 };
 

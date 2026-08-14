@@ -14,7 +14,7 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
   // Calculations derived from database visits
   const visitsCount = visits.length;
   const paidAmount = visits.filter(v => v.paymentStatus === "Paid").reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
-  const rawUnpaidAmount = visits.filter(v => v.paymentStatus === "Unpaid").reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
+  const rawUnpaidAmount = visits.filter(v => v.paymentStatus !== "Paid").reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
   const subtotalAmount = paidAmount + rawUnpaidAmount;
   const averageUnitPrice = visitsCount > 0 ? (subtotalAmount / visitsCount) : 0;
 
@@ -83,8 +83,10 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
             BILL TO
           </div>
           <div className="p-4 text-xs bg-bg-offwhite font-bold text-slate-700 space-y-1">
-            <p className="m-0 text-secondary text-sm font-extrabold">{patient.name}</p>
-            <p className="m-0 text-slate-500 font-medium">{patient.phone || "—"}</p>
+            <div><span className="text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Patient:</span> <span className="text-secondary uppercase font-extrabold">{patient.name || "-"}</span></div>
+            <div><span className="text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Mobile:</span> <span className="text-secondary font-extrabold">{patient.phone || "—"}</span></div>
+            {/* <p className="m-0 text-secondary text-sm font-extrabold">{patient.name}</p>
+            <p className="m-0 text-slate-500 font-medium">{patient.phone || "—"}</p> */}
           </div>
         </div>
 
@@ -94,9 +96,9 @@ export const InvoiceTemplate = ({ patient = {}, clinicCase = {}, visits = [], se
             INVOICE DETAILS
           </div>
           <div className="p-4 text-xs font-bold bg-bg-offwhite text-slate-750 space-y-1.5 leading-relaxed">
-            <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Patient Ref:</span> <span className="text-secondary uppercase font-extrabold">{patientCode}</span></div>
-            <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Due Date:</span> <span className="text-secondary font-extrabold">{endDateStr}</span></div>
-            <div><span className="text-slate-400 font-semibold text-[10px] uppercase tracking-wider">Case:</span> <span className="text-secondary font-extrabold">{clinicCase.title}</span></div>
+            <div><span className="text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Patient Ref:</span> <span className="text-secondary uppercase font-extrabold">{patientCode}</span></div>
+            <div><span className="text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Due Date:</span> <span className="text-secondary font-extrabold">{endDateStr}</span></div>
+            <div><span className="text-slate-500 font-semibold text-[10px] uppercase tracking-wider">Case:</span> <span className="text-secondary font-extrabold">{clinicCase.title}</span></div>
           </div>
         </div>
       </div>

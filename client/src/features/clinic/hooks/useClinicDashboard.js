@@ -63,10 +63,48 @@ const useClinicDashboard = () => {
         })
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      // Sum unpaid visit amounts
-      const unpaidSum = visits
-        .filter((v) => v.paymentStatus !== "Paid")
-        .reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
+      // Group visits by case to calculate unpaid payments incorporating discounts
+      const casesObjMap = {};
+      cases.forEach((c) => {
+        casesObjMap[c._id.toString()] = {
+          discountAmount: c.discountAmount || 0,
+          discountType: c.discountType || "",
+          subtotal: 0,
+          paid: 0,
+        };
+      });
+
+      visits.forEach((v) => {
+        const caseId = v.clinicCase ? (v.clinicCase._id || v.clinicCase).toString() : null;
+        if (caseId && casesObjMap[caseId]) {
+          casesObjMap[caseId].subtotal += v.paymentAmount || 0;
+          if (v.paymentStatus === "Paid") {
+            casesObjMap[caseId].paid += v.paymentAmount || 0;
+          }
+        }
+      });
+
+      let unpaidSum = 0;
+      Object.values(casesObjMap).forEach((cData) => {
+        let calculatedDiscount = 0;
+        if (cData.discountType === "percentage") {
+          calculatedDiscount = (cData.subtotal * cData.discountAmount) / 100;
+        } else if (cData.discountType === "rupee") {
+          calculatedDiscount = cData.discountAmount;
+        }
+        calculatedDiscount = Math.min(calculatedDiscount, cData.subtotal);
+        const caseGrandTotal = cData.subtotal - calculatedDiscount;
+        const caseRemaining = Math.max(0, caseGrandTotal - cData.paid);
+        unpaidSum += caseRemaining;
+      });
+
+      // Add any unpaid amount for visits that are not associated with any active case
+      visits.forEach((v) => {
+        const caseId = v.clinicCase ? (v.clinicCase._id || v.clinicCase).toString() : null;
+        if ((!caseId || !casesObjMap[caseId]) && v.paymentStatus !== "Paid") {
+          unpaidSum += (v.paymentAmount || 0);
+        }
+      });
 
       // Get recent 10 unique patients based on completed visits only (excluding future visits)
       const now = new Date();

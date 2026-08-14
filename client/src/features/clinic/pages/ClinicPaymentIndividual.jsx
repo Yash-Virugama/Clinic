@@ -61,6 +61,8 @@ const ClinicPaymentIndividual = () => {
     visitAmount,
     setVisitAmount,
     visitSubmitting,
+    activeVisitMenuId,
+    setActiveVisitMenuId,
     toggleCaseExpand,
     getPatientCode,
     getInitials,
@@ -68,8 +70,6 @@ const ClinicPaymentIndividual = () => {
     handleCaseBulkSubmit,
     triggerEditVisitPayment,
     handleVisitSubmit,
-    activeVisitMenuId,
-    setActiveVisitMenuId,
     updateVisitPaymentStatus,
   } = workspace;
 
@@ -132,9 +132,57 @@ Thank you!`;
     );
   }
 
-  // Calculate patient overall metrics
-  const totalPaidAll = visits.reduce((acc, v) => v.paymentStatus === "Paid" ? acc + (v.paymentAmount || 0) : acc, 0);
-  const totalUnpaidAll = visits.reduce((acc, v) => v.paymentStatus !== "Paid" ? acc + (v.paymentAmount || 0) : acc, 0);
+  // Calculate patient overall metrics incorporating discounts
+  const caseTotalsMap = {};
+  cases.forEach((c) => {
+    caseTotalsMap[c._id] = {
+      discountAmount: c.discountAmount || 0,
+      discountType: c.discountType || "",
+      subtotal: 0,
+      paid: 0,
+    };
+  });
+
+  visits.forEach((v) => {
+    const caseId = v.clinicCase?._id || v.clinicCase;
+    if (caseId && caseTotalsMap[caseId]) {
+      caseTotalsMap[caseId].subtotal += v.paymentAmount || 0;
+      if (v.paymentStatus === "Paid") {
+        caseTotalsMap[caseId].paid += v.paymentAmount || 0;
+      }
+    }
+  });
+
+  const orphanPaid = visits
+    .filter((v) => {
+      const caseId = v.clinicCase?._id || v.clinicCase;
+      return !caseId || !caseTotalsMap[caseId];
+    })
+    .filter((v) => v.paymentStatus === "Paid")
+    .reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
+
+  const orphanUnpaid = visits
+    .filter((v) => {
+      const caseId = v.clinicCase?._id || v.clinicCase;
+      return !caseId || !caseTotalsMap[caseId];
+    })
+    .filter((v) => v.paymentStatus !== "Paid")
+    .reduce((sum, v) => sum + (v.paymentAmount || 0), 0);
+
+  const totalPaidAll = Object.values(caseTotalsMap).reduce((sum, cData) => sum + cData.paid, 0) + orphanPaid;
+  const totalUnpaidAll = Object.values(caseTotalsMap).reduce((sum, cData) => {
+    let calculatedDiscount = 0;
+    if (cData.discountType === "percentage") {
+      calculatedDiscount = (cData.subtotal * cData.discountAmount) / 100;
+    } else if (cData.discountType === "rupee") {
+      calculatedDiscount = cData.discountAmount;
+    }
+    calculatedDiscount = Math.min(calculatedDiscount, cData.subtotal);
+    const caseGrandTotal = cData.subtotal - calculatedDiscount;
+    const caseRemaining = Math.max(0, caseGrandTotal - cData.paid);
+    return sum + caseRemaining;
+  }, 0) + orphanUnpaid;
+
   const isActive = cases.some((c) => c.status === "Active");
 
   return (
@@ -143,7 +191,7 @@ Thank you!`;
       <div className="flex justify-between items-center">
         <Link
           to={`${clinicPrefix}/payments`}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-650 hover:text-slate-800 text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-650 hover:border-primary hover:text-primary text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -302,10 +350,10 @@ Thank you!`;
                         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-slate-50/50 p-4.5 rounded-2xl border border-slate-150/40">
                           <div className="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:flex-row sm:items-center sm:gap-6">
                             <div className="text-center">
-                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-455 font-accent block">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-indigo-600 font-accent block">
                                 Case Subtotal
                               </span>
-                              <span className="text-sm font-bold text-slate-700 mt-0.5 block">
+                              <span className="text-sm font-bold text-indigo-600 mt-0.5 block">
                                 ₹{caseSubtotal.toFixed(2)}
                               </span>
                             </div>
@@ -322,16 +370,6 @@ Thank you!`;
                             <div className="hidden sm:block w-px h-8 bg-slate-200" />
 
                             <div className="text-center">
-                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary font-accent block">
-                                Case Total
-                              </span>
-                              <span className="text-sm font-bold text-primary mt-0.5 block">
-                                ₹{caseTotal.toFixed(2)}
-                              </span>
-                            </div>
-                            <div className="hidden sm:block w-px h-8 bg-slate-200" />
-
-                            <div className="text-center">
                               <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-600 font-accent block">
                                 Case Paid
                               </span>
@@ -339,14 +377,26 @@ Thank you!`;
                                 ₹{casePaid.toFixed(2)}
                               </span>
                             </div>
+
                             <div className="hidden sm:block w-px h-8 bg-slate-200" />
 
-                            <div className="text-center col-span-2 sm:col-span-1">
+                            <div className="text-center">
                               <span className="text-[9px] font-extrabold uppercase tracking-wider text-rose-600 font-accent block">
                                 Case Unpaid
                               </span>
-                              <span className="text-sm font-bold text-rose-605 mt-0.5 block">
-                                ₹{caseRemaining.toFixed(2)}
+                              <span className="text-sm font-bold text-rose-600 mt-0.5 block">
+                               ₹{caseRemaining.toFixed(2)}
+                              </span>
+                            </div>
+
+                            <div className="hidden sm:block w-px h-8 bg-slate-200" />
+
+                            <div className="text-center col-span-2 sm:col-span-1">
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider text-blue-600 font-accent block">
+                                Case Total
+                              </span>
+                              <span className="text-sm font-bold text-blue-600 mt-0.5 block">
+                                ₹{caseTotal.toFixed(2)}
                               </span>
                             </div>
                           </div>

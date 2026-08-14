@@ -219,7 +219,7 @@ const ClinicAppointments = () => {
     setApptLocation(appointment.location || "clinic");
     setCaseId(appointment.clinicCase?._id || "");
     setApptNotes(appointment.notes || "");
-    setApptStatus(appointment.status || "scheduled");
+    setApptStatus("scheduled");
     setErrors({});
     setIsEditModalOpen(true);
   };

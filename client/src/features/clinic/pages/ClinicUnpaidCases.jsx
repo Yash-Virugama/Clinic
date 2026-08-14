@@ -54,10 +54,24 @@ const ClinicUnpaidCases = () => {
           (acc, v) => (v.paymentStatus === "Paid" ? acc + (v.paymentAmount || 0) : acc),
           0
         );
-        const unpaid = caseVisits.reduce(
+        const rawUnpaid = caseVisits.reduce(
           (acc, v) => (v.paymentStatus !== "Paid" ? acc + (v.paymentAmount || 0) : acc),
           0
         );
+
+        const subtotal = paid + rawUnpaid;
+        const discountAmountVal = c.discountAmount || 0;
+        const discountType = c.discountType || "";
+        let calculatedDiscount = 0;
+        if (discountType === "percentage") {
+          calculatedDiscount = (subtotal * discountAmountVal) / 100;
+        } else if (discountType === "rupee") {
+          calculatedDiscount = discountAmountVal;
+        }
+        calculatedDiscount = Math.min(calculatedDiscount, subtotal);
+        const grandTotal = subtotal - calculatedDiscount;
+        const unpaid = Math.max(0, grandTotal - paid);
+
         const therapistName = c.therapist?.name || (caseVisits[0]?.therapist?.name) || "Unassigned";
 
         return {

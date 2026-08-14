@@ -119,27 +119,36 @@ const useClinicReport = () => {
       const home = filteredAppointments.filter((a) => a.location === "home").length;
       const online = filteredAppointments.filter((a) => a.location === "online").length;
 
+      // Map cases to their discount values
+      const casesObjMap = {};
+      cases.forEach((c) => {
+        casesObjMap[c._id.toString()] = {
+          discountAmount: c.discountAmount || 0,
+          discountType: c.discountType || "",
+        };
+      });
+
       // Calculate Financials and Outstanding Payments per Case based on filteredVisits
       let netRevenue = 0;
-      let outstanding = 0;
       const casePaymentsMap = {};
 
       filteredVisits.forEach((v) => {
         const amt = v.paymentAmount || 0;
         if (v.paymentStatus === "Paid") {
           netRevenue += amt;
-        } else {
-          outstanding += amt;
         }
 
         if (v.clinicCase) {
-          const caseId = v.clinicCase._id || v.clinicCase;
+          const caseId = (v.clinicCase._id || v.clinicCase).toString();
           if (!casePaymentsMap[caseId]) {
+            const caseDiscountInfo = casesObjMap[caseId] || { discountAmount: 0, discountType: "" };
             casePaymentsMap[caseId] = {
               caseId,
               caseName: v.clinicCase.title || "General",
               patientName: v.clinicCase.patient?.name || "Unknown Patient",
               patientId: v.clinicCase.patient?._id || null,
+              discountAmount: caseDiscountInfo.discountAmount,
+              discountType: caseDiscountInfo.discountType,
               paid: 0,
               unpaid: 0,
             };
@@ -152,17 +161,42 @@ const useClinicReport = () => {
         }
       });
 
-      const outstandingPayments = Object.values(casePaymentsMap)
-        .filter((item) => item.unpaid > 0)
-        .map((item) => ({
-          caseId: item.caseId,
-          patientId: item.patientId,
-          patientName: item.patientName,
-          caseName: item.caseName,
-          totalFee: item.paid + item.unpaid,
-          paid: item.paid,
-          unpaid: item.unpaid,
-        }));
+      let outstanding = 0;
+      const outstandingPayments = [];
+
+      Object.values(casePaymentsMap).forEach((item) => {
+        const subtotal = item.paid + item.unpaid;
+        let calculatedDiscount = 0;
+        if (item.discountType === "percentage") {
+          calculatedDiscount = (subtotal * item.discountAmount) / 100;
+        } else if (item.discountType === "rupee") {
+          calculatedDiscount = item.discountAmount;
+        }
+        calculatedDiscount = Math.min(calculatedDiscount, subtotal);
+        const grandTotal = subtotal - calculatedDiscount;
+        const caseRemaining = Math.max(0, grandTotal - item.paid);
+
+        outstanding += caseRemaining;
+
+        if (caseRemaining > 0) {
+          outstandingPayments.push({
+            caseId: item.caseId,
+            patientId: item.patientId,
+            patientName: item.patientName,
+            caseName: item.caseName,
+            totalFee: grandTotal,
+            paid: item.paid,
+            unpaid: caseRemaining,
+          });
+        }
+      });
+
+      // Add any unpaid amount for visits that are not associated with any active case
+      filteredVisits.forEach((v) => {
+        if (!v.clinicCase && v.paymentStatus !== "Paid") {
+          outstanding += (v.paymentAmount || 0);
+        }
+      });
 
       // Calculate Today's Visits (matching local today)
       const todayDateStr = new Date().toDateString();
